@@ -27,9 +27,9 @@ class ComposeLibraryConventionPlugin : Plugin<Project> {
                 "implementation"(libs.findLibrary("androidx.compose.foundation").get())
                 "implementation"(libs.findLibrary("androidx.compose.ui").get())
                 "implementation"(libs.findLibrary("androidx.compose.ui.tooling.preview").get())
-                "implementation"(libs.findLibrary("androidx.lifecycle.viewmodelCompose").get())
-                "implementation"(libs.findLibrary("androidx.lifecycle.runtimeCompose").get())
-                "implementation"(libs.findLibrary("androidx.lifecycle.viewmodelNavigation3").get())
+                "implementation"(libs.findLibrary("androidx.lifecycle.viewmodel.compose").get())
+                "implementation"(libs.findLibrary("androidx.lifecycle.runtime.compose").get())
+                "implementation"(libs.findLibrary("androidx.lifecycle.viewmodel.navigation3").get())
                 "implementation"(libs.findLibrary("androidx.navigation3.ui").get())
 
                 "implementation"(libs.findLibrary("coil.compose").get())

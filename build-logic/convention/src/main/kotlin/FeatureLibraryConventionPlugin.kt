@@ -18,6 +18,8 @@ class FeatureLibraryConventionPlugin : Plugin<Project> {
             }
 
             dependencies {
+                "implementation"(project(":core:data"))
+                "implementation"(project(":core:model"))
                 "implementation"(project(":core:ui"))
 
                 "implementation"(libs.findLibrary("kotlinx.serialization.core").get())

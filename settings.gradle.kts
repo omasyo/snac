@@ -29,6 +29,9 @@ dependencyResolutionManagement {
 }
 
 include(":app")
+include(":core:data")
+include(":core:model")
 include(":core:network")
 include(":core:ui")
 include(":feature:auth")
+include(":feature:settings")
