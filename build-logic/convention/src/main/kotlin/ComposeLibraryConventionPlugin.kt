@@ -25,7 +25,6 @@ class ComposeLibraryConventionPlugin : Plugin<Project> {
                 val composeBom = platform(libs.findLibrary("androidx.compose.bom").get())
                 "implementation"(composeBom)
                 "implementation"(libs.findLibrary("androidx.compose.foundation").get())
-                "implementation"(libs.findLibrary("androidx.compose.material3").get())
                 "implementation"(libs.findLibrary("androidx.compose.ui").get())
                 "implementation"(libs.findLibrary("androidx.compose.ui.tooling.preview").get())
                 "implementation"(libs.findLibrary("androidx.lifecycle.viewmodelCompose").get())
