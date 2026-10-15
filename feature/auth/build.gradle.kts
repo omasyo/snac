@@ -5,3 +5,7 @@ plugins {
 android {
     namespace = "com.omasyo.snac.feature.auth"
 }
+
+dependencies {
+    implementation(libs.androidx.browser)
+}

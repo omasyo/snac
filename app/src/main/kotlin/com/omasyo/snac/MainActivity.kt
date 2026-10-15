@@ -26,7 +26,7 @@ class MainActivity(private val metroVmf: MetroViewModelFactory) : ComponentActiv
         setContent {
             CompositionLocalProvider(LocalMetroViewModelFactory provides metroVmf) {
                 SnacTheme {
-                        AuthScreen()
+                    AuthScreen { }
                 }
             }
         }
