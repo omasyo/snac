@@ -1,6 +1,7 @@
 package com.omasyo.snac.core.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -154,7 +155,10 @@ fun Test(modifier: Modifier = Modifier) {
         Box(
             Modifier
                 .size(100.dp).rotate(-10f)
-//                .clip(CircleShape)
+                .clickable(
+                    indication = ScaleIndication,
+                    interactionSource = null
+                ) {}
                 .background(Color.Magenta)
         ) {
 
