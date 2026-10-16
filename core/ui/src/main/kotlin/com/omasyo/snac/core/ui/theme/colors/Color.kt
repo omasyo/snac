@@ -1,9 +1,11 @@
 package com.omasyo.snac.core.ui.theme.colors
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
+@Immutable
 data class Colors(
     val page: Color,
     val card: Color,
@@ -23,6 +25,7 @@ data class Colors(
     val shadow: Color,
 )
 
+@Immutable
 data class ColorScheme(
     val light: Colors,
     val dark: Colors = light,
