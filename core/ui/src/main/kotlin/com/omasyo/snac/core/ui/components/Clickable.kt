@@ -11,120 +11,70 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.drawscope.ContentDrawScope
-import androidx.compose.ui.graphics.drawscope.scale
-import androidx.compose.ui.graphics.drawscope.translate
-import androidx.compose.ui.graphics.layer.GraphicsLayer
-import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.ColorProducer
 import androidx.compose.ui.node.DelegatableNode
-import androidx.compose.ui.node.DrawModifierNode
-import androidx.compose.ui.node.requireGraphicsContext
+import androidx.compose.ui.node.DelegatingNode
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlin.math.ceil
 
-private class ScaleNode(private val interactionSource: InteractionSource) :
-    Modifier.Node(), DrawModifierNode {
-    private var overflow: Dp = 0.dp
+private val animationSpec = spring<Float>()
 
-    val offset: DpOffset = DpOffset(4.dp, 4.dp)
+private class SilhouettePressNode(
+    private val interactionSource: InteractionSource,
+    color: ColorProducer,
+    offset: DpOffset,
+    overflow: Dp,
+) : DelegatingNode() {
+    private val progress = Animatable(0f)
 
 
-    private var colorFilter = ColorFilter.tint(Color.Black, BlendMode.SrcIn)
-
-    private var contentLayer: GraphicsLayer? = null
-    private var tintedLayer: GraphicsLayer? = null
-    val progress = Animatable(0f)
-
-    private suspend fun animateToPressed() {
-        progress.animateTo(1f, spring())
-    }
-
-    private suspend fun animateToResting() {
-        progress.animateTo(0f, spring())
+    init {
+        delegate(
+            SilhouetteNode(
+                color = color,
+                offset = offset,
+                overflow = overflow,
+                contentShift = { progress.value },
+            )
+        )
     }
 
     override fun onAttach() {
-        val graphicsContext = requireGraphicsContext()
-        contentLayer = graphicsContext.createGraphicsLayer()
-        tintedLayer = graphicsContext.createGraphicsLayer().also {
-            it.colorFilter = colorFilter
-        }
-
         coroutineScope.launch {
             interactionSource.interactions.collectLatest { interaction ->
                 when (interaction) {
-                    is PressInteraction.Press -> animateToPressed()
-                    is PressInteraction.Release -> animateToResting()
-                    is PressInteraction.Cancel -> animateToResting()
+                    is PressInteraction.Press -> progress.animateTo(1f, animationSpec)
+                    is PressInteraction.Release,
+                    is PressInteraction.Cancel -> progress.animateTo(0f, animationSpec)
                 }
             }
         }
     }
 
-
-    override fun onDetach() {
-        val graphicsContext = requireGraphicsContext()
-        contentLayer?.let(graphicsContext::releaseGraphicsLayer)
-        tintedLayer?.let(graphicsContext::releaseGraphicsLayer)
-        contentLayer = null
-        tintedLayer = null
-    }
-
-    override fun ContentDrawScope.draw() {
-
-        val content = checkNotNull(contentLayer)
-        val tinted = checkNotNull(tintedLayer)
-
-        val m = ceil(overflow.toPx()).coerceAtLeast(0f)
-        val margin = m.toInt()
-
-        val paddedSize = IntSize(
-            ceil(size.width).toInt() + margin * 2,
-            ceil(size.height).toInt() + margin * 2,
-        )
-        val origin = IntOffset(-margin, -margin)
-
-        content.topLeft = origin
-        content.record(paddedSize) {
-            translate(m, m) { this@draw.drawContent() }
-        }
-
-        tinted.topLeft = origin
-        tinted.record(paddedSize) {
-            translate(m, m) { drawLayer(content) }
-        }
-
-        translate(offset.x.toPx(), offset.y.toPx()) {
-            drawLayer(tinted)
-        }
-
-        translate(offset.x.toPx() * progress.value, offset.y.toPx()* progress.value) {
-            drawLayer(content)
-        }
-    }
 }
 
-object ScaleIndication : IndicationNodeFactory {
+data class SilhouettePressIndication(
+    private val color: ColorProducer = { Color.Black },
+    private val offset: DpOffset = DefaultOffset,
+    private val overflow: Dp = DefaultOverflow,
+) : IndicationNodeFactory {
     override fun create(interactionSource: InteractionSource): DelegatableNode {
-        return ScaleNode(interactionSource)
+        return SilhouettePressNode(
+            interactionSource,
+            color = color,
+            offset = offset,
+            overflow = overflow
+        )
     }
-
-    override fun equals(other: Any?): Boolean = other === ScaleIndication
-    override fun hashCode() = 100
 }
 
 @Composable
@@ -133,20 +83,19 @@ fun Clickable(modifier: Modifier = Modifier) {
         modifier
 //            .fastSilhouette(Color.Black, overflow = 10.dp)
     ) {
+        val color = Color.Blue
         Box(
             Modifier
                 .size(100.dp)
-                .rotate(-10f)
+//                .rotate(-10f)
 
                 .clickable(
-                    indication = ScaleIndication,
+                    indication = remember(color) { SilhouettePressIndication({ color }) },
                     interactionSource = null
                 ) {}
 //                .silhouette(Color.Black, overflow = 20.dp)
                 .background(Color.Magenta)
-        ) {
-
-        }
+        )
     }
 }
 

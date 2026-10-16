@@ -12,10 +12,13 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorProducer
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.takeOrElse
+import androidx.compose.ui.node.CompositionLocalConsumerModifierNode
 import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.invalidateDraw
@@ -33,18 +36,13 @@ import androidx.compose.ui.unit.sp
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import kotlin.math.ceil
 
-/**
- * Draws a solid-color silhouette of the content, offset by [offset], behind the content.
- *
- * The tint needs an offscreen buffer, which would normally be clipped to the composable's
- * bounds. [overflow] pads that buffer on every side, so content that draws up to [overflow]
- * outside its bounds (shadows, glows, rotated children, etc.) is still captured.
- * Keep it as small as your content needs: the buffer grows with it.
- */
+val DefaultOffset = DpOffset(4.dp, 4.dp)
+val DefaultOverflow = 0.dp
+
 fun Modifier.silhouette(
     color: Color,
-    offset: DpOffset = DpOffset(4.dp, 4.dp),
-    overflow: Dp = 0.dp, //TODO needed?
+    offset: DpOffset = DefaultOffset,
+    overflow: Dp = DefaultOverflow, //TODO needed?
 ): Modifier = this then SilhouetteElement(color, offset, overflow)
 
 private data class SilhouetteElement(
@@ -53,10 +51,10 @@ private data class SilhouetteElement(
     val overflow: Dp,
 ) : ModifierNodeElement<SilhouetteNode>() {
 
-    override fun create() = SilhouetteNode(color, offset, overflow)
+    override fun create() = SilhouetteNode({ color }, offset, overflow)
 
     override fun update(node: SilhouetteNode) {
-        node.update(color, offset, overflow)
+        node.update({ color }, offset, overflow)
     }
 
     override fun InspectorInfo.inspectableProperties() {
@@ -67,25 +65,19 @@ private data class SilhouetteElement(
     }
 }
 
-private class SilhouetteNode(
-    private var color: Color,
+internal class SilhouetteNode(
+    private var color: ColorProducer,
     private var offset: DpOffset,
     private var overflow: Dp,
+    private val contentShift: () -> Float = { 0f },
 ) : Modifier.Node(), DrawModifierNode {
-
-    private var colorFilter = ColorFilter.tint(color, BlendMode.SrcIn)
 
     private var contentLayer: GraphicsLayer? = null
     private var tintedLayer: GraphicsLayer? = null
 
-    fun update(color: Color, offset: DpOffset, overflow: Dp) {
-        if (this.color != color) {
+    fun update(color: ColorProducer, offset: DpOffset, overflow: Dp) {
+        if (this.color != color || this.offset != offset || this.overflow != overflow) {
             this.color = color
-            colorFilter = ColorFilter.tint(color, BlendMode.SrcIn)
-            tintedLayer?.colorFilter = colorFilter
-            invalidateDraw()
-        }
-        if (this.offset != offset || this.overflow != overflow) {
             this.offset = offset
             this.overflow = overflow
             invalidateDraw()
@@ -95,9 +87,7 @@ private class SilhouetteNode(
     override fun onAttach() {
         val graphicsContext = requireGraphicsContext()
         contentLayer = graphicsContext.createGraphicsLayer()
-        tintedLayer = graphicsContext.createGraphicsLayer().also {
-            it.colorFilter = colorFilter
-        }
+        tintedLayer = graphicsContext.createGraphicsLayer()
     }
 
     override fun onDetach() {
@@ -109,8 +99,13 @@ private class SilhouetteNode(
     }
 
     override fun ContentDrawScope.draw() {
+        val resolved = color().takeOrElse { Color.Green }
+
         val content = checkNotNull(contentLayer)
-        val tinted = checkNotNull(tintedLayer)
+        val tinted = checkNotNull(tintedLayer).also {
+            it.colorFilter = ColorFilter.tint(resolved, BlendMode.SrcIn)
+        }
+
 
         val m = ceil(overflow.toPx()).coerceAtLeast(0f)
         val margin = m.toInt()
@@ -131,10 +126,12 @@ private class SilhouetteNode(
             translate(m, m) { drawLayer(content) }
         }
 
-        translate(offset.x.toPx(), offset.y.toPx()) {
-            drawLayer(tinted)
-        }
-        drawLayer(content)
+        val dx = offset.x.toPx()
+        val dy = offset.y.toPx()
+        translate(dx, dy) { drawLayer(tinted) }
+
+        val shift = contentShift()
+        translate(dx * shift, dy * shift) { drawLayer(content) }
     }
 }
 
@@ -154,9 +151,10 @@ fun Test(modifier: Modifier = Modifier) {
         )
         Box(
             Modifier
-                .size(100.dp).rotate(-10f)
+                .size(100.dp)
+                .rotate(-10f)
                 .clickable(
-                    indication = ScaleIndication,
+                    indication = SilhouettePressIndication(),
                     interactionSource = null
                 ) {}
                 .background(Color.Magenta)
