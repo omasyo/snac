@@ -1,6 +1,10 @@
 package com.omasyo.snac.core.ui.theme
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -29,9 +33,17 @@ data class Typography(
     val hand: TextStyle,
 )
 
+val LocalTextStyle = compositionLocalOf(structuralEqualityPolicy()) { SnacTypography.body }
+
+// TODO(b/156598010): remove this and replace with fold definition on the backing CompositionLocal
+@Composable
+fun ProvideTextStyle(value: TextStyle, content: @Composable () -> Unit) {
+    val mergedStyle = LocalTextStyle.current.merge(value)
+    CompositionLocalProvider(LocalTextStyle provides mergedStyle, content = content)
+}
 
 
-val AppTypography = Typography(
+val SnacTypography = Typography(
     hero = TextStyle(
         fontFamily = DisplayFamily,
         fontWeight = FontWeight.Normal,

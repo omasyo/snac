@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalWithComputedDefaultOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.BlendMode
@@ -21,6 +22,7 @@ import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.node.CompositionLocalConsumerModifierNode
 import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
+import androidx.compose.ui.node.currentValueOf
 import androidx.compose.ui.node.invalidateDraw
 import androidx.compose.ui.node.requireGraphicsContext
 import androidx.compose.ui.platform.InspectorInfo
@@ -34,13 +36,18 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.omasyo.snac.core.ui.theme.SnacTheme
+import com.omasyo.snac.core.ui.theme.colors.LocalColors
 import kotlin.math.ceil
 
-val DefaultOffset = DpOffset(4.dp, 4.dp)
+const val Offset = 3
+val DefaultOffset = DpOffset(Offset.dp, Offset.dp)
 val DefaultOverflow = 0.dp
 
+internal val LocalSilhouetteColor =
+    compositionLocalWithComputedDefaultOf { LocalColors.currentValue.signal }
+
 fun Modifier.silhouette(
-    color: Color,
+    color: Color = Color.Unspecified,
     offset: DpOffset = DefaultOffset,
     overflow: Dp = DefaultOverflow, //TODO needed?
 ): Modifier = this then SilhouetteElement(color, offset, overflow)
@@ -70,7 +77,7 @@ internal class SilhouetteNode(
     private var offset: DpOffset,
     private var overflow: Dp,
     private val contentShift: () -> Float = { 0f },
-) : Modifier.Node(), DrawModifierNode {
+) : Modifier.Node(), CompositionLocalConsumerModifierNode, DrawModifierNode {
 
     private var contentLayer: GraphicsLayer? = null
     private var tintedLayer: GraphicsLayer? = null
@@ -99,7 +106,7 @@ internal class SilhouetteNode(
     }
 
     override fun ContentDrawScope.draw() {
-        val resolved = color().takeOrElse { Color.Green }
+        val resolved = color().takeOrElse { currentValueOf(LocalSilhouetteColor) }
 
         val content = checkNotNull(contentLayer)
         val tinted = checkNotNull(tintedLayer).also {
