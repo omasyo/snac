@@ -1,7 +1,6 @@
 package com.omasyo.snac.feature.home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,16 +9,19 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.ui.components.Button
+import com.omasyo.snac.core.ui.components.SignInPrompt
+import com.omasyo.snac.core.ui.components.Stamp
+import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.modifiers.film
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
@@ -43,6 +45,7 @@ fun HomeScreen(
     Column(
         verticalArrangement = Arrangement.spacedBy(24.dp),
         modifier = modifier
+            .verticalScroll(rememberScrollState())
             .fillMaxSize()
             .background(SnacColors.page)
             .padding(vertical = 24.dp),
@@ -54,65 +57,36 @@ fun HomeScreen(
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth(),
         ) {
-            BasicText(
-                text = "Snac",
+            Text(
+                text = "snac",
                 style = SnacTypography.headline,
                 modifier = Modifier
                     .rotate(-3f)
                     .silhouette(SnacColors.signal),
             )
             Button(
-                text = "Sign in",
+                text = "SIGN IN WITH TRAKT",
                 onClick = onSignInClick,
             )
         }
-        Box {
-//            Box(Modifier.matchParentSize().background(Color.Gray))
-            Box(
-                modifier = Modifier
-                    .film()
-                    .background(SnacColors.film)
-                    .heightIn(272.dp)
-                    .fillMaxWidth()
-                    .padding(16.dp)
-                    .padding(horizontal = 16.dp)
-            ) {
-                Stamp("#1 trending", modifier = Modifier.rotate(-6f))
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.align(
-                        Alignment.BottomStart
-                    )
-                ) {
-                    val titleColor = SnacColors.onFilm
-                    BasicText(
-                        text = "FRANKENSTEIN",
-                        style = SnacTypography.display.copy(
-                            lineHeightStyle = CapHeightLineHeightStyle,
-                        ),
-                        color = { titleColor },
-                        modifier = Modifier.silhouette(SnacColors.signal)
-
-                    )
-                    val infoColor = SnacColors.accent
-                    BasicText(
-                        text = "1,204 watching now",
-                        style = SnacTypography.hand,
-                        color = { infoColor }
-
-                    )
-                }
-            }
-        }
+        TrendingSpotlight(
+            title = "FRANKENSTEIN",
+            watchingCount = 1204,
+        )
+        SignInPrompt(
+            title = "TRACK WHAT YOU WATCH",
+            message = "Sign in to get Up Next, check-ins, paused playback and recommendations from your Trakt account.",
+            onSignInClick = {},
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+        TrendingSection(
+            modifier = Modifier
+                .rotate(-1.5f)
+        )
     }
 }
 
-private val CapHeightLineHeightStyle = LineHeightStyle(
-    alignment = LineHeightStyle.Alignment.Center,
-    trim = LineHeightStyle.Trim.Both,
-    mode = LineHeightStyle.Mode.Tight,
-)
-
-@Preview
+@Preview(device = "spec:width=1080px,height=12340px,dpi=440")
 @Composable
 private fun Preview() {
     SnacTheme {
@@ -124,31 +98,5 @@ private fun Preview() {
             trendingTab = TrendingTab.Movie,
             onTrendingTabClick = {},
         )
-    }
-}
-
-@Composable
-fun Stamp(
-    text: String,
-    modifier: Modifier = Modifier,
-    backgroundColor: Color = SnacColors.chip,
-) {
-    val contentColor = SnacColors.signal
-    BasicText(
-        text = text,
-        style = SnacTypography.hand,
-        color = { contentColor },
-        modifier = modifier
-            .border(4.dp, contentColor)
-            .background(backgroundColor)
-            .padding(horizontal = 16.dp, vertical = 2.dp)
-    )
-}
-
-@Preview
-@Composable
-private fun SPreview() {
-    SnacTheme {
-        Stamp("#1 trending")
     }
 }

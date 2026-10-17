@@ -43,6 +43,7 @@ dependencies {
     implementation(projects.core.network)
     implementation(projects.core.ui)
     implementation(projects.feature.auth)
+    implementation(projects.feature.home)
     implementation(projects.feature.settings)
 
     implementation(platform(libs.androidx.compose.bom))

@@ -3,5 +3,5 @@ plugins {
 }
 
 android {
-    namespace = "com.omasyo.snac.feature.settings"
+    namespace = "com.omasyo.snac.feature.home"
 }

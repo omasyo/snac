@@ -6,13 +6,17 @@ import androidx.compose.foundation.IndicationNodeFactory
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.InteractionSource
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.compositionLocalWithComputedDefaultOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.BlendMode
@@ -45,7 +49,7 @@ import androidx.compose.ui.unit.sp
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.colors.LocalColors
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
-import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlin.math.ceil
 
@@ -194,11 +198,40 @@ private class SilhouettePressNode(
 
     override fun onAttach() {
         coroutineScope.launch {
-            interactionSource.interactions.collectLatest { interaction ->
+            progress.snapTo(0f)
+
+            val presses = mutableListOf<PressInteraction.Press>()
+            var pressJob: Job? = null
+            var releaseJob: Job? = null
+
+            fun onPressEnded(press: PressInteraction.Press, waitForPress: Boolean) {
+                presses -= press
+                if (presses.isEmpty()) {
+                    releaseJob = launch {
+                        if (waitForPress) pressJob?.join()
+                        progress.animateTo(0f, animationSpec)
+                    }
+                }
+            }
+
+            interactionSource.interactions.collect { interaction ->
                 when (interaction) {
-                    is PressInteraction.Press -> progress.animateTo(1f, animationSpec)
-                    is PressInteraction.Release,
-                    is PressInteraction.Cancel -> progress.animateTo(0f, animationSpec)
+                    is PressInteraction.Press -> {
+                        presses += interaction
+                        releaseJob?.cancel()
+                        pressJob = this@launch.launch { progress.animateTo(1f, animationSpec) }
+                    }
+
+                    is PressInteraction.Release -> onPressEnded(
+                        interaction.press,
+                        waitForPress = true
+                    )
+
+                    is PressInteraction.Cancel -> onPressEnded(
+                        interaction.press,
+                        waitForPress = false
+                    )
+
                 }
             }
         }
@@ -246,17 +279,27 @@ private fun SilhouettePreview() {
 @Composable
 private fun ClickablePreview() {
     SnacTheme {
-        Box(
+        Row(
             Modifier
                 .background(SnacColors.page)
-                .padding(20.dp)
+                .padding(20.dp),
+            horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             Box(
                 Modifier
-                    .size(100.dp)
+                    .size(200.dp)
                     .clickable(
-                        indication = SilhouettePressIndication({ Color.Blue }),
-                        interactionSource = null
+                        indication = SilhouettePressIndication(),
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {}
+                    .background(Color.Magenta)
+            )
+            Box(
+                Modifier
+                    .size(200.dp)
+                    .clickable(
+                        indication = SilhouettePressIndication(),
+                        interactionSource = remember { MutableInteractionSource() }
                     ) {}
                     .background(Color.Magenta)
             )
