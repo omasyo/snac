@@ -1,4 +1,4 @@
-package com.omasyo.snac.core.ui.components
+package com.omasyo.snac.core.ui.modifiers
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -73,7 +73,6 @@ fun Modifier.film(
 @Composable
 private fun Preview() {
     SnacTheme {
-
         Box(
             modifier = Modifier
                 .padding(20.dp)

@@ -1,7 +1,12 @@
-package com.omasyo.snac.core.ui.components
+package com.omasyo.snac.core.ui.modifiers
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.IndicationNodeFactory
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.InteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -20,6 +25,8 @@ import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.node.CompositionLocalConsumerModifierNode
+import androidx.compose.ui.node.DelegatableNode
+import androidx.compose.ui.node.DelegatingNode
 import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.node.currentValueOf
@@ -37,19 +44,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.colors.LocalColors
+import com.omasyo.snac.core.ui.theme.colors.SnacColors
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kotlin.math.ceil
 
-const val Offset = 3
-val DefaultOffset = DpOffset(Offset.dp, Offset.dp)
-val DefaultOverflow = 0.dp
 
-internal val LocalSilhouetteColor =
-    compositionLocalWithComputedDefaultOf { LocalColors.currentValue.signal }
+private object SilhouetteDefaults {
+    val Offset = DpOffset(3.dp, 3.dp)
+    val Overflow = 0.dp
+}
+
+val LocalSilhouetteColor =
+    compositionLocalWithComputedDefaultOf { LocalColors.currentValue.shadow }
 
 fun Modifier.silhouette(
     color: Color = Color.Unspecified,
-    offset: DpOffset = DefaultOffset,
-    overflow: Dp = DefaultOverflow, //TODO needed?
+    offset: DpOffset = SilhouetteDefaults.Offset,
+    overflow: Dp = SilhouetteDefaults.Overflow,
 ): Modifier = this then SilhouetteElement(color, offset, overflow)
 
 private data class SilhouetteElement(
@@ -142,42 +154,112 @@ internal class SilhouetteNode(
     }
 }
 
-@Composable
-fun Test(modifier: Modifier = Modifier) {
-    Box(
-        modifier
-//            .fastSilhouette(Color.Black, overflow = 10.dp)
-    ) {
-        BasicText(
-            "Hello new world",
-            style = TextStyle(fontSize = 40.sp, fontWeight = FontWeight.Black, color = Color.Red),
-            modifier = Modifier
-                .rotate(-90f)
-                .background(Color.Yellow)
-                .silhouette(Color.Black, overflow = 10.dp)
-        )
-        Box(
-            Modifier
-                .size(100.dp)
-                .rotate(-10f)
-                .clickable(
-                    indication = SilhouettePressIndication(),
-                    interactionSource = null
-                ) {}
-                .background(Color.Magenta)
-        ) {
+private val animationSpec = spring<Float>()
 
+
+data class SilhouettePressIndication(
+    private val color: ColorProducer = { Color.Unspecified },
+    private val offset: DpOffset = SilhouetteDefaults.Offset,
+    private val overflow: Dp = SilhouetteDefaults.Overflow,
+) : IndicationNodeFactory {
+    override fun create(interactionSource: InteractionSource): DelegatableNode {
+        return SilhouettePressNode(
+            interactionSource,
+            color = color,
+            offset = offset,
+            overflow = overflow
+        )
+    }
+}
+
+private class SilhouettePressNode(
+    private val interactionSource: InteractionSource,
+    color: ColorProducer,
+    offset: DpOffset,
+    overflow: Dp,
+) : DelegatingNode() {
+    private val progress = Animatable(0f)
+
+
+    init {
+        delegate(
+            SilhouetteNode(
+                color = color,
+                offset = offset,
+                overflow = overflow,
+                contentShift = { progress.value },
+            )
+        )
+    }
+
+    override fun onAttach() {
+        coroutineScope.launch {
+            interactionSource.interactions.collectLatest { interaction ->
+                when (interaction) {
+                    is PressInteraction.Press -> progress.animateTo(1f, animationSpec)
+                    is PressInteraction.Release,
+                    is PressInteraction.Cancel -> progress.animateTo(0f, animationSpec)
+                }
+            }
         }
     }
 }
 
-@Preview(showBackground = true)
+@Preview
 @Composable
-private fun Preview() {
+private fun SilhouettePreview() {
     SnacTheme {
+        Box(
+            Modifier
+                .background(SnacColors.page)
+                .padding(20.dp)
+        ) {
+            BasicText(
+                "Hello new world",
+                style = TextStyle(
+                    fontSize = 40.sp,
+                    fontWeight = FontWeight.Black,
+                    color = Color.Red
+                ),
+                modifier = Modifier
+                    .rotate(-90f)
+                    .background(Color.Yellow)
+                    .silhouette(Color.Black, overflow = 10.dp)
+            )
+            Box(
+                Modifier
+                    .size(100.dp)
+                    .rotate(-10f)
+                    .clickable(
+                        indication = SilhouettePressIndication(),
+                        interactionSource = null
+                    ) {}
+                    .background(Color.Magenta)
+            ) {
 
-        Test(
-            modifier = Modifier.padding(20.dp)
-        )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun ClickablePreview() {
+    SnacTheme {
+        Box(
+            Modifier
+                .background(SnacColors.page)
+                .padding(20.dp)
+        ) {
+            Box(
+                Modifier
+                    .size(100.dp)
+                    .clickable(
+                        indication = SilhouettePressIndication({ Color.Blue }),
+                        interactionSource = null
+                    ) {}
+                    .background(Color.Magenta)
+            )
+        }
     }
 }

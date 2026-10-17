@@ -20,8 +20,8 @@ import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.ui.components.Button
-import com.omasyo.snac.core.ui.components.film
-import com.omasyo.snac.core.ui.components.silhouette
+import com.omasyo.snac.core.ui.modifiers.film
+import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
@@ -90,7 +90,7 @@ fun HomeScreen(
                             lineHeightStyle = CapHeightLineHeightStyle,
                         ),
                         color = { titleColor },
-                        modifier = Modifier.silhouette()
+                        modifier = Modifier.silhouette(SnacColors.signal)
 
                     )
                     val infoColor = SnacColors.accent
