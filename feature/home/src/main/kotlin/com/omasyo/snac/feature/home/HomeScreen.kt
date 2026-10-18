@@ -1,6 +1,5 @@
 package com.omasyo.snac.feature.home
 
-import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.SignInPrompt
 import com.omasyo.snac.core.ui.components.Text
+import com.omasyo.snac.core.ui.modifiers.bottomBarPadding
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
@@ -46,7 +46,8 @@ fun HomeScreen(
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
             .background(SnacColors.page)
-            .padding(vertical = 24.dp)
+            .bottomBarPadding()
+//            .padding(vertical = 24.dp)
             .statusBarsPadding()
             .navigationBarsPadding(),
     ) {
@@ -102,7 +103,6 @@ fun HomeScreen(
 @Preview(device = "spec:width=1080px,height=12340px,dpi=440")
 @Composable
 private fun Preview() {
-    LocalIndication
     SnacTheme {
         HomeScreen(
             onSignInClick = {},

@@ -16,37 +16,38 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.toRect
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorProducer
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.ContentDrawScope
+import androidx.compose.ui.graphics.isSpecified
 import androidx.compose.ui.node.DelegatableNode
 import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.invalidateDraw
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.theme.SnacTheme
+import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
 import kotlinx.coroutines.launch
 
-class TintIndication(
+data class TintIndication(
+    private val contentOnly: Boolean = false,
     private val color: ColorProducer = { Color.Unspecified },
 ) : IndicationNodeFactory {
 
     override fun create(interactionSource: InteractionSource): DelegatableNode =
-        TintIndicationInstance(interactionSource, color)
-
-    override fun hashCode(): Int = -1
-
-    override fun equals(other: Any?) = other === this
+        TintIndicationInstance(interactionSource, color, contentOnly)
 
     private class TintIndicationInstance(
         private val interactionSource: InteractionSource,
         private val color: ColorProducer,
-    ) :
-        Modifier.Node(), DrawModifierNode {
-        private var isPressed = false
-        private var isHovered = false
-        private var isFocused = false
+        private val contentOnly: Boolean,
+    ) : Modifier.Node(), DrawModifierNode {
+        private var alpha = 0f
 
         override fun onAttach() {
             coroutineScope.launch {
@@ -63,35 +64,34 @@ class TintIndication(
                         is FocusInteraction.Focus -> focusCount++
                         is FocusInteraction.Unfocus -> focusCount--
                     }
-                    val pressed = pressCount > 0
-                    val hovered = hoverCount > 0
-                    val focused = focusCount > 0
-                    var invalidateNeeded = false
-                    if (isPressed != pressed) {
-                        isPressed = pressed
-                        invalidateNeeded = true
+                    val newAlpha = when {
+                        pressCount > 0 -> 0.3f
+                        hoverCount > 0 || focusCount > 0 -> 0.1f
+                        else -> 0f
                     }
-                    if (isHovered != hovered) {
-                        isHovered = hovered
-                        invalidateNeeded = true
+                    if (newAlpha != alpha) {
+                        alpha = newAlpha
+                        invalidateDraw()
                     }
-                    if (isFocused != focused) {
-                        isFocused = focused
-                        invalidateNeeded = true
-                    }
-                    if (invalidateNeeded) invalidateDraw()
                 }
             }
         }
 
         override fun ContentDrawScope.draw() {
-            drawContent()
             val color = color()
-            if (isPressed) {
-                drawRect(color = color.copy(alpha = 0.3f), size = size)
-            } else if (isHovered || isFocused) {
-                drawRect(color = color.copy(alpha = 0.1f), size = size)
+            if (alpha == 0f || !color.isSpecified) {
+                drawContent()
+                return
             }
+
+            val canvas = drawContext.canvas
+            if (contentOnly) canvas.saveLayer(size.toRect(), Paint())
+            drawContent()
+            drawRect(
+                color = color.copy(alpha = alpha),
+                blendMode = if (contentOnly) BlendMode.SrcAtop else BlendMode.SrcOver,
+            )
+            if (contentOnly) canvas.restore()
         }
     }
 }
@@ -110,11 +110,17 @@ private fun Preview() {
                 Modifier
                     .size(200.dp)
                     .clickable(
-                        indication = TintIndication { Color.Blue },
+                        indication = TintIndication(true) { Color.Blue },
                         interactionSource = remember { MutableInteractionSource() }
                     ) {}
-                    .background(Color.Magenta)
-            )
+//                    .background(Color.Magenta),
+            ) {
+                Text(
+                    "Hello",
+                    style = SnacTypography.title,
+                    modifier = Modifier
+                )
+            }
         }
     }
 }

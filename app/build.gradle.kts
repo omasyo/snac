@@ -56,4 +56,6 @@ dependencies {
     implementation(libs.metrox.android)
     implementation(libs.metrox.viewmodel)
     implementation(libs.metrox.viewmodel.compose)
+
+    debugImplementation(libs.androidx.compose.ui.tooling)
 }
