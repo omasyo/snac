@@ -20,7 +20,6 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.omasyo.snac.core.ui.components.bottombar.BottomBar
 import com.omasyo.snac.core.ui.components.navigation.TopLevelRoute
-import com.omasyo.snac.feature.auth.Auth
 import com.omasyo.snac.feature.calendar.CalendarRoute
 import com.omasyo.snac.feature.calendar.calendarNavigation
 import com.omasyo.snac.feature.charts.ChartsRoute
@@ -36,7 +35,6 @@ import kotlinx.serialization.modules.polymorphic
 val config = SavedStateConfiguration {
     serializersModule = SerializersModule {
         polymorphic(NavKey::class) {
-            subclass(Auth::class, Auth.serializer())
             subclass(CalendarRoute::class, CalendarRoute.serializer())
             subclass(ChartsRoute::class, ChartsRoute.serializer())
             subclass(HomeRoute::class, HomeRoute.serializer())

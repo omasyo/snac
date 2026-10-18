@@ -1,4 +1,4 @@
-package com.omasyo.snac.feature.auth
+package com.omasyo.snac.feature.auth.api
 
 sealed interface AuthState {
     data object Idle : AuthState

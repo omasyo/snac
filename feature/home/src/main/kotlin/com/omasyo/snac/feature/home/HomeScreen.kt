@@ -73,7 +73,7 @@ fun HomeScreen(
         TrendingSpotlight(
             title = "FRANKENSTEIN",
             watchingCount = 1204,
-            onClick = {},
+            onClick = { onMovieClick() },
         )
         SignInPrompt(
             title = "TRACK WHAT YOU WATCH",

@@ -5,3 +5,7 @@ plugins {
 android {
     namespace = "com.omasyo.snac.feature.home"
 }
+
+dependencies {
+    implementation(projects.feature.auth.api)
+}
