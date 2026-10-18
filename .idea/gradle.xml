@@ -34,10 +34,20 @@
             <option value="$PROJECT_DIR$/feature/auth/api" />
             <option value="$PROJECT_DIR$/feature/auth/impl" />
             <option value="$PROJECT_DIR$/feature/calendar" />
+            <option value="$PROJECT_DIR$/feature/calendar/api" />
+            <option value="$PROJECT_DIR$/feature/calendar/impl" />
             <option value="$PROJECT_DIR$/feature/charts" />
+            <option value="$PROJECT_DIR$/feature/charts/api" />
+            <option value="$PROJECT_DIR$/feature/charts/impl" />
             <option value="$PROJECT_DIR$/feature/home" />
+            <option value="$PROJECT_DIR$/feature/home/api" />
+            <option value="$PROJECT_DIR$/feature/home/impl" />
             <option value="$PROJECT_DIR$/feature/search" />
+            <option value="$PROJECT_DIR$/feature/search/api" />
+            <option value="$PROJECT_DIR$/feature/search/impl" />
             <option value="$PROJECT_DIR$/feature/settings" />
+            <option value="$PROJECT_DIR$/feature/settings/api" />
+            <option value="$PROJECT_DIR$/feature/settings/impl" />
           </set>
         </option>
       </GradleProjectSettings>

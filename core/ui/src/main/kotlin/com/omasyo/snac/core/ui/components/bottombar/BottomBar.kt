@@ -25,17 +25,17 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.ui.components.Text
-import com.omasyo.snac.core.ui.components.navigation.TopLevelRoute
 import com.omasyo.snac.core.ui.modifiers.TintIndication
 import com.omasyo.snac.core.ui.modifiers.bleedHorizontally
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
 
 @Composable
-fun BottomBar(
-    currentDestination: TopLevelRoute,
-    onCurrentDestinationChange: (TopLevelRoute) -> Unit,
-    destinations: List<TopLevelRoute>,
+fun <T> BottomBar(
+    currentDestination: T,
+    onCurrentDestinationChange: (T) -> Unit,
+    destinations: List<T>,
+    label: (T) -> String,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -54,7 +54,7 @@ fun BottomBar(
                 contentAlignment = Alignment.Center,
             ) {
                 BottomBarItem(
-                    destination = destination,
+                    label = label(destination),
                     isSelected = currentDestination == destination,
                     onClick = { onCurrentDestinationChange(destination) }
                 )
@@ -65,7 +65,7 @@ fun BottomBar(
 
 @Composable
 private fun BottomBarItem(
-    destination: TopLevelRoute,
+    label: String,
     isSelected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -92,14 +92,14 @@ private fun BottomBarItem(
                 }
         ) {
             Text(
-                text = destination.label,
+                text = label,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
             )
         }
     }
 }
 
-enum class TestDestination(override val label: String) : TopLevelRoute {
+private enum class TestDestination(val label: String) {
     Home("Home"),
     Charts("Charts"),
     Search("Search"),
@@ -110,13 +110,14 @@ enum class TestDestination(override val label: String) : TopLevelRoute {
 @Preview
 @Composable
 private fun Preview() {
-    var destination by remember { mutableStateOf<TopLevelRoute>(TestDestination.Home) }
+    var destination by remember { mutableStateOf(TestDestination.Home) }
 
     SnacTheme {
         BottomBar(
             currentDestination = destination,
             onCurrentDestinationChange = { destination = it },
             destinations = TestDestination.entries,
+            label = { it.label },
             modifier = Modifier.padding(vertical = 8.dp)
         )
     }

@@ -19,27 +19,28 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.omasyo.snac.core.ui.components.bottombar.BottomBar
-import com.omasyo.snac.core.ui.components.navigation.TopLevelRoute
-import com.omasyo.snac.feature.calendar.CalendarRoute
-import com.omasyo.snac.feature.calendar.calendarNavigation
-import com.omasyo.snac.feature.charts.ChartsRoute
-import com.omasyo.snac.feature.charts.chartsNavigation
-import com.omasyo.snac.feature.home.HomeRoute
-import com.omasyo.snac.feature.home.homeNavigation
-import com.omasyo.snac.feature.search.SearchRoute
-import com.omasyo.snac.feature.search.searchNavigation
-import com.omasyo.snac.feature.settings.Settings
+import com.omasyo.snac.feature.calendar.api.navigation.CalendarNavKey
+import com.omasyo.snac.feature.calendar.impl.navigation.calendarEntry
+import com.omasyo.snac.feature.charts.api.navigation.ChartsNavKey
+import com.omasyo.snac.feature.charts.impl.navigation.chartsEntry
+import com.omasyo.snac.feature.home.api.navigation.HomeNavKey
+import com.omasyo.snac.feature.home.impl.navigation.homeEntry
+import com.omasyo.snac.feature.search.api.navigation.SearchNavKey
+import com.omasyo.snac.feature.search.impl.navigation.searchEntry
+import com.omasyo.snac.feature.settings.api.navigation.SettingsNavKey
+import com.omasyo.snac.feature.settings.impl.navigation.settingsEntry
+import com.omasyo.snac.navigation.TOP_LEVEL_NAV_ITEMS
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
 
 val config = SavedStateConfiguration {
     serializersModule = SerializersModule {
         polymorphic(NavKey::class) {
-            subclass(CalendarRoute::class, CalendarRoute.serializer())
-            subclass(ChartsRoute::class, ChartsRoute.serializer())
-            subclass(HomeRoute::class, HomeRoute.serializer())
-            subclass(Settings::class, Settings.serializer())
-            subclass(SearchRoute::class, SearchRoute.serializer())
+            subclass(CalendarNavKey::class, CalendarNavKey.serializer())
+            subclass(ChartsNavKey::class, ChartsNavKey.serializer())
+            subclass(HomeNavKey::class, HomeNavKey.serializer())
+            subclass(SearchNavKey::class, SearchNavKey.serializer())
+            subclass(SettingsNavKey::class, SettingsNavKey.serializer())
         }
     }
 }
@@ -48,9 +49,9 @@ val config = SavedStateConfiguration {
 fun AppNavHost(
     modifier: Modifier = Modifier,
 ) {
-    val backStack = rememberNavBackStack(config, HomeRoute)
+    val backStack = rememberNavBackStack(config, HomeNavKey)
 
-    val destination = backStack.last { it is TopLevelRoute } as TopLevelRoute
+    val destination = backStack.last { it in TOP_LEVEL_NAV_ITEMS }
 
     Test(
         bottomBar = {
@@ -60,7 +61,8 @@ fun AppNavHost(
 //                    backStack.clear()
                     backStack.add(it)
                 },
-                destinations = listOf(HomeRoute, ChartsRoute, SearchRoute, CalendarRoute),
+                destinations = TOP_LEVEL_NAV_ITEMS.keys.toList(),
+                label = { TOP_LEVEL_NAV_ITEMS.getValue(it).label },
                 modifier = Modifier
                     .padding(vertical = 8.dp)
             )
@@ -85,10 +87,11 @@ fun AppNavHost(
                 )
             },
             entryProvider = entryProvider {
-                calendarNavigation()
-                chartsNavigation()
-                homeNavigation()
-                searchNavigation()
+                calendarEntry()
+                chartsEntry()
+                homeEntry()
+                searchEntry()
+                settingsEntry()
             },
         )
 

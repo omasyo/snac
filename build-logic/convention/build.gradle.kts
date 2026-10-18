@@ -36,10 +36,5 @@ gradlePlugin {
             id = "com.snac.feature.impl"
             implementationClass = "FeatureImplConventionPlugin"
         }
-
-        register("featureLibrary") {
-            id = "com.snac.feature.library"
-            implementationClass = "FeatureLibraryConventionPlugin"
-        }
     }
 }

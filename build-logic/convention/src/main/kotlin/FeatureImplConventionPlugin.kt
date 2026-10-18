@@ -24,6 +24,7 @@ class FeatureImplConventionPlugin : Plugin<Project> {
 
                 "implementation"(libs.findLibrary("kotlinx.serialization.core").get())
                 "implementation"(libs.findLibrary("metrox.viewmodel.compose").get())
+                "implementation"(libs.findLibrary("androidx.navigation3.runtime").get())
             }
         }
     }
