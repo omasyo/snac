@@ -27,6 +27,16 @@ gradlePlugin {
             implementationClass = "ComposeConventionPlugin"
         }
 
+        register("featureApi") {
+            id = "com.snac.feature.api"
+            implementationClass = "FeatureApiConventionPlugin"
+        }
+
+        register("featureImpl") {
+            id = "com.snac.feature.impl"
+            implementationClass = "FeatureImplConventionPlugin"
+        }
+
         register("featureLibrary") {
             id = "com.snac.feature.library"
             implementationClass = "FeatureLibraryConventionPlugin"
