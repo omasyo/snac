@@ -40,7 +40,10 @@ dependencies {
     implementation(projects.core.network)
     implementation(projects.core.ui)
     implementation(projects.feature.auth)
+    implementation(projects.feature.calendar)
+    implementation(projects.feature.charts)
     implementation(projects.feature.home)
+    implementation(projects.feature.search)
     implementation(projects.feature.settings)
 
     implementation(libs.androidx.activity.compose)

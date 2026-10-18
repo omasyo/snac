@@ -6,9 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.omasyo.snac.core.ui.theme.SnacTheme
-import com.omasyo.snac.feature.auth.AuthScreen
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
@@ -29,9 +27,7 @@ class MainActivity(private val metroVmf: MetroViewModelFactory) : ComponentActiv
             CompositionLocalProvider(LocalMetroViewModelFactory provides metroVmf) {
                 val viewModel: MainViewModel = metroViewModel()
                 SnacTheme {
-                    AppNavHost(
-                        isAuthenticated = viewModel.isAuthenticated.collectAsStateWithLifecycle().value,
-                    )
+                    AppNavHost()
                 }
             }
         }

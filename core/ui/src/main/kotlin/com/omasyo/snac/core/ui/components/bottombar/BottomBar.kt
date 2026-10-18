@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
@@ -24,39 +25,28 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.ui.components.Text
+import com.omasyo.snac.core.ui.components.navigation.TopLevelRoute
 import com.omasyo.snac.core.ui.modifiers.TintIndication
 import com.omasyo.snac.core.ui.modifiers.bleedHorizontally
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
 
-
-enum class BottomBarDestination(
-    val label: String,
-//    val route: NavRoute,
-) {
-    Home("Home"),
-    Charts("Charts"),
-    Search("Search"),
-    Calendar("Calendar"),
-//    Me("Me"),
-}
-
 @Composable
 fun BottomBar(
-    currentDestination: BottomBarDestination,
-    onCurrentDestinationChange: (BottomBarDestination) -> Unit,
-    destinations: List<BottomBarDestination>,
+    currentDestination: TopLevelRoute,
+    onCurrentDestinationChange: (TopLevelRoute) -> Unit,
+    destinations: List<TopLevelRoute>,
     modifier: Modifier = Modifier,
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
+            .navigationBarsPadding()
             .rotate(-1.5f)
             .bleedHorizontally(8.dp)
             .fillMaxWidth()
             .background(SnacColors.tape)
-            .padding(horizontal = 8.dp)
-            .padding(horizontal =  16.dp, vertical = 8.dp),
+            .padding(horizontal = 24.dp, vertical = 8.dp),
     ) {
         for (destination in destinations) {
             Box(
@@ -75,7 +65,7 @@ fun BottomBar(
 
 @Composable
 private fun BottomBarItem(
-    destination: BottomBarDestination,
+    destination: TopLevelRoute,
     isSelected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -88,16 +78,18 @@ private fun BottomBarItem(
         modifier = modifier
             .clickable(
                 interactionSource = mutableInteractionSource,
-                indication =  remember { TintIndication(true) { indicationColor } },
+                indication = remember { TintIndication(true) { indicationColor } },
                 onClick = onClick,
             )
     ) {
         Box(
-            modifier = Modifier.padding(4.dp).drawBehind {
-                if (isSelected) {
-                    drawOval(Color.Red, style = Stroke(width = 2.dp.toPx()))
+            modifier = Modifier
+                .padding(4.dp)
+                .drawBehind {
+                    if (isSelected) {
+                        drawOval(Color.Red, style = Stroke(width = 2.dp.toPx()))
+                    }
                 }
-            }
         ) {
             Text(
                 text = destination.label,
@@ -107,16 +99,24 @@ private fun BottomBarItem(
     }
 }
 
+enum class TestDestination(override val label: String) : TopLevelRoute {
+    Home("Home"),
+    Charts("Charts"),
+    Search("Search"),
+    Calendar("Calendar"),
+//    Me("Me"),
+}
+
 @Preview
 @Composable
 private fun Preview() {
-    var destination by remember { mutableStateOf(BottomBarDestination.Home) }
+    var destination by remember { mutableStateOf<TopLevelRoute>(TestDestination.Home) }
 
     SnacTheme {
         BottomBar(
             currentDestination = destination,
             onCurrentDestinationChange = { destination = it },
-            destinations = BottomBarDestination.entries,
+            destinations = TestDestination.entries,
             modifier = Modifier.padding(vertical = 8.dp)
         )
     }

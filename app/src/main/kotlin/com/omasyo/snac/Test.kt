@@ -13,7 +13,7 @@ import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.ui.components.bottombar.BottomBar
-import com.omasyo.snac.core.ui.components.bottombar.BottomBarDestination
+import com.omasyo.snac.core.ui.components.navigation.TopLevelRoute
 import com.omasyo.snac.core.ui.modifiers.LocalBottomBarPadding
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.feature.home.HomeScreen
@@ -47,19 +47,25 @@ fun Test(
     }
 }
 
+enum class TestDestination(override val label: String) : TopLevelRoute {
+    Home("Home"),
+    Charts("Charts"),
+    Search("Search"),
+    Calendar("Calendar"),
+    Me("Me"),
+}
 
 @Preview
 @Composable
 private fun Preview() {
-
-    var destination by remember { mutableStateOf(BottomBarDestination.Home) }
+    var destination by remember { mutableStateOf<TopLevelRoute>(TestDestination.Home) }
     SnacTheme {
         Test(
             bottomBar = {
                 BottomBar(
                     currentDestination = destination,
                     onCurrentDestinationChange = { destination = it },
-                    destinations = BottomBarDestination.entries,
+                    destinations = TestDestination.entries,
                     modifier = Modifier
                         .padding(vertical = 8.dp)
                 )

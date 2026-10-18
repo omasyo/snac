@@ -66,7 +66,7 @@ fun HomeScreen(
                     .silhouette(SnacColors.signal),
             )
             Button(
-                text = "SIGN IN WITH TRAKT",
+                text = "SIGN IN",
                 onClick = onSignInClick,
             )
         }
