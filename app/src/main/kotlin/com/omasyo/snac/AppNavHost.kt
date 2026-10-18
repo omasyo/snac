@@ -19,6 +19,8 @@ import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.omasyo.snac.feature.auth.Auth
 import com.omasyo.snac.feature.auth.AuthScreen
+import com.omasyo.snac.feature.home.HomeScreen
+import com.omasyo.snac.feature.home.TrendingTab
 import com.omasyo.snac.feature.settings.Settings
 import com.omasyo.snac.feature.settings.SettingsScreen
 import kotlinx.serialization.modules.SerializersModule
@@ -39,7 +41,7 @@ fun AppNavHost(
     modifier: Modifier = Modifier,
 ) {
 
-    val startRoute: NavKey = if (isAuthenticated) Settings else Auth
+    val startRoute: NavKey = Auth
 
     val backStack = rememberNavBackStack(config, startRoute)
 
@@ -70,11 +72,18 @@ fun AppNavHost(
         },
         entryProvider = entryProvider {
             entry<Auth> {
-                AuthScreen()
+                HomeScreen(
+                    onSignInClick = {},
+                    onMovieClick = {},
+                    onShowClick = {},
+                    onAllChartsClick = {},
+                    trendingTab = TrendingTab.Movie,
+                    onTrendingTabClick = {},
+                )
             }
-            entry<Settings> {
-                SettingsScreen()
-            }
+//            entry<Settings> {
+//                SettingsScreen()
+//            }
         },
     )
 }

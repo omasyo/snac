@@ -33,15 +33,6 @@ data class Typography(
     val hand: TextStyle,
 )
 
-val LocalTextStyle = compositionLocalOf(structuralEqualityPolicy()) { SnacTypography.body }
-
-// TODO(b/156598010): remove this and replace with fold definition on the backing CompositionLocal
-@Composable
-fun ProvideTextStyle(value: TextStyle, content: @Composable () -> Unit) {
-    val mergedStyle = LocalTextStyle.current.merge(value)
-    CompositionLocalProvider(LocalTextStyle provides mergedStyle, content = content)
-}
-
 
 val SnacTypography = Typography(
     hero = TextStyle(

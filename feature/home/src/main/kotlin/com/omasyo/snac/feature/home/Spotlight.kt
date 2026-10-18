@@ -1,6 +1,7 @@
 package com.omasyo.snac.feature.home
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -16,6 +18,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.ui.components.Stamp
 import com.omasyo.snac.core.ui.components.Text
+import com.omasyo.snac.core.ui.modifiers.TintIndication
 import com.omasyo.snac.core.ui.modifiers.film
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
@@ -32,11 +35,18 @@ private val CapHeightLineHeightStyle = LineHeightStyle(
 internal fun TrendingSpotlight(
     title: String,
     watchingCount: Int,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val indicationColor = SnacColors.accent
     Box(
         modifier = modifier
             .film()
+            .clickable(
+                onClick = onClick,
+                indication = remember { TintIndication { indicationColor } },
+                interactionSource = null,
+            )
             .background(SnacColors.film)
             .heightIn(272.dp)
             .fillMaxWidth()
@@ -77,6 +87,7 @@ fun TrendingSpotlightPreview() {
         TrendingSpotlight(
             title = "FRANKENSTEIN",
             watchingCount = 1204,
+            onClick = {}
         )
     }
 }
