@@ -1,6 +1,6 @@
 plugins {
     id("com.snac.android.library")
-    id("com.snac.compose.library")
+    id("com.snac.compose")
 }
 
 android {

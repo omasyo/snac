@@ -1,11 +1,11 @@
-import com.android.build.api.dsl.LibraryExtension
+import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
 
-class ComposeLibraryConventionPlugin : Plugin<Project> {
+class ComposeConventionPlugin : Plugin<Project> {
     override fun apply(target: Project) {
 
         with(target) {
@@ -15,11 +15,7 @@ class ComposeLibraryConventionPlugin : Plugin<Project> {
                 apply(libs.findPlugin("kotlin.compose").get().get().pluginId)
             }
 
-            extensions.getByType<LibraryExtension>().apply {
-                buildFeatures {
-                    compose = true
-                }
-            }
+            extensions.getByType<CommonExtension>().buildFeatures.compose = true
 
             dependencies {
                 val composeBom = platform(libs.findLibrary("androidx.compose.bom").get())

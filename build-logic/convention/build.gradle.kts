@@ -22,9 +22,9 @@ gradlePlugin {
             implementationClass = "AndroidLibraryConventionPlugin"
         }
 
-        register("composeLibrary") {
-            id = "com.snac.compose.library"
-            implementationClass = "ComposeLibraryConventionPlugin"
+        register("compose") {
+            id = "com.snac.compose"
+            implementationClass = "ComposeConventionPlugin"
         }
 
         register("featureLibrary") {

@@ -12,7 +12,7 @@ class FeatureLibraryConventionPlugin : Plugin<Project> {
 
             pluginManager.apply {
                 apply("com.snac.android.library")
-                apply("com.snac.compose.library")
+                apply("com.snac.compose")
                 apply(libs.findPlugin("kotlin.plugin.serialization").get().get().pluginId)
                 apply(libs.findPlugin("metro").get().get().pluginId)
             }

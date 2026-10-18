@@ -1,6 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.compose)
+    id("com.snac.compose")
     alias(libs.plugins.metro)
 }
 
@@ -26,9 +26,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    buildFeatures {
-        compose = true
-    }
 }
 
 kotlin {
@@ -46,16 +43,9 @@ dependencies {
     implementation(projects.feature.home)
     implementation(projects.feature.settings)
 
-    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.compose.foundation)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.lifecycle.runtime.compose)
-    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
-    implementation(libs.androidx.navigation3.ui)
+
     implementation(libs.metrox.android)
     implementation(libs.metrox.viewmodel)
     implementation(libs.metrox.viewmodel.compose)
-
-    debugImplementation(libs.androidx.compose.ui.tooling)
 }
