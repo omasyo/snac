@@ -96,8 +96,12 @@ internal fun HomeScreen(
             modifier = Modifier.padding(horizontal = 16.dp)
         )
         TrendingSection(
-            onMovieClick = onMovieClick,
-            onShowClick = onShowClick,
+            onMediaClick = {
+                when (it) {
+                    is Movie -> onMovieClick(it)
+                    is Show -> onShowClick(it)
+                }
+            },
             selectedTab = trendingTab,
             onTabChange = onTrendingTabChange,
             movies = trendingMovies,

@@ -25,6 +25,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.omasyo.snac.core.model.media.TrendingMedia
 import com.omasyo.snac.core.model.media.movie.TrendingMovie
 import com.omasyo.snac.core.model.media.show.TrendingShow
 import com.omasyo.snac.core.ui.components.Image
@@ -47,8 +48,7 @@ internal enum class TrendingTab(val label: String) {
 
 @Composable
 internal fun TrendingSection(
-    onMovieClick: (TrendingMovie) -> Unit,
-    onShowClick: (TrendingShow) -> Unit,
+    onMediaClick: (TrendingMedia) -> Unit,
     selectedTab: TrendingTab,
     onTabChange: (TrendingTab) -> Unit,
     movies: List<TrendingMovie>,
@@ -85,29 +85,8 @@ internal fun TrendingSection(
             }
 
             when (selectedTab) {
-                TrendingTab.Movie -> Row(movies, slug = { it.slug }) { movie, rotation ->
-                    TrendingCard(
-                        title = movie.title,
-                        watchingCount = movie.watchingCount,
-                        imageUrl = movie.imageUrl,
-                        onClick = { onMovieClick(movie) },
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .rotate(rotation)
-                    )
-                }
-
-                TrendingTab.Show -> Row(shows, slug = { it.slug }) { show, rotation ->
-                    TrendingCard(
-                        title = show.title,
-                        watchingCount = show.watchingCount,
-                        imageUrl = show.imageUrl,
-                        onClick = { onShowClick(show) },
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .rotate(rotation)
-                    )
-                }
+                TrendingTab.Movie -> Row(movies, onMediaClick)
+                TrendingTab.Show -> Row(shows, onMediaClick)
             }
         }
     }
@@ -141,16 +120,23 @@ private fun Toggle(
 }
 
 @Composable
-private fun <T> Row(
-    items: List<T>,
-    slug: (T) -> String,
-    content: @Composable (T, Float) -> Unit,
+private fun Row(
+    items: List<TrendingMedia>,
+    onMediaClick: (TrendingMedia) -> Unit,
 ) {
     LazyRow {
-        items(items, key = slug) { item ->
-            val rotation = Random(slug(item).hashCode()).nextInt(-2, 3).toFloat()
+        items(items, key = { it.slug }) { media ->
+            val rotation = Random(media.slug.hashCode()).nextInt(-2, 3).toFloat()
 
-            content(item, rotation)
+            TrendingCard(
+                title = media.title,
+                watchingCount = media.watchingCount,
+                imageUrl = media.imageUrl,
+                onClick = { onMediaClick(media) },
+                modifier = Modifier
+                    .padding(16.dp)
+                    .rotate(rotation)
+            )
         }
     }
 }
@@ -198,8 +184,7 @@ private fun Preview() {
     var trendingTab by remember { mutableStateOf(TrendingTab.Movie) }
     SnacTheme {
         TrendingSection(
-            onMovieClick = {},
-            onShowClick = {},
+            onMediaClick = {},
             selectedTab = trendingTab,
             onTabChange = { trendingTab = it },
             movies = List(10) {
