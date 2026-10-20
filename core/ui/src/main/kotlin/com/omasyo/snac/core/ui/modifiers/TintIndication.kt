@@ -36,16 +36,26 @@ import kotlinx.coroutines.launch
 
 data class TintIndication(
     private val contentOnly: Boolean = false,
+    private val focusOpacity: Float = 0.1f,
+    private val pressOpacity: Float = 0.3f,
     private val color: ColorProducer = { Color.Unspecified },
 ) : IndicationNodeFactory {
 
     override fun create(interactionSource: InteractionSource): DelegatableNode =
-        TintIndicationInstance(interactionSource, color, contentOnly)
+        TintIndicationInstance(
+            interactionSource = interactionSource,
+            contentOnly = contentOnly,
+            focusOpacity = focusOpacity,
+            pressOpacity = pressOpacity,
+            color = color
+        )
 
     private class TintIndicationInstance(
         private val interactionSource: InteractionSource,
-        private val color: ColorProducer,
         private val contentOnly: Boolean,
+        private val focusOpacity: Float,
+        private val pressOpacity: Float,
+        private val color: ColorProducer,
     ) : Modifier.Node(), DrawModifierNode {
         private var alpha = 0f
 
@@ -65,8 +75,8 @@ data class TintIndication(
                         is FocusInteraction.Unfocus -> focusCount--
                     }
                     val newAlpha = when {
-                        pressCount > 0 -> 0.3f
-                        hoverCount > 0 || focusCount > 0 -> 0.1f
+                        pressCount > 0 -> pressOpacity
+                        hoverCount > 0 || focusCount > 0 -> focusOpacity
                         else -> 0f
                     }
                     if (newAlpha != alpha) {

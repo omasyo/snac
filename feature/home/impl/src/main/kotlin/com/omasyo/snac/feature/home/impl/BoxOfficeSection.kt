@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.omasyo.snac.core.model.media.movie.BoxOfficeMovie
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.modifiers.TintIndication
 import com.omasyo.snac.core.ui.modifiers.silhouette
@@ -24,14 +25,9 @@ import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
 
-data class BoxOfficeMovie(
-    val name: String,
-    val revenue: String,
-)
-
 @Composable
 internal fun BoxOfficeSection(
-    onMovieClick: () -> Unit,
+    onMovieClick: (BoxOfficeMovie) -> Unit,
     movies: List<BoxOfficeMovie>,
     modifier: Modifier = Modifier,
 ) {
@@ -59,9 +55,9 @@ internal fun BoxOfficeSection(
         movies.forEachIndexed { index, movie ->
             Entry(
                 position = index + 1,
-                title = movie.name,
+                title = movie.title,
                 revenue = movie.revenue,
-                onClick = { onMovieClick() },
+                onClick = { onMovieClick(movie) },
             )
         }
     }
@@ -126,11 +122,11 @@ private fun Preview() {
         BoxOfficeSection(
             onMovieClick = {},
             movies = listOf(
-                BoxOfficeMovie("Harmattan", "$21.7M"),
-                BoxOfficeMovie("Orbital Diner", "$12.9M"),
-                BoxOfficeMovie("Ghost Frequency", "$8.4"),
-                BoxOfficeMovie("Velvet Hour", "$5.1M"),
-                BoxOfficeMovie("Saltline", "$3.3M"),
+                BoxOfficeMovie("1", "Harmattan", "$21.7M"),
+                BoxOfficeMovie("2", "Orbital Diner", "$12.9M"),
+                BoxOfficeMovie("3", "Ghost Frequency", "$8.4"),
+                BoxOfficeMovie("4", "Velvet Hour", "$5.1M"),
+                BoxOfficeMovie("5", "Saltline", "$3.3M"),
             ),
             modifier = Modifier.padding(16.dp),
         )

@@ -13,9 +13,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Stamp
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.modifiers.TintIndication
@@ -34,6 +37,7 @@ private val CapHeightLineHeightStyle = LineHeightStyle(
 @Composable
 internal fun TrendingSpotlight(
     title: String,
+    imageUrl: String?,
     watchingCount: Int,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -49,43 +53,54 @@ internal fun TrendingSpotlight(
             )
             .background(SnacColors.film)
             .heightIn(272.dp)
-            .fillMaxWidth()
-            .padding(16.dp)
-            .padding(horizontal = 16.dp)
+            .fillMaxWidth(),
     ) {
-        Stamp("#1 trending", modifier = Modifier.rotate(-6f))
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.align(
-                Alignment.BottomStart
-            )
+        Image(
+            imageUrl = imageUrl,
+            placeholder = ColorPainter(Color.Transparent),
+            modifier = Modifier.matchParentSize(),
+        )
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .padding(16.dp)
+                .padding(horizontal = 16.dp)
         ) {
-            val titleColor = SnacColors.onFilm
-            Text(
-                text = title,
-                style = SnacTypography.display.copy(
-                    lineHeightStyle = CapHeightLineHeightStyle,
-                ),
-                color = titleColor,
-                modifier = Modifier.silhouette(SnacColors.signal)
+            Stamp("#1 trending", modifier = Modifier.rotate(-6f))
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.align(
+                    Alignment.BottomStart
+                )
+            ) {
+                val titleColor = SnacColors.onFilm
+                Text(
+                    text = title,
+                    style = SnacTypography.display.copy(
+                        lineHeightStyle = CapHeightLineHeightStyle,
+                    ),
+                    color = titleColor,
+                    modifier = Modifier.silhouette(SnacColors.signal)
 
-            )
-            val infoColor = SnacColors.accent
-            Text(
-                text = "$watchingCount watching now", //TODO should have comma seperator
-                style = SnacTypography.hand,
-                color = infoColor
+                )
+                val infoColor = SnacColors.accent
+                Text(
+                    text = "$watchingCount watching now", //TODO should have comma seperator
+                    style = SnacTypography.hand,
+                    color = infoColor
 
-            )
+                )
+            }
         }
     }
 }
 
 @Preview
 @Composable
-fun TrendingSpotlightPreview() {
+private fun Preview() {
     SnacTheme {
         TrendingSpotlight(
             title = "FRANKENSTEIN",
+            imageUrl = null,
             watchingCount = 1204,
             onClick = {}
         )

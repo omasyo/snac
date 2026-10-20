@@ -18,7 +18,7 @@ import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
-import com.omasyo.snac.core.ui.components.bottombar.BottomBar
+import com.omasyo.snac.core.ui.components.BottomBar
 import com.omasyo.snac.feature.calendar.api.navigation.CalendarNavKey
 import com.omasyo.snac.feature.calendar.impl.navigation.calendarEntry
 import com.omasyo.snac.feature.charts.api.navigation.ChartsNavKey
@@ -53,7 +53,7 @@ fun AppNavHost(
 
     val destination = backStack.last { it in TOP_LEVEL_NAV_ITEMS }
 
-    Test(
+    RootScreenLayout(
         bottomBar = {
             BottomBar(
                 currentDestination = destination,

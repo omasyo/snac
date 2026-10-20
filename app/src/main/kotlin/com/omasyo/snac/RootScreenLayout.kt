@@ -1,6 +1,9 @@
 package com.omasyo.snac
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -12,14 +15,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.omasyo.snac.core.ui.components.bottombar.BottomBar
-import com.omasyo.snac.core.ui.modifiers.LocalBottomBarPadding
+import com.omasyo.snac.core.ui.components.BottomBar
+import com.omasyo.snac.core.ui.components.LocalBottomBarPadding
 import com.omasyo.snac.core.ui.theme.SnacTheme
-import com.omasyo.snac.feature.home.impl.HomeScreen
-import com.omasyo.snac.feature.home.impl.TrendingTab
+import com.omasyo.snac.core.ui.theme.colors.SnacColors
 
 @Composable
-fun Test(
+fun RootScreenLayout(
     bottomBar: @Composable () -> Unit,
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
@@ -59,7 +61,7 @@ private enum class TestDestination(val label: String) {
 private fun Preview() {
     var destination by remember { mutableStateOf(TestDestination.Home) }
     SnacTheme {
-        Test(
+        RootScreenLayout(
             bottomBar = {
                 BottomBar(
                     currentDestination = destination,
@@ -71,16 +73,7 @@ private fun Preview() {
                 )
             }
         ) {
-            HomeScreen(
-                onSignInClick = {},
-                onMovieClick = {},
-                onShowClick = {},
-                onAllChartsClick = {},
-                trendingTab = TrendingTab.Movie,
-                onTrendingTabClick = {},
-            )
-
-
+            Box(Modifier.fillMaxSize().background(SnacColors.page))
         }
     }
 }

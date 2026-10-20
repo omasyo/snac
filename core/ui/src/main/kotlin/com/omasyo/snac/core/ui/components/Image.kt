@@ -3,7 +3,9 @@ package com.omasyo.snac.core.ui.components
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.painter.BrushPainter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import coil3.compose.AsyncImage
@@ -18,7 +20,15 @@ fun Image(
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
     alignment: Alignment = Alignment.Center,
-    placeholder: Painter = ColorPainter(SnacColors.muted),
+    placeholder: Painter = BrushPainter(
+        Brush.linearGradient(
+            listOf(
+                SnacColors.film,
+                SnacColors.filmLine,
+                SnacColors.faint,
+            ), end = Offset(0f, Float.POSITIVE_INFINITY)
+        )
+    ),
     contentScale: ContentScale = ContentScale.Crop,
 ) {
     AsyncImage(

@@ -7,7 +7,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.isSuccess
 import kotlin.coroutines.cancellation.CancellationException
 
-class TraktHttpException(
+class TraktHttpException( //TODO
     val status: HttpStatusCode,
     val body: String,
 ) : Exception("HTTP ${status.value}: $body")
