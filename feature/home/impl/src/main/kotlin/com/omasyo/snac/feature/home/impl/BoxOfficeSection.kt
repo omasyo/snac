@@ -42,9 +42,10 @@ internal fun BoxOfficeSection(
                 text = "BOX OFFICE",
                 style = SnacTypography.title,
                 color = SnacColors.accent,
-                modifier = Modifier.alignByBaseline()
+                modifier = Modifier
+                    .weight(1f)
+                    .alignByBaseline()
             )
-            Spacer(Modifier.weight(1f))
             Text(
                 text = "Revenue",
                 style = SnacTypography.hand,

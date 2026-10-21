@@ -50,10 +50,10 @@ internal fun AnticipatedSection(
                 style = SnacTypography.title,
                 color = SnacColors.ink,
                 modifier = Modifier
+                    .weight(1f)
                     .alignByBaseline()
                     .silhouette(SnacColors.accent),
             )
-            Spacer(Modifier.weight(1f))
             val tintColor = SnacColors.page
             Text(
                 text = "ALL CHARTS →",
