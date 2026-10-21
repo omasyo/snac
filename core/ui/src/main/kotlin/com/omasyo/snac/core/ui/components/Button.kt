@@ -30,6 +30,31 @@ fun Button(
     borderColor: Color = SnacColors.ink,
     shadowColor: Color = SnacColors.shadow,
 ) {
+    Button(
+        onClick = onClick,
+        modifier = modifier,
+        backgroundColor = backgroundColor,
+        borderColor = borderColor,
+        shadowColor = shadowColor
+    ) {
+        BasicText(
+            text = text,
+            style = style,
+            color = { contentColor },
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+        )
+    }
+}
+
+@Composable
+fun Button(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    backgroundColor: Color = SnacColors.accent,
+    borderColor: Color = SnacColors.ink,
+    shadowColor: Color = SnacColors.shadow,
+    content: @Composable () -> Unit,
+) {
     Box(
         modifier = modifier
             .clickable(
@@ -40,12 +65,7 @@ fun Button(
             .background(backgroundColor)
             .border(2.dp, borderColor)
     ) {
-        BasicText(
-            text = text,
-            style = style,
-            color = { contentColor },
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-        )
+        content()
     }
 }
 

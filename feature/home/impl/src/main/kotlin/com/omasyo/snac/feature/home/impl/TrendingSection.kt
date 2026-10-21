@@ -62,7 +62,7 @@ internal fun TrendingSection(
                 .bleedHorizontally(8.dp)
                 .film(
                     orientation = Orientation.Horizontal,
-                    edgeInset = 16.dp
+                    crossEdgeInset = 16.dp
                 )
                 .background(SnacColors.film)
                 .padding(vertical = 40.dp, horizontal = 8.dp)

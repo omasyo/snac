@@ -34,8 +34,8 @@ import androidx.compose.ui.unit.constrainWidth
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.util.lerp
-import com.omasyo.snac.core.ui.components.SelectableText
 import com.omasyo.snac.core.ui.components.ClapperboardStripes
+import com.omasyo.snac.core.ui.components.SelectableText
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.theme.SnacTheme
@@ -68,7 +68,7 @@ enum class TimePeriod(val label: String) {
 }
 
 @Composable
-fun ChartFilter(
+fun ChartSelector(
     selectedChart: Chart,
     onSelectedChartChange: (Chart) -> Unit,
     selectedPeriod: TimePeriod,
@@ -246,7 +246,7 @@ fun ChartFilterItem(
 
 @Preview
 @Composable
-fun TestPreview() {
+private fun Preview() {
     var expanded by remember { mutableStateOf(true) }
     var selectedChart by remember { mutableStateOf(Chart.Trending) }
     var selectedPeriod by remember { mutableStateOf(TimePeriod.Weekly) }
@@ -257,7 +257,7 @@ fun TestPreview() {
                 .fillMaxWidth()
                 .padding(16.dp),
         ) {
-            ChartFilter(
+            ChartSelector(
                 selectedChart = selectedChart,
                 onSelectedChartChange = {
                     if (!expanded) {

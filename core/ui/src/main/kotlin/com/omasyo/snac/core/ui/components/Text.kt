@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.LocalColors
 
@@ -32,6 +33,7 @@ fun Text(
     modifier: Modifier = Modifier,
     style: TextStyle = TextStyle.Default,
     color: Color = Color.Unspecified,
+    align: TextAlign = TextAlign.Start,
     maxLines: Int = Int.MAX_VALUE,
 ) {
     val color = color.takeOrElse { LocalContentColor.current }

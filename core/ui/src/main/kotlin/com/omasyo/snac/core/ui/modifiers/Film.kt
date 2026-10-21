@@ -18,18 +18,18 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.ui.theme.SnacTheme
 
-enum class Orientation {
-    Vertical,
+enum class Orientation { Vertical, Horizontal }
 
-    Horizontal,
-}
+enum class Side { Both, Start, End }
 
 fun Modifier.film(
     orientation: Orientation = Orientation.Vertical,
+    side: Side = Side.Both,
     holeLength: Dp = 12.dp,
     holeDepth: Dp = 12.dp,
     holeGap: Dp = 12.dp,
-    edgeInset: Dp = 4.dp,
+    crossEdgeInset: Dp = 4.dp,
+    edgeInset: Dp = 0.dp,
 ): Modifier = graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
     .drawWithContent {
         drawContent()
@@ -41,10 +41,11 @@ fun Modifier.film(
         val length = holeLength.toPx()
         val depth = holeDepth.toPx()
         val gap = holeGap.toPx()
+        val crossInset = crossEdgeInset.toPx()
         val inset = edgeInset.toPx()
         val pitch = length + gap
 
-        val count = ((mainSize + gap) / pitch).toInt()
+        val count = ((mainSize + gap - inset) / pitch).toInt()
         if (count <= 0) return@drawWithContent
 
 
@@ -57,7 +58,15 @@ fun Modifier.film(
 
         repeat(count) { i ->
             val main = start + i * pitch
-            listOf(inset, crossSize - inset - depth).forEach { cross ->
+
+            buildList {
+                if (side == Side.Both || side == Side.Start) {
+                    add(crossInset)
+                }
+                if (side == Side.Both || side == Side.End) {
+                    add(crossSize - crossInset - depth)
+                }
+            }.forEach { cross ->
                 drawRect(
                     color = Color.Black, // ignored by BlendMode.Clear
                     topLeft = topLeft(main, cross),
