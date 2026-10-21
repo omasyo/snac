@@ -1,11 +1,8 @@
 package com.omasyo.snac.core.ui.components
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,13 +17,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.omasyo.snac.core.ui.modifiers.TintIndication
 import com.omasyo.snac.core.ui.modifiers.bleedHorizontally
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
@@ -54,54 +47,12 @@ fun <T> BottomBar(
                 modifier = Modifier.widthIn(64.dp),
                 contentAlignment = Alignment.Center,
             ) {
-                BottomBarItem(
+                SelectableText(
                     label = label(destination),
                     isSelected = currentDestination == destination,
-                    onClick = { onCurrentDestinationChange(destination) }
+                    onClick = { onCurrentDestinationChange(destination) },
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun BottomBarItem(
-    label: String,
-    isSelected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val mutableInteractionSource = remember { MutableInteractionSource() }
-    val indicationColor = SnacColors.onFilm
-
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-            .clickable(
-                interactionSource = mutableInteractionSource,
-                indication = remember {
-                    TintIndication(
-                        contentOnly = true,
-                        focusOpacity = 0.2f,
-                        pressOpacity = 0.5f
-                    ) { indicationColor }
-                },
-                onClick = onClick,
-            )
-    ) {
-        Box(
-            modifier = Modifier
-                .padding(4.dp)
-                .drawBehind {
-                    if (isSelected) {
-                        drawOval(Color.Red, style = Stroke(width = 2.dp.toPx()))
-                    }
-                }
-        ) {
-            Text(
-                text = label,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-            )
         }
     }
 }

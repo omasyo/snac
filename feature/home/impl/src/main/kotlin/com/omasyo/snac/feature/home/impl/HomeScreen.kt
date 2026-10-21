@@ -55,8 +55,8 @@ internal fun HomeScreen(
     Column(
         verticalArrangement = Arrangement.spacedBy(24.dp),
         modifier = modifier
-            .verticalScroll(rememberScrollState())
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .background(SnacColors.page)
             .bottomBarPadding()
             .statusBarsPadding()

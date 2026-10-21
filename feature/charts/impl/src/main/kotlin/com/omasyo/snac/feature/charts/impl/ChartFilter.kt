@@ -1,27 +1,20 @@
 package com.omasyo.snac.feature.charts.impl
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.togetherWith
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalGridApi
-import androidx.compose.foundation.layout.Grid
-import androidx.compose.foundation.layout.GridTrackSize
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,21 +23,30 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.DpOffset
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.constrainHeight
+import androidx.compose.ui.unit.constrainWidth
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
-import com.omasyo.snac.core.ui.components.BottomBarItem
+import androidx.compose.ui.unit.lerp
+import androidx.compose.ui.util.lerp
+import com.omasyo.snac.core.ui.components.SelectableText
 import com.omasyo.snac.core.ui.components.ClapperboardStripes
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
+import kotlin.math.max
 import kotlin.random.Random
 
-val MinWidth = 104.dp
-
+val ChartMinWidth = 104.dp
+private val ItemGap = 12.dp
+private val GroupGap = 16.dp
 
 enum class Chart(val label: String) {
     Trending("Trending"),
@@ -57,67 +59,147 @@ enum class Chart(val label: String) {
     BoxOffice("Box Office"),
 }
 
-@OptIn(ExperimentalGridApi::class)
+enum class TimePeriod(val label: String) {
+    Daily("Daily"),
+    Weekly("Weekly"),
+    Monthly("Monthly"),
+    Yearly("Yearly"),
+    AllTime("All Time"),
+}
+
 @Composable
 fun ChartFilter(
-    selected: Chart,
-    onSelectedChange: (Chart) -> Unit,
+    selectedChart: Chart,
+    onSelectedChartChange: (Chart) -> Unit,
+    selectedPeriod: TimePeriod,
+    onSelectedPeriodChange: (TimePeriod) -> Unit,
     expanded: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    SharedTransitionLayout(modifier) {
-        AnimatedContent(
-            targetState = expanded,
-            transitionSpec = {
-                (EnterTransition.None togetherWith ExitTransition.None) using null
-            },
-        ) {
-            val grid: @Composable (@Composable () -> Unit) -> Unit = { content ->
-                Grid(
-                    config = {
-                        repeat(3) {
-                            column(GridTrackSize.MinMax(MinWidth, 1.fr))
-                        }
-                        gap(10.dp)
-                    },
-                    content = { content() }
-                )
-            }
+    val progress = animateFloatAsState(
+        targetValue = if (expanded) 1f else 0f,
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        label = "chartFilter",
+    )
 
-            val stack: @Composable (@Composable () -> Unit) -> Unit = { content ->
-                Box(
-                    modifier = Modifier
-                        .widthIn(MinWidth)
-                        .width(IntrinsicSize.Max),
-                    content = { content() }
-                )
-            }
-
-            val layout = if (it) grid else stack
-
-            layout {
-                for (chart in Chart.entries) {
-                    val isSelected = selected == chart
-                    val pos = if (isSelected) Chart.entries.size else chart.ordinal
+    Layout(
+        contents = listOf(
+            {
+                Chart.entries.forEach { chart ->
                     ChartFilterItem(
                         chart = chart,
-                        selected = isSelected,
-                        onClick = { onSelectedChange(chart) },
-                        modifier = Modifier
-                            .sharedElement(
-                                rememberSharedContentState(chart),
-                                this@AnimatedContent,
-                                zIndexInOverlay = pos.toFloat(),
-                            )
-                            .zIndex(pos.toFloat())
-                            .fillMaxWidth(),
+                        selected = chart == selectedChart,
+                        onClick = { onSelectedChartChange(chart) },
                     )
+                }
+            },
+            {
+                TimePeriod.entries.forEach { period ->
+                    SelectableText(
+                        label = period.label,
+                        isSelected = period == selectedPeriod,
+                        onClick = { onSelectedPeriodChange(period) },
+                    )
+                }
+            },
+        ),
+        modifier = modifier,
+    ) { (chartMeasurables, periodMeasurables), constraints ->
+        val p = progress.value
+        val gap = ItemGap.roundToPx()
+        val groupGap = GroupGap.roundToPx()
+        val chartMinWidth = ChartMinWidth.roundToPx()
+
+        require(constraints.hasBoundedWidth) { "ChartFilter needs a bounded width" }
+        val available = constraints.maxWidth
+
+        val chartColumns = max(1, (available + gap) / (chartMinWidth + gap))
+        val chartCellWidth = (available - gap * (chartColumns - 1)) / chartColumns
+        val charts = chartMeasurables.map { it.measure(Constraints.fixedWidth(chartCellWidth)) }
+
+        val periodConstraints = Constraints(maxWidth = available)
+        val periods = periodMeasurables.map { it.measure(periodConstraints) }
+
+        val chartStackHeight = charts.maxOf { it.height }
+        val periodStackHeight = periods.maxOf { it.height }
+        val rowHeight = max(chartStackHeight, periodStackHeight)
+        val chartCollapsed = IntOffset(0, (rowHeight - chartStackHeight) / 2)
+        val periodCollapsed =
+            IntOffset(chartCellWidth + groupGap, (rowHeight - periodStackHeight) / 2)
+        val selectedPeriodWidth = periods[selectedPeriod.ordinal].width
+        val collapsedWidth = chartCellWidth + groupGap + selectedPeriodWidth
+
+        fun gridOffsets(
+            ps: List<Placeable>,
+            top: Int,
+            columns: Int,
+            cellWidth: Int,
+        ): Pair<List<IntOffset>, Int> {
+            val rowHeights = ps.chunked(columns) { row -> row.maxOf { it.height } }
+            val offsets = ps.indices.map { i ->
+                val row = i / columns
+                IntOffset(
+                    x = (i % columns) * (cellWidth + gap),
+                    y = top + rowHeights.take(row).sum() + gap * row,
+                )
+            }
+            return offsets to rowHeights.sum() + gap * (rowHeights.size - 1)
+        }
+
+        fun flowOffsets(ps: List<Placeable>, top: Int): Pair<List<IntOffset>, Int> {
+            val offsets = ArrayList<IntOffset>(ps.size)
+            var x = 0
+            var y = top
+            var lineHeight = 0
+            for (placeable in ps) {
+                if (x > 0 && x + placeable.width > available) {
+                    x = 0
+                    y += lineHeight + gap
+                    lineHeight = 0
+                }
+                offsets += IntOffset(x, y)
+                x += placeable.width + gap
+                lineHeight = max(lineHeight, placeable.height)
+            }
+            return offsets to (y - top + lineHeight)
+        }
+
+        val (chartGrid, chartGridHeight) = gridOffsets(
+            charts,
+            top = 0,
+            columns = chartColumns,
+            cellWidth = chartCellWidth,
+        )
+        val (periodFlow, periodFlowHeight) = flowOffsets(
+            periods,
+            top = chartGridHeight + groupGap,
+        )
+        val expandedWidth = chartColumns * chartCellWidth + gap * (chartColumns - 1)
+        val expandedHeight = chartGridHeight + groupGap + periodFlowHeight
+
+        val width = constraints.constrainWidth(lerp(collapsedWidth, expandedWidth, p))
+        val height = constraints.constrainHeight(lerp(rowHeight, expandedHeight, p))
+
+        layout(width, height) {
+            charts.forEachIndexed { i, placeable ->
+                val selected = Chart.entries[i] == selectedChart
+                placeable.place(
+                    position = lerp(chartCollapsed, chartGrid[i], p),
+                    zIndex = if (selected) 1f else 0f,
+                )
+            }
+            periods.forEachIndexed { i, placeable ->
+                val selected = TimePeriod.entries[i] == selectedPeriod
+                val position = lerp(periodCollapsed, periodFlow[i], p)
+                if (selected) {
+                    placeable.place(position, zIndex = 1f)
+                } else {
+                    placeable.placeWithLayer(position) { alpha = p.coerceIn(0f, 1f) }
                 }
             }
         }
     }
 }
-
 
 @Composable
 fun ChartFilterItem(
@@ -130,7 +212,6 @@ fun ChartFilterItem(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
-            .width(IntrinsicSize.Max)
             .rotate(rotation)
             .clickable(
                 indication = SilhouettePressIndication(
@@ -158,7 +239,6 @@ fun ChartFilterItem(
             text = chart.label,
             style = SnacTypography.tag,
             modifier = Modifier
-                .fillMaxWidth()
                 .padding(horizontal = 12.dp, vertical = 4.dp)
         )
     }
@@ -168,22 +248,31 @@ fun ChartFilterItem(
 @Composable
 fun TestPreview() {
     var expanded by remember { mutableStateOf(true) }
-    var selected by remember { mutableStateOf(Chart.Trending) }
+    var selectedChart by remember { mutableStateOf(Chart.Trending) }
+    var selectedPeriod by remember { mutableStateOf(TimePeriod.Weekly) }
     SnacTheme {
         Box(
             modifier = Modifier
                 .background(SnacColors.page)
                 .fillMaxWidth()
-                .height(400.dp)
                 .padding(16.dp),
         ) {
             ChartFilter(
-                selected = selected,
-                onSelectedChange = {
+                selectedChart = selectedChart,
+                onSelectedChartChange = {
                     if (!expanded) {
                         expanded = true
                     } else {
-                        selected = it
+                        selectedChart = it
+                        expanded = false
+                    }
+                },
+                selectedPeriod = selectedPeriod,
+                onSelectedPeriodChange = {
+                    if (!expanded) {
+                        expanded = true
+                    } else {
+                        selectedPeriod = it
                         expanded = false
                     }
                 },
@@ -204,8 +293,8 @@ private fun ChartFilterItemPreview() {
                 selected = true,
                 onClick = {},
                 modifier = Modifier
-                    .padding(8.dp),
-//                    .width(120.dp)
+                    .padding(8.dp)
+                    .width(120.dp),
             )
         }
     }
