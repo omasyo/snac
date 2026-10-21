@@ -31,13 +31,15 @@ fun Text(
     text: String,
     modifier: Modifier = Modifier,
     style: TextStyle = TextStyle.Default,
-    color: Color = Color.Unspecified
+    color: Color = Color.Unspecified,
+    maxLines: Int = Int.MAX_VALUE,
 ) {
     val color = color.takeOrElse { LocalContentColor.current }
     BasicText(
         text = text,
         style = LocalTextStyle.current.merge(style),
         color = { color },
+        maxLines = maxLines,
         modifier = modifier,
     )
 }

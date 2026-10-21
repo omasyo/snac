@@ -36,11 +36,6 @@ import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
 
-enum class Chart {
-    Trending,
-}
-
-
 enum class TrendingTab(val label: String) {
     Movie("Movie"), Show("Show")
 }
@@ -52,7 +47,7 @@ fun ChartsScreen(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(24.dp),
+//        verticalArrangement = Arrangement.spacedBy(24.dp),
         modifier = modifier
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
@@ -95,6 +90,7 @@ fun ChartsScreen(
                 )
             }
         }
+        TestPreview()
     }
 }
 
