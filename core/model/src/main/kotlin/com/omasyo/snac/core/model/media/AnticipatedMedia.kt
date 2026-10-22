@@ -1,9 +1,8 @@
 package com.omasyo.snac.core.model.media
 
 import com.omasyo.snac.core.model.media.movie.AnticipatedMovie
-import com.omasyo.snac.core.model.media.movie.TrendingMovie
 
-interface AnticipatedMedia {
+interface AnticipatedMedia : Media {
     val slug: String
     val title: String
     val listCount: Int

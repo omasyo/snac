@@ -45,11 +45,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.model.media.ChartMedia
-import com.omasyo.snac.core.model.media.ChartMovie
-import com.omasyo.snac.core.model.media.ChartShow
-import com.omasyo.snac.core.model.media.TrendingMovie
-import com.omasyo.snac.core.model.media.movie.Movie
-import com.omasyo.snac.core.model.media.show.Show
+import com.omasyo.snac.core.model.media.Media
+import com.omasyo.snac.core.model.media.movie.TrendingMovie
 import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.TabRow
@@ -108,8 +105,7 @@ val ChartMedia.info: String get() = "61,000 plays"
 
 @Composable
 fun ChartsScreen(
-    onMovieClick: (Movie) -> Unit,
-    onShowClick: (Show) -> Unit,
+    onMediaClick: (Media) -> Unit,
     selectedMediaTab: MediaTab,
     onSelectedMediaChange: (MediaTab) -> Unit,
     selectedChart: Chart,
@@ -235,15 +231,10 @@ fun ChartsScreen(
                 val media = results.first()
                 TopMediaCard(
                     title = media.title,
-                    imageUrl = media.title,
+                    imageUrl = media.imageUrl,
                     year = media.year,
                     info = media.info,
-                    onClick = {
-                        when (media) {
-                            is ChartMovie -> onMovieClick(media)
-                            is ChartShow -> onShowClick(media)
-                        }
-                    },
+                    onClick = { onMediaClick(media) },
                     modifier = Modifier.padding(horizontal = 16.dp),
                 )
             }
@@ -256,12 +247,7 @@ fun ChartsScreen(
                     imageUrl = media.title,
                     year = media.year,
                     info = media.info,
-                    onClick = {
-                        when (media) {
-                            is ChartMovie -> onMovieClick(media)
-                            is ChartShow -> onShowClick(media)
-                        }
-                    },
+                    onClick = { onMediaClick(media) },
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
                         .film(
@@ -412,8 +398,7 @@ private fun Preview() {
     var selectedPeriod by remember { mutableStateOf(TimePeriod.Weekly) }
     SnacTheme {
         ChartsScreen(
-            onMovieClick = {},
-            onShowClick = {},
+            onMediaClick = {},
             selectedMediaTab = mediaTab,
             onSelectedMediaChange = { mediaTab = it },
             selectedChart = selectedChart,
@@ -425,6 +410,7 @@ private fun Preview() {
                     slug = "movie-$it",
                     title = "Frankenstein",
                     year = 2025,
+                    watchingCount = 31_000,
                     imageUrl = null,
                 )
             }

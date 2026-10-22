@@ -9,6 +9,8 @@ import androidx.navigation3.runtime.NavKey
 import com.omasyo.snac.core.model.media.AnticipatedMedia
 import com.omasyo.snac.core.model.media.TrendingMedia
 import com.omasyo.snac.core.model.media.movie.BoxOfficeMovie
+import com.omasyo.snac.core.model.media.movie.Movie
+import com.omasyo.snac.core.model.media.show.Show
 import com.omasyo.snac.core.model.media.show.TrendingShow
 import com.omasyo.snac.feature.auth.api.rememberAuthenticator
 import com.omasyo.snac.feature.home.api.navigation.HomeNavKey
@@ -22,8 +24,13 @@ fun EntryProviderScope<NavKey>.homeEntry() {
         var trendingTab by remember { mutableStateOf(TrendingTab.Movie) }
         HomeScreen(
             onSignInClick = { authenticator.signIn() },
-            onMovieClick = { authenticator.signOut() },
-            onShowClick = {},
+            onMediaClick = {
+                when (it) {
+                    is Movie -> {}
+                    is Show -> {}
+                    else -> error("Unhandled media: $it")
+                }
+            },
             onAllChartsClick = {},
             trendingTab = trendingTab,
             onTrendingTabChange = { trendingTab = it },

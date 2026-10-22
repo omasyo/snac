@@ -22,12 +22,11 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.model.media.AnticipatedMedia
+import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.TrendingMedia
 import com.omasyo.snac.core.model.media.movie.AnticipatedMovie
 import com.omasyo.snac.core.model.media.movie.BoxOfficeMovie
-import com.omasyo.snac.core.model.media.movie.Movie
 import com.omasyo.snac.core.model.media.movie.TrendingMovie
-import com.omasyo.snac.core.model.media.show.Show
 import com.omasyo.snac.core.model.media.show.TrendingShow
 import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.SignInPrompt
@@ -41,8 +40,7 @@ import com.omasyo.snac.core.ui.theme.colors.SnacColors
 @Composable
 internal fun HomeScreen(
     onSignInClick: () -> Unit,
-    onMovieClick: (Movie) -> Unit,
-    onShowClick: (Show) -> Unit,
+    onMediaClick: (Media) -> Unit,
     onAllChartsClick: () -> Unit,
     trendingTab: TrendingTab,
     onTrendingTabChange: (TrendingTab) -> Unit,
@@ -86,7 +84,7 @@ internal fun HomeScreen(
                 title = movie.title,
                 imageUrl = movie.imageUrl,
                 watchingCount = 1204,
-                onClick = { onMovieClick(movie) },
+                onClick = { onMediaClick(movie) },
             )
         }
         SignInPrompt(
@@ -96,12 +94,7 @@ internal fun HomeScreen(
             modifier = Modifier.padding(horizontal = 16.dp)
         )
         TrendingSection(
-            onMediaClick = {
-                when (it) {
-                    is Movie -> onMovieClick(it)
-                    is Show -> onShowClick(it)
-                }
-            },
+            onMediaClick = onMediaClick,
             selectedTab = trendingTab,
             onTabChange = onTrendingTabChange,
             movies = trendingMovies,
@@ -111,17 +104,12 @@ internal fun HomeScreen(
         )
 
         BoxOfficeSection(
-            onMovieClick = onMovieClick,
+            onMovieClick = onMediaClick,
             movies = boxOfficeMovies,
             modifier = Modifier.padding(16.dp),
         )
         AnticipatedSection(
-            onMediaClick = {
-                when (it) {
-                    is Movie -> onMovieClick(it)
-                    is Show -> onShowClick(it)
-                }
-            },
+            onMediaClick = onMediaClick,
             onAllChartsClick = onAllChartsClick,
             media = anticipatedMedia,
         )
@@ -135,8 +123,7 @@ private fun Preview() {
     SnacTheme {
         HomeScreen(
             onSignInClick = {},
-            onMovieClick = {},
-            onShowClick = {},
+            onMediaClick = {},
             onAllChartsClick = {},
             trendingTab = trendingTab,
             onTrendingTabChange = { trendingTab = it },

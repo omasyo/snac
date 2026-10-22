@@ -190,6 +190,7 @@ private fun Preview() {
                 TrendingMovie(
                     slug = "movie-$it",
                     title = "Frankenstein",
+                    year = 2025,
                     watchingCount = 1204,
                     imageUrl = null,
                 )
@@ -198,6 +199,7 @@ private fun Preview() {
                 TrendingShow(
                     slug = "show-$it",
                     title = "Dark",
+                    year = 2023,
                     watchingCount = 300,
                     imageUrl = null,
                 )

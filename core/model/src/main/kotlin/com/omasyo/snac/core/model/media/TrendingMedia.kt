@@ -2,7 +2,7 @@ package com.omasyo.snac.core.model.media
 
 import com.omasyo.snac.core.model.media.movie.TrendingMovie
 
-interface TrendingMedia {
+interface TrendingMedia : Media {
     val slug: String
     val title: String
     val watchingCount: Int
@@ -14,6 +14,7 @@ interface TrendingMedia {
                 slug = "movie-$it",
                 title = "Frankenstein",
                 watchingCount = 1204,
+                year = 2025,
                 imageUrl = null,
             )
         }
