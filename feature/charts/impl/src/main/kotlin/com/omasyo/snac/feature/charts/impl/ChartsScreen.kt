@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -22,25 +21,37 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.omasyo.snac.core.model.media.ChartMedia
+import com.omasyo.snac.core.model.media.ChartMovie
+import com.omasyo.snac.core.model.media.ChartShow
+import com.omasyo.snac.core.model.media.TrendingMovie
 import com.omasyo.snac.core.model.media.movie.Movie
 import com.omasyo.snac.core.model.media.show.Show
 import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.Image
-import com.omasyo.snac.core.ui.components.LocalBottomBarPadding
 import com.omasyo.snac.core.ui.components.TabRow
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
@@ -52,86 +63,219 @@ import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlin.random.Random
 
-enum class Media(val label: String) {
+enum class MediaTab(val label: String) {
     Movie("Movie"), Show("Show")
 }
+
+private class CollapseOnScrollDownConnection(
+    private val thresholdPx: Float,
+    private val onThresholdReached: () -> Unit,
+) : NestedScrollConnection {
+    private var accumulated = 0f
+
+    override fun onPostScroll(
+        consumed: Offset,
+        available: Offset,
+        source: NestedScrollSource,
+    ): Offset {
+        val dy = consumed.y
+        when {
+            dy < 0f -> {
+                accumulated += -dy
+                if (accumulated >= thresholdPx) {
+                    onThresholdReached()
+                    accumulated = 0f
+                }
+            }
+
+            dy > 0f -> {
+                accumulated = 0f
+            }
+        }
+        return Offset.Zero
+    }
+
+    fun reset() {
+        accumulated = 0f
+    }
+}
+
+
+val ChartMedia.info: String get() = "61,000 plays"
 
 @Composable
 fun ChartsScreen(
     onMovieClick: (Movie) -> Unit,
     onShowClick: (Show) -> Unit,
-    selectedMedia: Media,
-    onSelectedMediaChange: (Media) -> Unit,
+    selectedMediaTab: MediaTab,
+    onSelectedMediaChange: (MediaTab) -> Unit,
     selectedChart: Chart,
     onSelectedChartChange: (Chart) -> Unit,
     selectedPeriod: TimePeriod,
     onSelectedPeriodChange: (TimePeriod) -> Unit,
-    selectorExpanded: Boolean,
-//    results: List<>,
+    results: List<ChartMedia>,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+    val listState = rememberLazyListState()
+    var selectorExpanded by rememberSaveable { mutableStateOf(true) }
+
+    val collapseThresholdPx = with(LocalDensity.current) { 56.dp.toPx() }
+    val collapseConnection = remember(collapseThresholdPx) {
+        CollapseOnScrollDownConnection(collapseThresholdPx) {
+            selectorExpanded = false
+        }
+    }
+
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.isScrollInProgress }
+            .distinctUntilChanged()
+            .collect { isScrolling ->
+                if (!isScrolling) collapseConnection.reset()
+            }
+    }
+
+
+    LazyColumn(
+        state = listState,
         modifier = modifier
             .fillMaxSize()
+            .nestedScroll(collapseConnection)
             .background(SnacColors.page)
-//            .bottomBarPadding() TODO
-//            .statusBarsPadding()
-//            .navigationBarsPadding()
-        ,
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth(),
-        ) {
-            Box(Modifier.weight(1f)) {
-                Text(
-                    text = "CHARTS",
-                    style = SnacTypography.headline,
-                    modifier = Modifier
-                        .rotate(-3f)
-                        .silhouette(SnacColors.signal),
-                )
-            }
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.height(IntrinsicSize.Min),
+        stickyHeader("header") {
+            val background = SnacColors.page
+            val border = SnacColors.rule
+
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier
+                    .drawBehind {
+                        drawRect(background)
+
+                        val dividerAlpha = if (listState.firstVisibleItemIndex > 0) {
+                            1f
+                        } else {
+                            listState.firstVisibleItemScrollOffset / 40.dp.toPx()
+                        }.coerceIn(0f, 1f)
+
+                        drawLine(
+                            color = border.copy(minOf(dividerAlpha, 1f)),
+                            start = Offset(0f, size.height),
+                            end = Offset(size.width, size.height),
+                            strokeWidth = 2.dp.toPx(),
+                        )
+                    }
+                    .statusBarsPadding()
+                    .padding(vertical = 16.dp),
             ) {
-                TabRow(
-                    selectedTab = selectedMedia,
-                    onSelectedTabChange = onSelectedMediaChange,
-                    name = { it.label },
-                )
-                Button(
-                    onClick = {},
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .fillMaxHeight()
-                        .aspectRatio(1f),
-                ) {}
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth(),
+                ) {
+                    Box(Modifier.weight(1f)) {
+                        Text(
+                            text = "CHARTS",
+                            style = SnacTypography.headline,
+                            modifier = Modifier
+                                .rotate(-3f)
+                                .silhouette(SnacColors.signal),
+                        )
+                    }
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.height(IntrinsicSize.Min),
+                    ) {
+                        TabRow(
+                            selectedTab = selectedMediaTab,
+                            onSelectedTabChange = onSelectedMediaChange,
+                            name = { it.label },
+                        )
+                        Button(
+                            onClick = { selectorExpanded = !selectorExpanded },
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .aspectRatio(1f),
+                        ) {
+
+                        }
+                    }
+                }
+
+                ChartSelector(
+                    selectedChart = selectedChart,
+                    onSelectedChartChange = {
+                        if (!selectorExpanded) {
+                            selectorExpanded = true
+                        } else {
+                            onSelectedChartChange(it)
+                        }
+                    },
+                    selectedPeriod = selectedPeriod,
+                    onSelectedPeriodChange = {
+                        if (!selectorExpanded) {
+                            selectorExpanded = true
+                        } else {
+                            onSelectedPeriodChange(it)
+                        }
+                    },
+                    expanded = selectorExpanded,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
             }
         }
-        ChartSelector(
-            selectedChart = selectedChart,
-            onSelectedChartChange = onSelectedChartChange,
-            selectedPeriod = selectedPeriod,
-            onSelectedPeriodChange = onSelectedPeriodChange,
-            expanded = selectorExpanded,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-        TopMediaCard(
-            title = "FRANKENSTEIN",
-            imageUrl = null,
-            year = 2025,
-            info = "61,000 plays",
-            onClick = {},
-            modifier = Modifier.padding(horizontal = 16.dp),
-        )
-        MediaList()
-        Spacer(Modifier.height(LocalBottomBarPadding.current.calculateBottomPadding()))
+        item { Spacer(Modifier.height(16.dp)) }
+        if (results.isNotEmpty()) {
+            item("top-media-card") {
+                val media = results.first()
+                TopMediaCard(
+                    title = media.title,
+                    imageUrl = media.title,
+                    year = media.year,
+                    info = media.info,
+                    onClick = {
+                        when (media) {
+                            is ChartMovie -> onMovieClick(media)
+                            is ChartShow -> onShowClick(media)
+                        }
+                    },
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                )
+            }
+
+            item { Spacer(Modifier.height(16.dp)) }
+            itemsIndexed(results.drop(1)) { index, media ->
+                MediaCard(
+                    position = index + 2,
+                    title = media.title,
+                    imageUrl = media.title,
+                    year = media.year,
+                    info = media.info,
+                    onClick = {
+                        when (media) {
+                            is ChartMovie -> onMovieClick(media)
+                            is ChartShow -> onShowClick(media)
+                        }
+                    },
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .film(
+                            side = Side.Start,
+                            crossEdgeInset = 12.dp,
+                        )
+                        .background(SnacColors.film)
+                )
+            }
+        }
+        item("bottom-padding") {
+            Spacer(Modifier.bottomBarPadding())
+            Spacer(Modifier.navigationBarsPadding())
+        }
     }
 }
 
@@ -184,35 +328,6 @@ private fun TopMediaCard(
                 text = info,
                 style = SnacTypography.hand,
                 color = SnacColors.accent,
-            )
-        }
-    }
-}
-
-@Composable
-private fun MediaList(
-//    media: List<Media>,
-    modifier: Modifier = Modifier,
-) {
-    LazyColumn(
-        contentPadding = PaddingValues(vertical = 8.dp),
-        modifier = modifier
-            .padding(horizontal = 16.dp)
-            .film(
-                side = Side.Start,
-                crossEdgeInset = 12.dp,
-                edgeInset = 12.dp,
-            )
-            .background(SnacColors.film),
-    ) {
-        items(100) {
-            MediaCard(
-                position = it + 2,
-                title = "FRANKENSTEIN",
-                imageUrl = null,
-                year = 2025,
-                info = "61,000 plays",
-                onClick = {},
             )
         }
     }
@@ -292,35 +407,27 @@ private fun MediaCard(
 @Preview
 @Composable
 private fun Preview() {
-    var media by remember { mutableStateOf(Media.Movie) }
-    var expanded by remember { mutableStateOf(true) }
+    var mediaTab by remember { mutableStateOf(MediaTab.Movie) }
     var selectedChart by remember { mutableStateOf(Chart.Trending) }
     var selectedPeriod by remember { mutableStateOf(TimePeriod.Weekly) }
     SnacTheme {
         ChartsScreen(
             onMovieClick = {},
             onShowClick = {},
-            selectedMedia = media,
-            onSelectedMediaChange = { media = it },
+            selectedMediaTab = mediaTab,
+            onSelectedMediaChange = { mediaTab = it },
             selectedChart = selectedChart,
-            onSelectedChartChange = {
-                if (!expanded) {
-                    expanded = true
-                } else {
-                    selectedChart = it
-                    expanded = false
-                }
-            },
+            onSelectedChartChange = { selectedChart = it },
             selectedPeriod = selectedPeriod,
-            onSelectedPeriodChange = {
-                if (!expanded) {
-                    expanded = true
-                } else {
-                    selectedPeriod = it
-                    expanded = false
-                }
-            },
-            selectorExpanded = expanded,
+            onSelectedPeriodChange = { selectedPeriod = it },
+            results = List(10) {
+                TrendingMovie(
+                    slug = "movie-$it",
+                    title = "Frankenstein",
+                    year = 2025,
+                    imageUrl = null,
+                )
+            }
         )
     }
 }

@@ -10,7 +10,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.constrainWidth
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.util.lerp
+import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.ClapperboardStripes
 import com.omasyo.snac.core.ui.components.SelectableText
 import com.omasyo.snac.core.ui.components.Text
@@ -251,7 +253,7 @@ private fun Preview() {
     var selectedChart by remember { mutableStateOf(Chart.Trending) }
     var selectedPeriod by remember { mutableStateOf(TimePeriod.Weekly) }
     SnacTheme {
-        Box(
+        Column (
             modifier = Modifier
                 .background(SnacColors.page)
                 .fillMaxWidth()
@@ -264,7 +266,6 @@ private fun Preview() {
                         expanded = true
                     } else {
                         selectedChart = it
-                        expanded = false
                     }
                 },
                 selectedPeriod = selectedPeriod,
@@ -273,12 +274,19 @@ private fun Preview() {
                         expanded = true
                     } else {
                         selectedPeriod = it
-                        expanded = false
                     }
                 },
                 expanded = expanded,
-                modifier = Modifier.fillMaxSize()
             )
+
+            Button(
+                onClick = { expanded = !expanded },
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .aspectRatio(1f),
+            ) {
+
+            }
         }
     }
 }

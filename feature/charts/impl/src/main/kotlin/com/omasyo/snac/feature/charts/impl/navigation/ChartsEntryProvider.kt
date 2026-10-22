@@ -6,43 +6,35 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
+import com.omasyo.snac.core.model.media.TrendingMovie
 import com.omasyo.snac.feature.charts.api.navigation.ChartsNavKey
 import com.omasyo.snac.feature.charts.impl.Chart
 import com.omasyo.snac.feature.charts.impl.ChartsScreen
-import com.omasyo.snac.feature.charts.impl.Media
+import com.omasyo.snac.feature.charts.impl.MediaTab
 import com.omasyo.snac.feature.charts.impl.TimePeriod
 
 fun EntryProviderScope<NavKey>.chartsEntry() {
     entry<ChartsNavKey> {
-
-        var media by remember { mutableStateOf(Media.Movie) }
-        var expanded by remember { mutableStateOf(true) }
+        var mediaTab by remember { mutableStateOf(MediaTab.Movie) }
         var selectedChart by remember { mutableStateOf(Chart.Trending) }
         var selectedPeriod by remember { mutableStateOf(TimePeriod.Weekly) }
-        ChartsScreen(
-            onMovieClick = {},
-            onShowClick = {},
-            selectedMedia = media,
-            onSelectedMediaChange = { media = it },
-            selectedChart = selectedChart,
-            onSelectedChartChange = {
-                if (!expanded) {
-                    expanded = true
-                } else {
-                    selectedChart = it
-                    expanded = false
+            ChartsScreen(
+                onMovieClick = {},
+                onShowClick = {},
+                selectedMediaTab = mediaTab,
+                onSelectedMediaChange = { mediaTab = it },
+                selectedChart = selectedChart,
+                onSelectedChartChange = { selectedChart = it },
+                selectedPeriod = selectedPeriod,
+                onSelectedPeriodChange = { selectedPeriod = it },
+                results = List(10) {
+                    TrendingMovie(
+                        slug = "movie-$it",
+                        title = "Frankenstein",
+                        year = 2025,
+                        imageUrl = null,
+                    )
                 }
-            },
-            selectedPeriod = selectedPeriod,
-            onSelectedPeriodChange = {
-                if (!expanded) {
-                    expanded = true
-                } else {
-                    selectedPeriod = it
-                    expanded = false
-                }
-            },
-            selectorExpanded = expanded,
-        )
+            )
     }
 }
