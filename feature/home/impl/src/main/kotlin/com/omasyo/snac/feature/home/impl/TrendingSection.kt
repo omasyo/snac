@@ -24,9 +24,8 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.omasyo.snac.core.model.media.TrendingMedia
-import com.omasyo.snac.core.model.media.movie.TrendingMovie
-import com.omasyo.snac.core.model.media.show.TrendingShow
+import com.omasyo.snac.core.model.media.Media
+import com.omasyo.snac.core.model.media.TrendingItem
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.modifiers.LocalSilhouetteColor
@@ -47,11 +46,11 @@ internal enum class TrendingTab(val label: String) {
 
 @Composable
 internal fun TrendingSection(
-    onMediaClick: (TrendingMedia) -> Unit,
+    onMediaClick: (Media) -> Unit,
     selectedTab: TrendingTab,
     onTabChange: (TrendingTab) -> Unit,
-    movies: List<TrendingMovie>,
-    shows: List<TrendingShow>,
+    movies: List<TrendingItem>,
+    shows: List<TrendingItem>,
     modifier: Modifier = Modifier,
 ) {
     CompositionLocalProvider(
@@ -120,16 +119,17 @@ private fun MediaToggle(
 
 @Composable
 private fun Row(
-    items: List<TrendingMedia>,
-    onMediaClick: (TrendingMedia) -> Unit,
+    items: List<TrendingItem>,
+    onMediaClick: (Media) -> Unit,
 ) {
     LazyRow {
-        items(items, key = { it.slug }) { media ->
+        items(items, key = { it.media.slug }) { item ->
+            val media = item.media
             val rotation = Random(media.slug.hashCode()).nextInt(-2, 3).toFloat()
 
             TrendingCard(
                 title = media.title,
-                watchingCount = media.watchingCount,
+                watchingCount = item.watchers,
                 imageUrl = media.imageUrl,
                 onClick = { onMediaClick(media) },
                 modifier = Modifier
@@ -186,24 +186,8 @@ private fun Preview() {
             onMediaClick = {},
             selectedTab = trendingTab,
             onTabChange = { trendingTab = it },
-            movies = List(10) {
-                TrendingMovie(
-                    slug = "movie-$it",
-                    title = "Frankenstein",
-                    year = 2025,
-                    watchingCount = 1204,
-                    imageUrl = null,
-                )
-            },
-            shows = List(10) {
-                TrendingShow(
-                    slug = "show-$it",
-                    title = "Dark",
-                    year = 2023,
-                    watchingCount = 300,
-                    imageUrl = null,
-                )
-            },
+            movies = TrendingItem.MoviePreviewSample,
+            shows = TrendingItem.ShowPreviewSample,
             modifier = Modifier
                 .rotate(-1.5f),
         )

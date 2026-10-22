@@ -6,12 +6,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
-import com.omasyo.snac.core.model.media.AnticipatedMedia
-import com.omasyo.snac.core.model.media.TrendingMedia
-import com.omasyo.snac.core.model.media.movie.BoxOfficeMovie
-import com.omasyo.snac.core.model.media.movie.Movie
-import com.omasyo.snac.core.model.media.show.Show
-import com.omasyo.snac.core.model.media.show.TrendingShow
+import com.omasyo.snac.core.model.media.AnticipatedItem
+import com.omasyo.snac.core.model.media.BoxOfficeItem
+import com.omasyo.snac.core.model.media.Movie
+import com.omasyo.snac.core.model.media.Show
+import com.omasyo.snac.core.model.media.TrendingItem
 import com.omasyo.snac.feature.auth.api.rememberAuthenticator
 import com.omasyo.snac.feature.home.api.navigation.HomeNavKey
 import com.omasyo.snac.feature.home.impl.HomeScreen
@@ -28,16 +27,15 @@ fun EntryProviderScope<NavKey>.homeEntry() {
                 when (it) {
                     is Movie -> {}
                     is Show -> {}
-                    else -> error("Unhandled media: $it")
                 }
             },
             onAllChartsClick = {},
             trendingTab = trendingTab,
             onTrendingTabChange = { trendingTab = it },
-            trendingMovies = TrendingMedia.PreviewSample,
-            trendingShows = TrendingShow.PreviewSample,
-            boxOfficeMovies = BoxOfficeMovie.PreviewSample,
-            anticipatedMedia = AnticipatedMedia.PreviewSample
+            trendingMovies = TrendingItem.MoviePreviewSample,
+            trendingShows = TrendingItem.ShowPreviewSample,
+            boxOffice = BoxOfficeItem.PreviewSample,
+            anticipated = AnticipatedItem.PreviewSample,
         )
     }
 }

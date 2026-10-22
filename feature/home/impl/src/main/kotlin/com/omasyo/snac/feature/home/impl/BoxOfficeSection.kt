@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
@@ -17,7 +16,8 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import com.omasyo.snac.core.model.media.movie.BoxOfficeMovie
+import com.omasyo.snac.core.model.media.BoxOfficeItem
+import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.modifiers.TintIndication
 import com.omasyo.snac.core.ui.modifiers.silhouette
@@ -27,8 +27,8 @@ import com.omasyo.snac.core.ui.theme.colors.SnacColors
 
 @Composable
 internal fun BoxOfficeSection(
-    onMovieClick: (BoxOfficeMovie) -> Unit,
-    movies: List<BoxOfficeMovie>,
+    onMovieClick: (Movie) -> Unit,
+    items: List<BoxOfficeItem>,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -53,15 +53,21 @@ internal fun BoxOfficeSection(
                 modifier = Modifier.alignByBaseline()
             )
         }
-        movies.forEachIndexed { index, movie ->
+        items.forEachIndexed { index, item ->
             Entry(
                 position = index + 1,
-                title = movie.title,
-                revenue = movie.revenue,
-                onClick = { onMovieClick(movie) },
+                title = item.media.title,
+                revenue = formatRevenue(item.revenue),
+                onClick = { onMovieClick(item.media) },
             )
         }
     }
+}
+
+private fun formatRevenue(dollars: Long): String = when { //TODO who asked for this?
+    dollars >= 1_000_000 -> "$%.1fM".format(dollars / 1_000_000.0)
+    dollars >= 1_000 -> "$%.1fK".format(dollars / 1_000.0)
+    else -> "$$dollars"
 }
 
 @Composable
@@ -122,13 +128,7 @@ private fun Preview() {
     SnacTheme {
         BoxOfficeSection(
             onMovieClick = {},
-            movies = listOf(
-                BoxOfficeMovie("1", "Harmattan", "$21.7M"),
-                BoxOfficeMovie("2", "Orbital Diner", "$12.9M"),
-                BoxOfficeMovie("3", "Ghost Frequency", "$8.4"),
-                BoxOfficeMovie("4", "Velvet Hour", "$5.1M"),
-                BoxOfficeMovie("5", "Saltline", "$3.3M"),
-            ),
+            items = BoxOfficeItem.PreviewSample,
             modifier = Modifier.padding(16.dp),
         )
     }

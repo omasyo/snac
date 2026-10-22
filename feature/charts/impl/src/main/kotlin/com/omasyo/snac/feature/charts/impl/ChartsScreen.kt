@@ -44,9 +44,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import com.omasyo.snac.core.model.media.ChartMedia
+import com.omasyo.snac.core.model.media.AnticipatedItem
+import com.omasyo.snac.core.model.media.BoxOfficeItem
+import com.omasyo.snac.core.model.media.ChartItem
+import com.omasyo.snac.core.model.media.FavoritedItem
 import com.omasyo.snac.core.model.media.Media
-import com.omasyo.snac.core.model.media.movie.TrendingMovie
+import com.omasyo.snac.core.model.media.PopularItem
+import com.omasyo.snac.core.model.media.TrendingItem
+import com.omasyo.snac.core.model.media.WatchStatsItem
 import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.TabRow
@@ -101,7 +106,7 @@ private class CollapseOnScrollDownConnection(
 }
 
 
-val ChartMedia.info: String get() = "61,000 plays"
+val ChartItem.info: String get() = "61,000 plays"
 
 @Composable
 fun ChartsScreen(
@@ -112,7 +117,7 @@ fun ChartsScreen(
     onSelectedChartChange: (Chart) -> Unit,
     selectedPeriod: TimePeriod,
     onSelectedPeriodChange: (TimePeriod) -> Unit,
-    results: List<ChartMedia>,
+    results: List<ChartItem>,
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
@@ -228,26 +233,26 @@ fun ChartsScreen(
         item { Spacer(Modifier.height(16.dp)) }
         if (results.isNotEmpty()) {
             item("top-media-card") {
-                val media = results.first()
+                val item = results.first()
                 TopMediaCard(
-                    title = media.title,
-                    imageUrl = media.imageUrl,
-                    year = media.year,
-                    info = media.info,
-                    onClick = { onMediaClick(media) },
+                    title = item.media.title,
+                    imageUrl = item.media.imageUrl,
+                    year = item.media.year,
+                    info = item.info,
+                    onClick = { onMediaClick(item.media) },
                     modifier = Modifier.padding(horizontal = 16.dp),
                 )
             }
 
             item { Spacer(Modifier.height(16.dp)) }
-            itemsIndexed(results.drop(1)) { index, media ->
+            itemsIndexed(results.drop(1)) { index, item ->
                 MediaCard(
                     position = index + 2,
-                    title = media.title,
-                    imageUrl = media.title,
-                    year = media.year,
-                    info = media.info,
-                    onClick = { onMediaClick(media) },
+                    title = item.media.title,
+                    imageUrl = item.media.imageUrl,
+                    year = item.media.year,
+                    info = item.info,
+                    onClick = { onMediaClick(item.media) },
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
                         .film(
@@ -270,7 +275,7 @@ private fun TopMediaCard(
     title: String,
     imageUrl: String?,
     year: Int,
-    info: String,
+    info: String?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -310,11 +315,13 @@ private fun TopMediaCard(
                 style = SnacTypography.label,
                 color = SnacColors.mutedOnFilm,
             )
-            Text(
-                text = info,
-                style = SnacTypography.hand,
-                color = SnacColors.accent,
-            )
+            if (info != null) {
+                Text(
+                    text = info,
+                    style = SnacTypography.hand,
+                    color = SnacColors.accent,
+                )
+            }
         }
     }
 }
@@ -325,7 +332,7 @@ private fun MediaCard(
     title: String,
     imageUrl: String?,
     year: Int,
-    info: String,
+    info: String?,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -381,11 +388,13 @@ private fun MediaCard(
                 style = SnacTypography.label,
                 color = SnacColors.mutedOnFilm,
             )
-            Text(
-                text = info,
-                style = SnacTypography.hand,
-                color = SnacColors.accent,
-            )
+            if (info != null) {
+                Text(
+                    text = info,
+                    style = SnacTypography.hand,
+                    color = SnacColors.accent,
+                )
+            }
         }
     }
 }
@@ -405,15 +414,7 @@ private fun Preview() {
             onSelectedChartChange = { selectedChart = it },
             selectedPeriod = selectedPeriod,
             onSelectedPeriodChange = { selectedPeriod = it },
-            results = List(10) {
-                TrendingMovie(
-                    slug = "movie-$it",
-                    title = "Frankenstein",
-                    year = 2025,
-                    watchingCount = 31_000,
-                    imageUrl = null,
-                )
-            }
+            results = TrendingItem.MoviePreviewSample,
         )
     }
 }

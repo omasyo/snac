@@ -21,13 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.omasyo.snac.core.model.media.AnticipatedMedia
+import com.omasyo.snac.core.model.media.AnticipatedItem
+import com.omasyo.snac.core.model.media.BoxOfficeItem
 import com.omasyo.snac.core.model.media.Media
-import com.omasyo.snac.core.model.media.TrendingMedia
-import com.omasyo.snac.core.model.media.movie.AnticipatedMovie
-import com.omasyo.snac.core.model.media.movie.BoxOfficeMovie
-import com.omasyo.snac.core.model.media.movie.TrendingMovie
-import com.omasyo.snac.core.model.media.show.TrendingShow
+import com.omasyo.snac.core.model.media.TrendingItem
 import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.SignInPrompt
 import com.omasyo.snac.core.ui.components.Text
@@ -44,10 +41,10 @@ internal fun HomeScreen(
     onAllChartsClick: () -> Unit,
     trendingTab: TrendingTab,
     onTrendingTabChange: (TrendingTab) -> Unit,
-    trendingMovies: List<TrendingMovie>,
-    trendingShows: List<TrendingShow>,
-    boxOfficeMovies: List<BoxOfficeMovie>,
-    anticipatedMedia: List<AnticipatedMovie>,
+    trendingMovies: List<TrendingItem>,
+    trendingShows: List<TrendingItem>,
+    boxOffice: List<BoxOfficeItem>,
+    anticipated: List<AnticipatedItem>,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -79,12 +76,12 @@ internal fun HomeScreen(
                 onClick = onSignInClick,
             )
         }
-        trendingMovies.firstOrNull()?.let { movie ->
+        trendingMovies.firstOrNull()?.let { item ->
             TrendingSpotlight(
-                title = movie.title,
-                imageUrl = movie.imageUrl,
-                watchingCount = 1204,
-                onClick = { onMediaClick(movie) },
+                title = item.media.title,
+                imageUrl = item.media.imageUrl,
+                watchingCount = item.watchers,
+                onClick = { onMediaClick(item.media) },
             )
         }
         SignInPrompt(
@@ -105,13 +102,13 @@ internal fun HomeScreen(
 
         BoxOfficeSection(
             onMovieClick = onMediaClick,
-            movies = boxOfficeMovies,
+            items = boxOffice,
             modifier = Modifier.padding(16.dp),
         )
         AnticipatedSection(
             onMediaClick = onMediaClick,
             onAllChartsClick = onAllChartsClick,
-            media = anticipatedMedia,
+            items = anticipated,
         )
     }
 }
@@ -127,10 +124,10 @@ private fun Preview() {
             onAllChartsClick = {},
             trendingTab = trendingTab,
             onTrendingTabChange = { trendingTab = it },
-            trendingMovies = TrendingMedia.PreviewSample,
-            trendingShows = TrendingShow.PreviewSample,
-            boxOfficeMovies = BoxOfficeMovie.PreviewSample,
-            anticipatedMedia = AnticipatedMedia.PreviewSample
+            trendingMovies = TrendingItem.MoviePreviewSample,
+            trendingShows = TrendingItem.ShowPreviewSample,
+            boxOffice = BoxOfficeItem.PreviewSample,
+            anticipated = AnticipatedItem.PreviewSample,
         )
     }
 }

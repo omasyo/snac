@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
@@ -22,7 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.omasyo.snac.core.model.media.AnticipatedMedia
+import com.omasyo.snac.core.model.media.AnticipatedItem
+import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Stamp
 import com.omasyo.snac.core.ui.components.Text
@@ -35,9 +35,9 @@ import com.omasyo.snac.core.ui.theme.colors.SnacColors
 
 @Composable
 internal fun AnticipatedSection(
-    onMediaClick: (AnticipatedMedia) -> Unit,
+    onMediaClick: (Media) -> Unit,
     onAllChartsClick: () -> Unit,
-    media: List<AnticipatedMedia>,
+    items: List<AnticipatedItem>,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -77,12 +77,12 @@ internal fun AnticipatedSection(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16f.dp),
         ) {
-            items(media, key = { it.slug }) { media ->
+            items(items, key = { it.media.slug }) { item ->
                 AnticipatedCard(
-                    title = media.title,
-                    listCount = media.listCount,
-                    imageUrl = media.imageUrl,
-                    onClick = { onMediaClick(media) },
+                    title = item.media.title,
+                    listCount = item.listCount,
+                    imageUrl = item.media.imageUrl,
+                    onClick = { onMediaClick(item.media) },
                 )
             }
         }
@@ -148,7 +148,7 @@ private fun Preview() {
             AnticipatedSection(
                 onMediaClick = { },
                 onAllChartsClick = { },
-                media = AnticipatedMedia.PreviewSample,
+                items = AnticipatedItem.PreviewSample,
                 modifier = Modifier.padding(vertical = 16.dp)
             )
         }
