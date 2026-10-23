@@ -29,6 +29,7 @@ import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.SignInPrompt
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
+import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
@@ -102,13 +103,13 @@ internal fun HomeScreen(
 
         BoxOfficeSection(
             onMovieClick = onMediaClick,
-            items = boxOffice,
+            state = UiState.Success(boxOffice),
             modifier = Modifier.padding(16.dp),
         )
         AnticipatedSection(
             onMediaClick = onMediaClick,
             onAllChartsClick = onAllChartsClick,
-            items = anticipated,
+            state = UiState.Success(anticipated),
         )
     }
 }

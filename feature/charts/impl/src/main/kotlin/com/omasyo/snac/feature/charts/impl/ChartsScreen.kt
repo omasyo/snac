@@ -44,14 +44,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import com.omasyo.snac.core.model.media.AnticipatedItem
-import com.omasyo.snac.core.model.media.BoxOfficeItem
 import com.omasyo.snac.core.model.media.ChartItem
-import com.omasyo.snac.core.model.media.FavoritedItem
 import com.omasyo.snac.core.model.media.Media
-import com.omasyo.snac.core.model.media.PopularItem
 import com.omasyo.snac.core.model.media.TrendingItem
-import com.omasyo.snac.core.model.media.WatchStatsItem
 import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.TabRow
@@ -245,7 +240,7 @@ fun ChartsScreen(
             }
 
             item { Spacer(Modifier.height(16.dp)) }
-            itemsIndexed(results.drop(1)) { index, item ->
+            itemsIndexed(results.drop(1), key = { _, item -> item.media.slug }) { index, item ->
                 MediaCard(
                     position = index + 2,
                     title = item.media.title,

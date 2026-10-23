@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
@@ -29,6 +30,8 @@ fun Button(
     contentColor: Color = SnacColors.onAccent,
     borderColor: Color = SnacColors.ink,
     shadowColor: Color = SnacColors.shadow,
+    contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+
 ) {
     Button(
         onClick = onClick,
@@ -41,7 +44,7 @@ fun Button(
             text = text,
             style = style,
             color = { contentColor },
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            modifier = Modifier.padding(contentPadding)
         )
     }
 }
