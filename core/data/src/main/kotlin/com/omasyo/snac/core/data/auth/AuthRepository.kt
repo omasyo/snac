@@ -1,6 +1,6 @@
 package com.omasyo.snac.core.data.auth
 
-import com.omasyo.snac.core.data.DataResult
+import com.omasyo.snac.core.model.SnacResult
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
@@ -10,7 +10,7 @@ interface AuthRepository {
 
     suspend fun createAuthorizationUrl(): String
 
-    suspend fun completeAuthorization(redirectUri: String): DataResult<AuthorizationOutcome>
+    suspend fun completeAuthorization(redirectUri: String): SnacResult<AuthorizationOutcome>
 
     suspend fun signOut()
 }

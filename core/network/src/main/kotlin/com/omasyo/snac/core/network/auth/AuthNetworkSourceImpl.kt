@@ -1,6 +1,6 @@
 package com.omasyo.snac.core.network.auth
 
-import com.omasyo.snac.core.network.NetworkResult
+import com.omasyo.snac.core.model.SnacResult
 import com.omasyo.snac.core.network.TraktConfig
 import com.omasyo.snac.core.network.auth.models.ExchangeTokenRequest
 import com.omasyo.snac.core.network.auth.models.RevokeTokenRequest
@@ -20,7 +20,7 @@ import io.ktor.client.request.setBody
 class AuthNetworkSourceImpl(
     private val client: HttpClient
 ) : AuthNetworkSource {
-    override suspend fun exchangeCode(code: String, codeVerifier: String): NetworkResult<TokenResponse> =
+    override suspend fun exchangeCode(code: String, codeVerifier: String): SnacResult<TokenResponse> =
         safeCall {
             client.post(TraktConfig.TOKEN_URL) {
                 setBody(
@@ -35,7 +35,7 @@ class AuthNetworkSourceImpl(
             }
         }
 
-    override suspend fun revoke(accessToken: String): NetworkResult<Unit> =
+    override suspend fun revoke(accessToken: String): SnacResult<Unit> =
         safeCall {
             client.post(TraktConfig.REVOKE_URL) {
                 setBody(RevokeTokenRequest(clientId = TraktConfig.CLIENT_ID, token = accessToken))

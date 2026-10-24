@@ -18,14 +18,15 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.omasyo.snac.core.model.SnacError
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.TrendingItem
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Stamp
 import com.omasyo.snac.core.ui.components.Text
-import com.omasyo.snac.core.ui.models.GenericError
 import com.omasyo.snac.core.ui.models.UiState
+import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.TintIndication
 import com.omasyo.snac.core.ui.modifiers.film
 import com.omasyo.snac.core.ui.modifiers.silhouette
@@ -134,7 +135,7 @@ private fun Preview() {
 private fun ErrorPreview() {
     SnacTheme {
         TrendingSpotlight(
-            state = UiState.Error(GenericError, {}),
+            state = UiState.Error(SnacError.ErrorOnMyPart) {},
             onClick = {}
         )
     }

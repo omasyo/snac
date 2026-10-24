@@ -2,10 +2,9 @@ package com.omasyo.snac.core.data.auth
 
 import android.net.Uri
 import android.util.Log
-import com.omasyo.snac.core.data.DataError
-import com.omasyo.snac.core.data.DataResult
-import com.omasyo.snac.core.data.map
-import com.omasyo.snac.core.data.toDataResult
+import com.omasyo.snac.core.model.SnacError
+import com.omasyo.snac.core.model.SnacResult
+import com.omasyo.snac.core.model.map
 import com.omasyo.snac.core.network.TraktConfig
 import com.omasyo.snac.core.network.auth.AuthNetworkSource
 import com.omasyo.snac.core.network.auth.models.toContent
@@ -46,7 +45,7 @@ class AuthRepositoryImpl(
             .toString()
     }
 
-    override suspend fun completeAuthorization(redirectUri: String): DataResult<AuthorizationOutcome> {
+    override suspend fun completeAuthorization(redirectUri: String): SnacResult<AuthorizationOutcome> {
         val uri = Uri.parse(redirectUri)
         val pending = tokenStorage.getPendingAuthorization()
         if (pending == null || uri.getQueryParameter("state") != pending.state) {
@@ -56,22 +55,22 @@ class AuthRepositoryImpl(
         tokenStorage.clearPendingAuthorization()
 
         uri.getQueryParameter("error")?.let { error ->
-            if (error == "access_denied") return DataResult.Success(AuthorizationOutcome.Cancelled)
+            if (error == "access_denied") return SnacResult.Success(AuthorizationOutcome.Cancelled)
             return authorizationFailed(uri.getQueryParameter("error_description") ?: error)
         }
         val code = uri.getQueryParameter("code")
             ?: return authorizationFailed("Missing code")
 
-        return authNetworkSource.exchangeCode(code, pending.codeVerifier).toDataResult().map {
+        return authNetworkSource.exchangeCode(code, pending.codeVerifier).map {
             tokenStorage.saveToken(it.toContent())
             authNetworkSource.clearCachedTokens()
             AuthorizationOutcome.SignedIn
         }
     }
 
-    private fun authorizationFailed(detail: String): DataResult<Nothing> {
+    private fun authorizationFailed(detail: String): SnacResult<Nothing> {
         Log.e("AuthRepository", "completeAuthorization: $detail")
-        return DataResult.Failure(DataError.ErrorOnMyPart)
+        return SnacResult.Failure(SnacError.ErrorOnMyPart)
     }
 
     override suspend fun signOut() {

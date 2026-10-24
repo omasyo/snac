@@ -6,3 +6,7 @@ plugins {
 android {
     namespace = "com.omasyo.snac.core.ui"
 }
+
+dependencies {
+    implementation(projects.core.model)
+}

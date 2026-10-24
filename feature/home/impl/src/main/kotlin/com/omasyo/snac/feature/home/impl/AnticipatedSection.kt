@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.omasyo.snac.core.model.SnacError
 import com.omasyo.snac.core.model.media.AnticipatedItem
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.ui.components.ErrorBox
@@ -37,16 +38,16 @@ import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Stamp
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.imageGradient
-import com.omasyo.snac.core.ui.models.GenericError
 import com.omasyo.snac.core.ui.models.UiState
+import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.modifiers.TintIndication
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
-import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.delay
 
 @Composable
 internal fun AnticipatedSection(
@@ -223,7 +224,7 @@ private fun LoadingToErrorPreview() {
 
     LaunchedEffect(Unit) {
         delay(3.seconds)
-        state = UiState.Error(GenericError, {})
+        state = UiState.Error(SnacError.ErrorOnMyPart, {})
     }
 
     SnacTheme {

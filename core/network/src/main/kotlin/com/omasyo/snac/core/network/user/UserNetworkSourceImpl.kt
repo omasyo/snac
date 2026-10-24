@@ -1,6 +1,6 @@
 package com.omasyo.snac.core.network.user
 
-import com.omasyo.snac.core.network.NetworkResult
+import com.omasyo.snac.core.model.SnacResult
 import com.omasyo.snac.core.network.safeCall
 import com.omasyo.snac.core.network.user.models.NetworkUser
 import dev.zacsweers.metro.AppScope
@@ -15,7 +15,7 @@ import io.ktor.client.request.parameter
 class UserNetworkSourceImpl(
     private val client: HttpClient
 ) : UserNetworkSource {
-    override suspend fun getMe(): NetworkResult<NetworkUser> = safeCall {
+    override suspend fun getMe(): SnacResult<NetworkUser> = safeCall {
         client.get("users/me") {
             parameter("extended", "full")
         }

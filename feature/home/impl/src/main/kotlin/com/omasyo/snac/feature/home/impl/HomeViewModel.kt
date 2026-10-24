@@ -2,10 +2,10 @@ package com.omasyo.snac.feature.home.impl
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.omasyo.snac.core.model.SnacError
 import com.omasyo.snac.core.model.media.AnticipatedItem
 import com.omasyo.snac.core.model.media.BoxOfficeItem
 import com.omasyo.snac.core.model.media.TrendingItem
-import com.omasyo.snac.core.ui.models.GenericError
 import com.omasyo.snac.core.ui.models.UiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,7 +45,7 @@ class HomeViewModel : ViewModel() {
         if (Random.nextBoolean()) {
             state.value = UiState.Success(value)
         } else {
-            state.value = UiState.Error(GenericError, {})
+            state.value = UiState.Error(SnacError.ErrorOnMyPart, {})
         }
     }
 }

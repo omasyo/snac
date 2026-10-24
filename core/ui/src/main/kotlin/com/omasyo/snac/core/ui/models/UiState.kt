@@ -1,5 +1,7 @@
 package com.omasyo.snac.core.ui.models
 
+import com.omasyo.snac.core.model.SnacError
+
 sealed interface UiState<out T> {
 
     data object Loading : UiState<Nothing>

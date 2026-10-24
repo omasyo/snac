@@ -3,10 +3,10 @@ package com.omasyo.snac.feature.auth.impl
 import android.net.Uri
 import androidx.core.net.toUri
 import com.omasyo.snac.core.data.auth.AuthRepository
-import com.omasyo.snac.core.data.onFailure
-import com.omasyo.snac.core.data.onSuccess
-import com.omasyo.snac.core.ui.models.GenericError
+import com.omasyo.snac.core.model.onFailure
+import com.omasyo.snac.core.model.onSuccess
 import com.omasyo.snac.core.network.TraktConfig
+import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.feature.auth.api.AuthState
 import com.omasyo.snac.feature.auth.api.Authenticator
 import dev.zacsweers.metro.AppScope
@@ -65,7 +65,7 @@ class AuthManager(
         scope.launch {
             authRepository.completeAuthorization(uri.toString())
                 .onSuccess { _state.value = AuthState.Idle }
-                .onFailure { _state.value = AuthState.Error(GenericError.message) } //TODO message per DataError
+                .onFailure { _state.value = AuthState.Error(it.message) }
         }
         return true
     }
