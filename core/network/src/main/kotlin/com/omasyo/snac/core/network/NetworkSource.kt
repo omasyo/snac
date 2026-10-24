@@ -11,6 +11,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.isSuccess
 import io.ktor.serialization.ContentConvertException
 import java.io.IOException
+import kotlin.time.Duration.Companion.seconds
 
 interface NetworkSource {
     val tag: String
@@ -44,7 +45,7 @@ internal suspend fun NetworkSource.toError(response: HttpResponse): SnacResult.E
         404 -> SnacResult.Error.NotFound
         420 -> SnacResult.Error.AccountLimitExceeded(response.headers["X-Account-Limit"])
         423 -> SnacResult.Error.AccountLocked
-        429 -> SnacResult.Error.RateLimitExceeded(response.headers[HttpHeaders.RetryAfter]?.toLongOrNull())
+        429 -> SnacResult.Error.RateLimitExceeded(response.headers[HttpHeaders.RetryAfter]?.toLongOrNull()?.seconds)
         in 500..599 -> SnacResult.Error.ServerUnavailable
         else -> unexpected("HTTP ${response.status.value}: ${response.bodyAsText()}")
     }

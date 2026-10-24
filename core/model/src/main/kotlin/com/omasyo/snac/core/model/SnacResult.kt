@@ -1,5 +1,7 @@
 package com.omasyo.snac.core.model
 
+import kotlin.time.Duration
+
 sealed interface SnacResult<out T> {
     data class Success<T>(val value: T) : SnacResult<T>
 
@@ -17,7 +19,7 @@ sealed interface SnacResult<out T> {
 
         data object AccountLocked : Error
 
-        data class RateLimitExceeded(val retryAfterSeconds: Long?) : Error
+        data class RateLimitExceeded(val retryAfter: Duration?) : Error
 
         data object Unexpected : Error
     }
