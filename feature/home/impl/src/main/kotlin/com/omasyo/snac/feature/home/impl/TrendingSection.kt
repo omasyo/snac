@@ -3,20 +3,30 @@ package com.omasyo.snac.feature.home.impl
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,8 +36,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.TrendingItem
+import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
+import com.omasyo.snac.core.ui.components.imageGradient
+import com.omasyo.snac.core.ui.models.GenericError
+import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.modifiers.LocalSilhouetteColor
 import com.omasyo.snac.core.ui.modifiers.Orientation
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
@@ -38,7 +52,10 @@ import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlin.random.Random
+import kotlin.time.Duration.Companion.seconds
 
 internal enum class TrendingTab(val label: String) {
     Movie("Movie"), Show("Show")
@@ -47,12 +64,12 @@ internal enum class TrendingTab(val label: String) {
 @Composable
 internal fun TrendingSection(
     onMediaClick: (Media) -> Unit,
-    selectedTab: TrendingTab,
-    onTabChange: (TrendingTab) -> Unit,
-    movies: List<TrendingItem>,
-    shows: List<TrendingItem>,
+    moviesState: UiState<List<TrendingItem>>,
+    showsState: UiState<List<TrendingItem>>,
     modifier: Modifier = Modifier,
 ) {
+    val pagerState = rememberPagerState { TrendingTab.entries.size }
+    val coroutineScope = rememberCoroutineScope()
     CompositionLocalProvider(
         LocalSilhouetteColor provides SnacColors.signal
     ) {
@@ -79,12 +96,41 @@ internal fun TrendingSection(
                         .weight(1f)
                         .silhouette(),
                 )
-                MediaToggle(selectedTab, onTabChange)
+                MediaToggle(
+                    selectedTab = TrendingTab.entries[pagerState.currentPage],
+                    onTabClick = { coroutineScope.launch { pagerState.animateScrollToPage(it.ordinal) } }
+                )
             }
 
-            when (selectedTab) {
-                TrendingTab.Movie -> Row(movies, onMediaClick)
-                TrendingTab.Show -> Row(shows, onMediaClick)
+            HorizontalPager(
+                state = pagerState,
+                userScrollEnabled = false,
+            ) { page ->
+                val items = when (TrendingTab.entries[page]) {
+                    TrendingTab.Movie -> moviesState
+                    TrendingTab.Show -> showsState
+                }
+
+                val placeholder =
+                    remember { movableContentOf<Boolean> { scrollable -> PlaceholderRow(scrollable) } }
+
+                when (items) {
+                    is UiState.Error -> {
+                        ErrorBox(
+                            description = items.error.message,
+                            onRetry = items.refresh,
+                        ) {
+                            placeholder(false)
+                        }
+                    }
+
+
+                    UiState.Loading -> placeholder(true)
+
+                    is UiState.Success -> {
+                        Row(items.content, onMediaClick)
+                    }
+                }
             }
         }
     }
@@ -141,6 +187,42 @@ private fun Row(
 }
 
 @Composable
+private fun PlaceholderRow(scrollable: Boolean) {
+    Row(Modifier.horizontalScroll(rememberScrollState(), scrollable)) {
+        repeat(10) {
+            val rotation = Random(it + 80).nextInt(-2, 3).toFloat()
+
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+                    .rotate(rotation),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .border(4.dp, SnacColors.chip)
+                        .background(imageGradient())
+                        .size(120.dp, 180.dp),
+                )
+
+                Box(
+                    Modifier
+                        .padding(vertical = 8.dp)
+                        .width(96.dp)
+                        .height(16.dp)
+                        .background(SnacColors.faint)
+                )
+                Box(
+                    Modifier
+                        .width(104.dp)
+                        .height(12.dp)
+                        .background(SnacColors.faint)
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun TrendingCard(
     title: String,
     watchingCount: Int,
@@ -161,7 +243,6 @@ private fun TrendingCard(
             modifier = Modifier
                 .indication(interactionSource, SilhouettePressIndication())
                 .border(4.dp, SnacColors.chip)
-                .background(SnacColors.muted)
                 .size(120.dp, 180.dp),
         )
         Text(
@@ -180,14 +261,35 @@ private fun TrendingCard(
 @Preview
 @Composable
 private fun Preview() {
-    var trendingTab by remember { mutableStateOf(TrendingTab.Movie) }
     SnacTheme {
         TrendingSection(
             onMediaClick = {},
-            selectedTab = trendingTab,
-            onTabChange = { trendingTab = it },
-            movies = TrendingItem.MoviePreviewSample,
-            shows = TrendingItem.ShowPreviewSample,
+            moviesState = UiState.Success(TrendingItem.MoviePreviewSample),
+            showsState = UiState.Success(TrendingItem.ShowPreviewSample),
+            modifier = Modifier
+                .rotate(-1.5f),
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun LoadingToErrorPreview() {
+    var moviesState by remember { mutableStateOf<UiState<List<TrendingItem>>>(UiState.Loading) }
+    var showsState by remember { mutableStateOf<UiState<List<TrendingItem>>>(UiState.Loading) }
+
+    LaunchedEffect(Unit) {
+        delay(2.seconds)
+        moviesState = UiState.Error(GenericError, {})
+        delay(2.seconds)
+        showsState = UiState.Error(GenericError, {})
+    }
+
+    SnacTheme {
+        TrendingSection(
+            onMediaClick = {},
+            moviesState = moviesState,
+            showsState = showsState,
             modifier = Modifier
                 .rotate(-1.5f),
         )

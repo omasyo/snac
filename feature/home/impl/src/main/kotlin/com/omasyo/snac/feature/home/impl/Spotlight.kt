@@ -18,9 +18,14 @@ import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.omasyo.snac.core.model.media.Media
+import com.omasyo.snac.core.model.media.TrendingItem
+import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Stamp
 import com.omasyo.snac.core.ui.components.Text
+import com.omasyo.snac.core.ui.models.GenericError
+import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.modifiers.TintIndication
 import com.omasyo.snac.core.ui.modifiers.film
 import com.omasyo.snac.core.ui.modifiers.silhouette
@@ -36,10 +41,8 @@ private val CapHeightLineHeightStyle = LineHeightStyle(
 
 @Composable
 internal fun TrendingSpotlight(
-    title: String,
-    imageUrl: String?,
-    watchingCount: Int,
-    onClick: () -> Unit,
+    state: UiState<TrendingItem>,
+    onClick: (Media) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val indicationColor = SnacColors.accent
@@ -47,48 +50,69 @@ internal fun TrendingSpotlight(
         modifier = modifier
             .film()
             .clickable(
-                onClick = onClick,
+                onClick = {
+                    if (state is UiState.Success) {
+                        onClick(state.content.media)
+                    }
+                },
                 indication = remember { TintIndication { indicationColor } },
                 interactionSource = null,
+                enabled = state is UiState.Success,
             )
             .background(SnacColors.film)
             .heightIn(272.dp)
             .fillMaxWidth(),
     ) {
-        Image(
-            imageUrl = imageUrl,
-            placeholder = ColorPainter(Color.Transparent),
-            modifier = Modifier.matchParentSize(),
-        )
-        Box(
-            modifier = Modifier
-                .matchParentSize()
-                .padding(16.dp)
-                .padding(horizontal = 16.dp)
-        ) {
-            Stamp("#1 trending", modifier = Modifier.rotate(-6f))
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.align(
-                    Alignment.BottomStart
-                )
-            ) {
-                val titleColor = SnacColors.onFilm
-                Text(
-                    text = title,
-                    style = SnacTypography.display.copy(
-                        lineHeightStyle = CapHeightLineHeightStyle,
-                    ),
-                    color = titleColor,
-                    modifier = Modifier.silhouette(SnacColors.signal)
+        when (state) {
+            is UiState.Error -> {
 
-                )
-                val infoColor = SnacColors.accent
-                Text(
-                    text = "$watchingCount watching now", //TODO should have comma seperator
-                    style = SnacTypography.hand,
-                    color = infoColor
+                ErrorBox(
+                    description = state.error.message,
+                    onRetry = state.refresh,
+                    modifier = Modifier.matchParentSize()
+                ) {
+                }
+            }
 
+            UiState.Loading -> {}
+            is UiState.Success -> {
+                val item = state.content
+                Image(
+                    imageUrl = item.media.imageUrl,
+                    placeholder = ColorPainter(Color.Transparent),
+                    modifier = Modifier.matchParentSize(),
                 )
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .padding(16.dp)
+                        .padding(horizontal = 16.dp)
+                ) {
+                    Stamp("#1 trending", modifier = Modifier.rotate(-6f))
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.align(
+                            Alignment.BottomStart
+                        )
+                    ) {
+                        val titleColor = SnacColors.onFilm
+                        Text(
+                            text = item.media.title,
+                            style = SnacTypography.display.copy(
+                                lineHeightStyle = CapHeightLineHeightStyle,
+                            ),
+                            color = titleColor,
+                            modifier = Modifier.silhouette(SnacColors.signal)
+
+                        )
+                        val infoColor = SnacColors.accent
+                        Text(
+                            text = "${item.watchers} watching now", //TODO should have comma seperator
+                            style = SnacTypography.hand,
+                            color = infoColor
+
+                        )
+                    }
+                }
             }
         }
     }
@@ -99,9 +123,18 @@ internal fun TrendingSpotlight(
 private fun Preview() {
     SnacTheme {
         TrendingSpotlight(
-            title = "FRANKENSTEIN",
-            imageUrl = null,
-            watchingCount = 1204,
+            state = UiState.Success(TrendingItem.MoviePreviewSample.first()),
+            onClick = {}
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ErrorPreview() {
+    SnacTheme {
+        TrendingSpotlight(
+            state = UiState.Error(GenericError, {}),
             onClick = {}
         )
     }

@@ -59,7 +59,7 @@ internal fun BoxOfficeSection(
     when (state) {
         is UiState.Error -> {
             ErrorBox(
-                "Couldn’t get anticipated films from Trakt.",
+                description = state.error.message,
                 onRetry = state.refresh,
             ) {
                 loadingPlaceholder()

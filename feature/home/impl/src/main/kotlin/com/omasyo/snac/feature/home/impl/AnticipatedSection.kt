@@ -28,8 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.model.media.AnticipatedItem
@@ -38,6 +36,7 @@ import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Stamp
 import com.omasyo.snac.core.ui.components.Text
+import com.omasyo.snac.core.ui.components.imageGradient
 import com.omasyo.snac.core.ui.models.GenericError
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
@@ -89,21 +88,21 @@ internal fun AnticipatedSection(
             )
         }
 
-        val loadingPlaceholder =
-            remember { movableContentOf<Boolean> { scrollable -> LoadingPlaceholder(scrollable) } }
+        val placeholder =
+            remember { movableContentOf<Boolean> { scrollable -> Placeholder(scrollable) } }
 
         when (state) {
             is UiState.Error -> {
                 ErrorBox(
-                    "Couldn’t get anticipated films from Trakt.",
+                    description = state.error.message,
                     onRetry = state.refresh,
                 ) {
-                    loadingPlaceholder(false)
+                    placeholder(false)
                 }
             }
 
 
-            UiState.Loading -> loadingPlaceholder(true)
+            UiState.Loading -> placeholder(true)
 
             is UiState.Success -> {
                 LazyRow(
@@ -121,7 +120,6 @@ internal fun AnticipatedSection(
                 }
             }
         }
-
     }
 }
 
@@ -175,12 +173,9 @@ private fun AnticipatedCard(
 }
 
 @Composable
-private fun LoadingPlaceholder(
-    scrollable: Boolean,
-    modifier: Modifier = Modifier
-) {
+private fun Placeholder(scrollable: Boolean) {
     Row(
-        modifier = modifier
+        modifier = Modifier
             .horizontalScroll(rememberScrollState(), scrollable)
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16f.dp),
@@ -191,15 +186,7 @@ private fun LoadingPlaceholder(
                     modifier = Modifier
                         .silhouette()
                         .border(2.dp, SnacColors.ink)
-                        .background(
-                            Brush.linearGradient(
-                                listOf(
-                                    SnacColors.film,
-                                    SnacColors.filmLine,
-                                    SnacColors.faint,
-                                ), end = Offset(0f, Float.POSITIVE_INFINITY)
-                            )
-                        )
+                        .background(imageGradient())
                         .size(224.dp, 128.dp)
                 )
                 Box(

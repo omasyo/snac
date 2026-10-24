@@ -12,15 +12,13 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.omasyo.snac.core.model.media.AnticipatedItem
 import com.omasyo.snac.core.model.media.BoxOfficeItem
 import com.omasyo.snac.core.model.media.Media
@@ -29,7 +27,10 @@ import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.SignInPrompt
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
+import com.omasyo.snac.core.ui.models.GenericError
 import com.omasyo.snac.core.ui.models.UiState
+import com.omasyo.snac.core.ui.models.map
+import com.omasyo.snac.core.ui.models.transpose
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
@@ -40,12 +41,30 @@ internal fun HomeScreen(
     onSignInClick: () -> Unit,
     onMediaClick: (Media) -> Unit,
     onAllChartsClick: () -> Unit,
-    trendingTab: TrendingTab,
-    onTrendingTabChange: (TrendingTab) -> Unit,
-    trendingMovies: List<TrendingItem>,
-    trendingShows: List<TrendingItem>,
-    boxOffice: List<BoxOfficeItem>,
-    anticipated: List<AnticipatedItem>,
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = viewModel(),
+) {
+    HomeScreen(
+        onSignInClick = onSignInClick,
+        onMediaClick = onMediaClick,
+        onAllChartsClick = onAllChartsClick,
+        trendingMovies = viewModel.trendingMovies.collectAsStateWithLifecycle().value,
+        trendingShows = viewModel.trendingShows.collectAsStateWithLifecycle().value,
+        boxOffice = viewModel.boxOffice.collectAsStateWithLifecycle().value,
+        anticipated = viewModel.anticipated.collectAsStateWithLifecycle().value,
+        modifier = modifier,
+    )
+}
+
+@Composable
+internal fun HomeScreen(
+    onSignInClick: () -> Unit,
+    onMediaClick: (Media) -> Unit,
+    onAllChartsClick: () -> Unit,
+    trendingMovies: UiState<List<TrendingItem>>,
+    trendingShows: UiState<List<TrendingItem>>,
+    boxOffice: UiState<List<BoxOfficeItem>>,
+    anticipated: UiState<List<AnticipatedItem>>,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -77,12 +96,10 @@ internal fun HomeScreen(
                 onClick = onSignInClick,
             )
         }
-        trendingMovies.firstOrNull()?.let { item ->
+        trendingMovies.map { it.firstOrNull() }.transpose()?.let { state ->
             TrendingSpotlight(
-                title = item.media.title,
-                imageUrl = item.media.imageUrl,
-                watchingCount = item.watchers,
-                onClick = { onMediaClick(item.media) },
+                state = state,
+                onClick = onMediaClick,
             )
         }
         SignInPrompt(
@@ -93,23 +110,21 @@ internal fun HomeScreen(
         )
         TrendingSection(
             onMediaClick = onMediaClick,
-            selectedTab = trendingTab,
-            onTabChange = onTrendingTabChange,
-            movies = trendingMovies,
-            shows = trendingShows,
+            moviesState = trendingMovies,
+            showsState = trendingShows,
             modifier = Modifier
                 .rotate(-1.5f),
         )
 
         BoxOfficeSection(
             onMovieClick = onMediaClick,
-            state = UiState.Success(boxOffice),
+            state = boxOffice,
             modifier = Modifier.padding(16.dp),
         )
         AnticipatedSection(
             onMediaClick = onMediaClick,
             onAllChartsClick = onAllChartsClick,
-            state = UiState.Success(anticipated),
+            state = anticipated,
         )
     }
 }
@@ -117,18 +132,15 @@ internal fun HomeScreen(
 @Preview(device = "spec:width=1080px,height=12340px,dpi=440")
 @Composable
 private fun Preview() {
-    var trendingTab by remember { mutableStateOf(TrendingTab.Movie) }
     SnacTheme {
         HomeScreen(
             onSignInClick = {},
             onMediaClick = {},
             onAllChartsClick = {},
-            trendingTab = trendingTab,
-            onTrendingTabChange = { trendingTab = it },
-            trendingMovies = TrendingItem.MoviePreviewSample,
-            trendingShows = TrendingItem.ShowPreviewSample,
-            boxOffice = BoxOfficeItem.PreviewSample,
-            anticipated = AnticipatedItem.PreviewSample,
+            trendingMovies = UiState.Success(TrendingItem.MoviePreviewSample),
+            trendingShows = UiState.Success(TrendingItem.ShowPreviewSample),
+            boxOffice = UiState.Success(BoxOfficeItem.PreviewSample),
+            anticipated = UiState.Error(GenericError) {},
         )
     }
 }

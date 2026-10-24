@@ -15,20 +15,23 @@ import coil3.request.crossfade
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
 
 @Composable
+fun imageGradient(): Brush {
+    return Brush.linearGradient(
+        listOf(
+            SnacColors.film,
+            SnacColors.filmLine,
+            SnacColors.faint,
+        ), end = Offset(0f, Float.POSITIVE_INFINITY)
+    )
+}
+
+@Composable
 fun Image(
     imageUrl: String?,
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
     alignment: Alignment = Alignment.Center,
-    placeholder: Painter = BrushPainter(
-        Brush.linearGradient(
-            listOf(
-                SnacColors.film,
-                SnacColors.filmLine,
-                SnacColors.faint,
-            ), end = Offset(0f, Float.POSITIVE_INFINITY)
-        )
-    ),
+    placeholder: Painter = BrushPainter(imageGradient()),
     contentScale: ContentScale = ContentScale.Crop,
 ) {
     AsyncImage(
