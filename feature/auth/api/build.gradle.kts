@@ -9,5 +9,5 @@ android {
 }
 
 dependencies {
-    implementation(libs.metrox.android)
+    compileOnly(libs.metrox.android)
 }

@@ -1,5 +1,8 @@
 package com.omasyo.snac.feature.home.impl
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,8 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -26,7 +27,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,7 +55,6 @@ import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 
@@ -68,11 +69,10 @@ internal fun TrendingSection(
     showsState: UiState<List<TrendingItem>>,
     modifier: Modifier = Modifier,
 ) {
-    val pagerState = rememberPagerState { TrendingTab.entries.size }
-    val coroutineScope = rememberCoroutineScope()
-    CompositionLocalProvider(
-        LocalSilhouetteColor provides SnacColors.signal
-    ) {
+    var selectedTab by rememberSaveable { mutableStateOf(TrendingTab.Movie) }
+    val stateHolder = rememberSaveableStateHolder()
+
+    CompositionLocalProvider(LocalSilhouetteColor provides SnacColors.signal) {
         Column(
             modifier = modifier
                 .bleedHorizontally(8.dp)
@@ -97,38 +97,48 @@ internal fun TrendingSection(
                         .silhouette(),
                 )
                 MediaToggle(
-                    selectedTab = TrendingTab.entries[pagerState.currentPage],
-                    onTabClick = { coroutineScope.launch { pagerState.animateScrollToPage(it.ordinal) } }
+                    selectedTab = selectedTab,
+                    onTabClick = { selectedTab = it }
                 )
             }
 
-            HorizontalPager(
-                state = pagerState,
-                userScrollEnabled = false,
-            ) { page ->
-                val items = when (TrendingTab.entries[page]) {
+            AnimatedContent(
+                targetState = selectedTab,
+                transitionSpec = {
+                    val towards =
+                        if (targetState > initialState) AnimatedContentTransitionScope.SlideDirection.Left
+                        else AnimatedContentTransitionScope.SlideDirection.Right
+                    slideIntoContainer(towards) togetherWith slideOutOfContainer(towards)
+                },
+                label = "trending",
+            ) { tab ->
+
+                val items = when (tab) {
                     TrendingTab.Movie -> moviesState
                     TrendingTab.Show -> showsState
                 }
 
+
                 val placeholder =
                     remember { movableContentOf<Boolean> { scrollable -> PlaceholderRow(scrollable) } }
 
-                when (items) {
-                    is UiState.Error -> {
-                        ErrorBox(
-                            description = items.error.message,
-                            onRetry = items.refresh,
-                        ) {
-                            placeholder(false)
+                stateHolder.SaveableStateProvider(tab) {
+                    when (items) {
+                        is UiState.Error -> {
+                            ErrorBox(
+                                description = items.error.message,
+                                onRetry = items.refresh,
+                            ) {
+                                placeholder(false)
+                            }
                         }
-                    }
 
 
-                    UiState.Loading -> placeholder(true)
+                        UiState.Loading -> placeholder(true)
 
-                    is UiState.Success -> {
-                        Row(items.content, onMediaClick)
+                        is UiState.Success -> {
+                            Row(items.content, onMediaClick)
+                        }
                     }
                 }
             }
