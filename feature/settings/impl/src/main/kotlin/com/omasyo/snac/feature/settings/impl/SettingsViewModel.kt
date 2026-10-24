@@ -2,9 +2,11 @@ package com.omasyo.snac.feature.settings.impl
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.omasyo.snac.core.data.DataResult
 import com.omasyo.snac.core.data.auth.AuthRepository
 import com.omasyo.snac.core.data.user.UserRepository
 import com.omasyo.snac.core.model.user.UserProfile
+import com.omasyo.snac.core.ui.models.GenericError
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
@@ -35,10 +37,10 @@ class SettingsViewModel(
     fun fetchProfile() {
         profileState.value = ProfileState.Loading
         viewModelScope.launch {
-            profileState.value = userRepository.getProfile().fold(
-                onSuccess = { ProfileState.Loaded(it) },
-                onFailure = { ProfileState.Failed(it.message ?: "Unknown error") },
-            )
+            profileState.value = when (val result = userRepository.getProfile()) {
+                is DataResult.Success -> ProfileState.Loaded(result.value)
+                is DataResult.Failure -> ProfileState.Failed(GenericError.message) //TODO message per DataError
+            }
         }
     }
 

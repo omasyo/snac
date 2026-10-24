@@ -13,6 +13,8 @@ interface TokenStorage {
 
     suspend fun clearToken()
 
+    suspend fun expireToken()
+
 
     @Serializable
     data class Content(

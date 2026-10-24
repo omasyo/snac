@@ -11,7 +11,9 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.Serializable
@@ -46,6 +48,14 @@ class DataStoreTokenStorage(
 
     override suspend fun clearToken() {
         dataStore.edit { it.remove(TokenKey) }
+    }
+
+    private val _sessionExpired = Channel<Unit>(Channel.CONFLATED)
+    val sessionExpired: Flow<Unit> = _sessionExpired.receiveAsFlow()
+
+    override suspend fun expireToken() {
+        clearToken()
+        _sessionExpired.send(Unit)
     }
 
     suspend fun getPendingAuthorization(): PendingAuthorization? =

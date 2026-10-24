@@ -3,6 +3,9 @@ package com.omasyo.snac.feature.auth.impl
 import android.net.Uri
 import androidx.core.net.toUri
 import com.omasyo.snac.core.data.auth.AuthRepository
+import com.omasyo.snac.core.data.onFailure
+import com.omasyo.snac.core.data.onSuccess
+import com.omasyo.snac.core.ui.models.GenericError
 import com.omasyo.snac.core.network.TraktConfig
 import com.omasyo.snac.feature.auth.api.AuthState
 import com.omasyo.snac.feature.auth.api.Authenticator
@@ -36,7 +39,7 @@ class AuthManager(
 
     internal val authorizationUrls: Flow<String> = _authorizationUrls.receiveAsFlow()
 
-    private val redirectUri = TraktConfig.RedirectUri.toUri()
+    private val redirectUri = TraktConfig.REDIRECT_URI.toUri()
 
     override fun signIn() {
         if (_state.value.isLoading) return
@@ -62,7 +65,7 @@ class AuthManager(
         scope.launch {
             authRepository.completeAuthorization(uri.toString())
                 .onSuccess { _state.value = AuthState.Idle }
-                .onFailure { _state.value = AuthState.Error(it.message ?: "Unknown error") }
+                .onFailure { _state.value = AuthState.Error(GenericError.message) } //TODO message per DataError
         }
         return true
     }

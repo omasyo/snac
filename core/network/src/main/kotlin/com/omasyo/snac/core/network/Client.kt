@@ -8,6 +8,7 @@ import com.omasyo.snac.core.network.auth.models.toContent
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.ResponseException
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
@@ -19,7 +20,10 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import io.ktor.client.statement.request
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.http.userAgent
@@ -45,37 +49,43 @@ fun createClient(tokenStorage: TokenStorage) = HttpClient(OkHttp) {
                 tokenStorage.getToken()?.let { BearerTokens(it.access, it.refresh) }
             }
             refreshTokens {
-                val refreshToken = oldTokens?.refreshToken ?: return@refreshTokens null
-                val response = runCatching {
-                    client.post(TraktConfig.TokenUrl) {
-                        markAsRefreshTokenRequest()
-                        setBody(
-                            RefreshTokenRequest(
-                                clientId = TraktConfig.ClientId,
-                                redirectUri = TraktConfig.RedirectUri,
-                                refreshToken = refreshToken,
-                            )
-                        )
-                    }
-                }.getOrNull()
+                val refreshToken = oldTokens?.refreshToken ?: run {
+                    Log.e("HttpClient", "401 on a request sent without credentials: ${response.request.url}")
+                    return@refreshTokens null
+                }
 
-                if (response?.status?.isSuccess() == true) {
-                    val content = response.body<TokenResponse>().toContent()
-                    tokenStorage.saveToken(content)
-                    BearerTokens(content.access, content.refresh)
-                } else {
-                    if (response != null) tokenStorage.clearToken()
-                    null
+                val response = client.post(TraktConfig.TOKEN_URL) {
+                    markAsRefreshTokenRequest()
+                    setBody(
+                        RefreshTokenRequest(
+                            clientId = TraktConfig.CLIENT_ID,
+                            redirectUri = TraktConfig.REDIRECT_URI,
+                            refreshToken = refreshToken,
+                        )
+                    )
+                }
+
+                when {
+                    response.status.isSuccess() -> {
+                        val content = response.body<TokenResponse>().toContent()
+                        tokenStorage.saveToken(content)
+                        BearerTokens(content.access, content.refresh)
+                    }
+                    response.status == HttpStatusCode.Unauthorized -> {
+                        tokenStorage.expireToken()
+                        null
+                    }
+                    else -> throw ResponseException(response, response.bodyAsText())
                 }
             }
-            sendWithoutRequest { request -> request.url.host == TraktConfig.ApiHost }
+            sendWithoutRequest { request -> request.url.host == TraktConfig.API_HOST }
         }
     }
     defaultRequest {
-        url(TraktConfig.ApiBaseUrl)
+        url(TraktConfig.API_BASE_URL)
         contentType(ContentType.Application.Json)
         userAgent("Snac/0.1") // TODO Hardcoded version
-        header("trakt-api-version", "2")
-        header("trakt-api-key", TraktConfig.ClientId)
+        header("trakt-api-version", TraktConfig.API_VERSION)
+        header("trakt-api-key", TraktConfig.CLIENT_ID)
     }
 }
