@@ -1,12 +1,12 @@
 package com.omasyo.snac.core.ui.models
 
-import com.omasyo.snac.core.model.SnacError
+import com.omasyo.snac.core.model.SnacResult
 
 sealed interface UiState<out T> {
 
     data object Loading : UiState<Nothing>
 
-    data class Error(val error: SnacError, val refresh: () -> Unit) :
+    data class Error(val error: SnacResult.Error, val refresh: () -> Unit) :
         UiState<Nothing> //TODO error type
 
     data class Success<T>(val content: T, val isRefreshing: Boolean = false) : UiState<T>

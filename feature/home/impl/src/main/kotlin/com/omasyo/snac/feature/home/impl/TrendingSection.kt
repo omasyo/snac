@@ -36,7 +36,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.omasyo.snac.core.model.SnacError
+import com.omasyo.snac.core.model.SnacResult
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.TrendingItem
 import com.omasyo.snac.core.ui.components.ErrorBox
@@ -291,9 +291,9 @@ private fun LoadingToErrorPreview() {
 
     LaunchedEffect(Unit) {
         delay(2.seconds)
-        moviesState = UiState.Error(SnacError.ErrorOnMyPart) {}
+        moviesState = UiState.Error(SnacResult.Error.Unexpected) {}
         delay(2.seconds)
-        showsState = UiState.Error(SnacError.ErrorOnMyPart) {}
+        showsState = UiState.Error(SnacResult.Error.Unexpected) {}
     }
 
     SnacTheme {

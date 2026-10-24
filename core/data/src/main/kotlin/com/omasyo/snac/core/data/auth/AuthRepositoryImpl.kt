@@ -2,7 +2,6 @@ package com.omasyo.snac.core.data.auth
 
 import android.net.Uri
 import android.util.Log
-import com.omasyo.snac.core.model.SnacError
 import com.omasyo.snac.core.model.SnacResult
 import com.omasyo.snac.core.model.map
 import com.omasyo.snac.core.network.TraktConfig
@@ -70,7 +69,7 @@ class AuthRepositoryImpl(
 
     private fun authorizationFailed(detail: String): SnacResult<Nothing> {
         Log.e("AuthRepository", "completeAuthorization: $detail")
-        return SnacResult.Failure(SnacError.ErrorOnMyPart)
+        return SnacResult.Failure(SnacResult.Error.Unexpected)
     }
 
     override suspend fun signOut() {

@@ -2,7 +2,7 @@ package com.omasyo.snac.feature.home.impl
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.omasyo.snac.core.model.SnacError
+import com.omasyo.snac.core.model.SnacResult
 import com.omasyo.snac.core.model.media.AnticipatedItem
 import com.omasyo.snac.core.model.media.BoxOfficeItem
 import com.omasyo.snac.core.model.media.TrendingItem
@@ -45,7 +45,7 @@ class HomeViewModel : ViewModel() {
         if (Random.nextBoolean()) {
             state.value = UiState.Success(value)
         } else {
-            state.value = UiState.Error(SnacError.ErrorOnMyPart, {})
+            state.value = UiState.Error(SnacResult.Error.Unexpected) {}
         }
     }
 }

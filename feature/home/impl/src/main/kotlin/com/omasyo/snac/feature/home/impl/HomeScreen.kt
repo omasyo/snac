@@ -19,7 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.omasyo.snac.core.model.SnacError
+import com.omasyo.snac.core.model.SnacResult
 import com.omasyo.snac.core.model.media.AnticipatedItem
 import com.omasyo.snac.core.model.media.BoxOfficeItem
 import com.omasyo.snac.core.model.media.Media
@@ -140,7 +140,7 @@ private fun Preview() {
             trendingMovies = UiState.Success(TrendingItem.MoviePreviewSample),
             trendingShows = UiState.Success(TrendingItem.ShowPreviewSample),
             boxOffice = UiState.Success(BoxOfficeItem.PreviewSample),
-            anticipated = UiState.Error(SnacError.ErrorOnMyPart) {},
+            anticipated = UiState.Error(SnacResult.Error.Unexpected) {},
         )
     }
 }
