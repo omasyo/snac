@@ -1,6 +1,6 @@
 package com.omasyo.snac.core.network.user
 
-import com.omasyo.snac.core.model.SnacResult
+import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.network.safeCall
 import com.omasyo.snac.core.network.user.models.NetworkUser
 import dev.zacsweers.metro.AppScope

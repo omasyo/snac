@@ -18,7 +18,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.omasyo.snac.core.model.SnacResult
+import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.model.media.AnticipatedItem
 import com.omasyo.snac.core.model.media.BoxOfficeItem
 import com.omasyo.snac.core.model.media.Media

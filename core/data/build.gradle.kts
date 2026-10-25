@@ -9,8 +9,10 @@ android {
 }
 
 dependencies {
-    api(projects.core.model)
+    implementation(projects.core.common)
+    implementation(projects.core.model)
     implementation(projects.core.network)
+
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.serialization.json)
 }

@@ -1,6 +1,6 @@
 package com.omasyo.snac.core.data.auth
 
-import com.omasyo.snac.core.model.SnacResult
+import com.omasyo.snac.core.common.SnacResult
 import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {

@@ -1,6 +1,6 @@
 package com.omasyo.snac.core.ui.models
 
-import com.omasyo.snac.core.model.SnacResult
+import com.omasyo.snac.core.common.SnacResult
 
 sealed interface UiState<out T> {
 

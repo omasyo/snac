@@ -1,7 +1,7 @@
 package com.omasyo.snac.core.network.media
 
-import com.omasyo.snac.core.model.SnacResult
-import com.omasyo.snac.core.network.media.models.TrendingItem
+import com.omasyo.snac.core.common.SnacResult
+import com.omasyo.snac.core.network.media.models.TrendingItemResponse
 import com.omasyo.snac.core.network.safeCall
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
@@ -15,7 +15,7 @@ import io.ktor.client.request.parameter
 class MediaNetworkSourceImpl(
     private val client: HttpClient
 ) : MediaNetworkSource {
-    override suspend fun getTopTrendingMedia(): SnacResult<List<TrendingItem>> =
+    override suspend fun getTopTrendingMedia(): SnacResult<List<TrendingItemResponse>> =
         safeCall {
             client.get("media/trending") {
                 parameter("limit", 1)

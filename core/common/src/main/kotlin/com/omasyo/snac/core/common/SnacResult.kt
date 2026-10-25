@@ -1,4 +1,4 @@
-package com.omasyo.snac.core.model
+package com.omasyo.snac.core.common
 
 import kotlin.time.Duration
 

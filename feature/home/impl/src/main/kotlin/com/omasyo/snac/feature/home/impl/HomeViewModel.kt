@@ -2,13 +2,13 @@ package com.omasyo.snac.feature.home.impl
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.omasyo.snac.core.common.SnacResult
+import com.omasyo.snac.core.common.onFailure
+import com.omasyo.snac.core.common.onSuccess
 import com.omasyo.snac.core.data.media.MediaRepository
-import com.omasyo.snac.core.model.SnacResult
 import com.omasyo.snac.core.model.media.AnticipatedItem
 import com.omasyo.snac.core.model.media.BoxOfficeItem
 import com.omasyo.snac.core.model.media.TrendingItem
-import com.omasyo.snac.core.model.onFailure
-import com.omasyo.snac.core.model.onSuccess
 import com.omasyo.snac.core.ui.models.UiState
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap

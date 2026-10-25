@@ -1,7 +1,7 @@
 package com.omasyo.snac.core.network
 
 import android.util.Log
-import com.omasyo.snac.core.model.SnacResult
+import com.omasyo.snac.core.common.SnacResult
 import io.ktor.client.call.NoTransformationFoundException
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException

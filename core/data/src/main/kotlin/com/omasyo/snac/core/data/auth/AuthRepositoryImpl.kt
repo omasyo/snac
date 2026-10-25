@@ -2,8 +2,8 @@ package com.omasyo.snac.core.data.auth
 
 import android.net.Uri
 import android.util.Log
-import com.omasyo.snac.core.model.SnacResult
-import com.omasyo.snac.core.model.map
+import com.omasyo.snac.core.common.SnacResult
+import com.omasyo.snac.core.common.map
 import com.omasyo.snac.core.network.TraktConfig
 import com.omasyo.snac.core.network.auth.AuthNetworkSource
 import com.omasyo.snac.core.network.auth.models.toContent

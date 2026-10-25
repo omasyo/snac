@@ -2,9 +2,9 @@ package com.omasyo.snac.feature.auth.impl
 
 import android.net.Uri
 import androidx.core.net.toUri
+import com.omasyo.snac.core.common.onFailure
+import com.omasyo.snac.core.common.onSuccess
 import com.omasyo.snac.core.data.auth.AuthRepository
-import com.omasyo.snac.core.model.onFailure
-import com.omasyo.snac.core.model.onSuccess
 import com.omasyo.snac.core.network.TraktConfig
 import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.feature.auth.api.AuthState

@@ -1,12 +1,12 @@
 package com.omasyo.snac.core.data.media
 
-import com.omasyo.snac.core.model.SnacResult
-import com.omasyo.snac.core.model.map
+import com.omasyo.snac.core.common.SnacResult
+import com.omasyo.snac.core.common.map
 import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.model.media.TrendingItem
 import com.omasyo.snac.core.network.media.MediaNetworkSource
-import com.omasyo.snac.core.network.media.models.MovieItem
-import com.omasyo.snac.core.network.media.models.ShowItem
+import com.omasyo.snac.core.network.media.models.MovieItemResponse
+import com.omasyo.snac.core.network.media.models.ShowItemResponse
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
@@ -20,7 +20,7 @@ class MediaRepositoryImpl(
     override suspend fun getTopTrendingMedia(): SnacResult<TrendingItem> =
         mediaNetworkSource.getTopTrendingMedia().map {
             when (val item = it.first()) {
-                is MovieItem -> TrendingItem(
+                is MovieItemResponse -> TrendingItem(
                     Movie(
                         item.movie.ids.slug,
                         item.movie.title,
@@ -29,7 +29,7 @@ class MediaRepositoryImpl(
                     ), watchers = item.watchers
                 )
 
-                is ShowItem -> TrendingItem(
+                is ShowItemResponse -> TrendingItem(
                     Movie(
                         item.show.ids.slug,
                         item.show.title,

@@ -2,9 +2,9 @@ package com.omasyo.snac.feature.settings.impl
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.data.auth.AuthRepository
 import com.omasyo.snac.core.data.user.UserRepository
-import com.omasyo.snac.core.model.SnacResult
 import com.omasyo.snac.core.model.user.UserProfile
 import com.omasyo.snac.core.ui.models.message
 import dev.zacsweers.metro.AppScope

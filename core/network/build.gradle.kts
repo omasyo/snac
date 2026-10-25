@@ -9,7 +9,8 @@ android {
 }
 
 dependencies {
-    implementation(projects.core.model)
+    implementation(projects.core.common)
+
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.auth)
     implementation(libs.ktor.content.negotiation)

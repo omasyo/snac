@@ -1,7 +1,7 @@
 package com.omasyo.snac.core.data.user
 
-import com.omasyo.snac.core.model.SnacResult
-import com.omasyo.snac.core.model.map
+import com.omasyo.snac.core.common.SnacResult
+import com.omasyo.snac.core.common.map
 import com.omasyo.snac.core.model.user.UserProfile
 import com.omasyo.snac.core.network.user.UserNetworkSource
 import dev.zacsweers.metro.AppScope
