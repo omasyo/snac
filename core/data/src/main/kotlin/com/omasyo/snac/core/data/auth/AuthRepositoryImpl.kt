@@ -1,6 +1,6 @@
 package com.omasyo.snac.core.data.auth
 
-import android.net.Uri
+import androidx.core.net.toUri
 import android.util.Log
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.common.map
@@ -33,7 +33,7 @@ class AuthRepositoryImpl(
         )
         tokenStorage.savePendingAuthorization(pending)
 
-        return Uri.parse(TraktConfig.AUTHORIZE_URL).buildUpon()
+        return TraktConfig.AUTHORIZE_URL.toUri().buildUpon()
             .appendQueryParameter("response_type", "code")
             .appendQueryParameter("client_id", TraktConfig.CLIENT_ID)
             .appendQueryParameter("redirect_uri", TraktConfig.REDIRECT_URI)
@@ -45,7 +45,7 @@ class AuthRepositoryImpl(
     }
 
     override suspend fun completeAuthorization(redirectUri: String): SnacResult<AuthorizationOutcome> {
-        val uri = Uri.parse(redirectUri)
+        val uri = redirectUri.toUri()
         val pending = tokenStorage.getPendingAuthorization()
         if (pending == null || uri.getQueryParameter("state") != pending.state) {
             return authorizationFailed("State mismatch")

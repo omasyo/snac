@@ -24,3 +24,7 @@ fun <T> UiState<T?>.transpose(): UiState<T>? = when (this) {
     is UiState.Success -> content?.let { UiState.Success(it, isRefreshing) }
 }
 
+//fun <T> SnacResult<T>.toUiState() : UiState<T>  = when (this) {
+//    is SnacResult.Error -> UiState.Error(this) {}
+//    is SnacResult.Success -> UiState.Success(data)
+//}

@@ -28,6 +28,7 @@ import com.omasyo.snac.core.ui.components.SignInPrompt
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
 import com.omasyo.snac.core.ui.models.UiState
+import com.omasyo.snac.core.ui.models.transpose
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
@@ -60,7 +61,7 @@ internal fun HomeScreen(
     onSignInClick: () -> Unit,
     onMediaClick: (Media) -> Unit,
     onAllChartsClick: () -> Unit,
-    topTrendingMedia: UiState<TrendingItem>,
+    topTrendingMedia: UiState<TrendingItem?>,
     trendingMovies: UiState<List<TrendingItem>>,
     trendingShows: UiState<List<TrendingItem>>,
     boxOffice: UiState<List<BoxOfficeItem>>,
@@ -96,10 +97,12 @@ internal fun HomeScreen(
                 onClick = onSignInClick,
             )
         }
-        TrendingSpotlight(
-            state = topTrendingMedia,
-            onClick = onMediaClick,
-        )
+        topTrendingMedia.transpose()?.let {
+            TrendingSpotlight(
+                state = it,
+                onClick = onMediaClick,
+            )
+        }
         SignInPrompt(
             title = "TRACK WHAT YOU WATCH",
             message = "Sign in to get Up Next, check-ins, paused playback and recommendations from your Trakt account.",
