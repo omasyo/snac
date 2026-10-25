@@ -7,14 +7,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -58,8 +59,15 @@ enum class Chart(val label: String) {
     Played("Played"),
     Collected("Collected"),
     Favorited("Favorited"),
-    BoxOffice("Box Office"),
+    BoxOffice("Box Office");
+
+    val hasTimePeriod
+        get() = when (this) {
+            Watched, Played, Collected, Favorited -> true
+            else -> false
+        }
 }
+
 
 enum class TimePeriod(val label: String) {
     Daily("Daily"),
@@ -82,6 +90,11 @@ fun ChartSelector(
         targetValue = if (expanded) 1f else 0f,
         animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
         label = "chartFilter",
+    )
+    val periodVisibility = animateFloatAsState(
+        targetValue = if (selectedChart.hasTimePeriod) 1f else 0f,
+        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
+        label = "periodVisibility",
     )
 
     Layout(
@@ -108,6 +121,8 @@ fun ChartSelector(
         modifier = modifier,
     ) { (chartMeasurables, periodMeasurables), constraints ->
         val p = progress.value
+        val v = periodVisibility.value
+
         val gap = ItemGap.roundToPx()
         val groupGap = GroupGap.roundToPx()
         val chartMinWidth = ChartMinWidth.roundToPx()
@@ -124,12 +139,15 @@ fun ChartSelector(
 
         val chartStackHeight = charts.maxOf { it.height }
         val periodStackHeight = periods.maxOf { it.height }
-        val rowHeight = max(chartStackHeight, periodStackHeight)
+
+        val rowHeight = lerp(chartStackHeight, max(chartStackHeight, periodStackHeight), v)
+
         val chartCollapsed = IntOffset(0, (rowHeight - chartStackHeight) / 2)
         val periodCollapsed =
             IntOffset(chartCellWidth + groupGap, (rowHeight - periodStackHeight) / 2)
         val selectedPeriodWidth = periods[selectedPeriod.ordinal].width
-        val collapsedWidth = chartCellWidth + groupGap + selectedPeriodWidth
+
+        val collapsedWidth = chartCellWidth + lerp(0, groupGap + selectedPeriodWidth, v)
 
         fun gridOffsets(
             ps: List<Placeable>,
@@ -177,7 +195,8 @@ fun ChartSelector(
             top = chartGridHeight + groupGap,
         )
         val expandedWidth = chartColumns * chartCellWidth + gap * (chartColumns - 1)
-        val expandedHeight = chartGridHeight + groupGap + periodFlowHeight
+
+        val expandedHeight = chartGridHeight + lerp(0, groupGap + periodFlowHeight, v)
 
         val width = constraints.constrainWidth(lerp(collapsedWidth, expandedWidth, p))
         val height = constraints.constrainHeight(lerp(rowHeight, expandedHeight, p))
@@ -190,13 +209,15 @@ fun ChartSelector(
                     zIndex = if (selected) 1f else 0f,
                 )
             }
-            periods.forEachIndexed { i, placeable ->
-                val selected = TimePeriod.entries[i] == selectedPeriod
-                val position = lerp(periodCollapsed, periodFlow[i], p)
-                if (selected) {
-                    placeable.place(position, zIndex = 1f)
-                } else {
-                    placeable.placeWithLayer(position) { alpha = p.coerceIn(0f, 1f) }
+            if (v > 0f) {
+                val visibility = v.coerceIn(0f, 1f)
+                periods.forEachIndexed { i, placeable ->
+                    val selected = TimePeriod.entries[i] == selectedPeriod
+                    val position = lerp(periodCollapsed, periodFlow[i], p)
+                    val baseAlpha = if (selected) 1f else p.coerceIn(0f, 1f)
+                    placeable.placeWithLayer(position, zIndex = if (selected) 1f else 0f) {
+                        alpha = baseAlpha * visibility
+                    }
                 }
             }
         }
@@ -253,10 +274,11 @@ private fun Preview() {
     var selectedChart by remember { mutableStateOf(Chart.Trending) }
     var selectedPeriod by remember { mutableStateOf(TimePeriod.Weekly) }
     SnacTheme {
-        Column (
+        Column(
+            verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier
                 .background(SnacColors.page)
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(16.dp),
         ) {
             ChartSelector(
@@ -281,9 +303,7 @@ private fun Preview() {
 
             Button(
                 onClick = { expanded = !expanded },
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .aspectRatio(1f),
+                modifier = Modifier.size(40.dp),
             ) {
 
             }

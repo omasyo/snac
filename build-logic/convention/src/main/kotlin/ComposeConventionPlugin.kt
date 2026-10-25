@@ -32,6 +32,8 @@ class ComposeConventionPlugin : Plugin<Project> {
                 "implementation"(libs.findLibrary("coil.network.ktor3").get())
                 "implementation"(libs.findLibrary("ktor.okhttp").get())
 
+                "implementation"(libs.findLibrary("androidx.paging.compose").get())
+
                 "debugImplementation"(libs.findLibrary("androidx.compose.ui.tooling").get())
             }
         }

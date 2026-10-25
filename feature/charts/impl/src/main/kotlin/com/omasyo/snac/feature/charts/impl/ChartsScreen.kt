@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,10 +43,21 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import androidx.paging.LoadStates
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import com.omasyo.snac.core.model.media.AnticipatedItem
+import com.omasyo.snac.core.model.media.BoxOfficeItem
 import com.omasyo.snac.core.model.media.ChartItem
+import com.omasyo.snac.core.model.media.FavoritedItem
 import com.omasyo.snac.core.model.media.Media
+import com.omasyo.snac.core.model.media.PopularItem
 import com.omasyo.snac.core.model.media.TrendingItem
+import com.omasyo.snac.core.model.media.WatchStatsItem
 import com.omasyo.snac.core.ui.components.Button
+import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.TabRow
 import com.omasyo.snac.core.ui.components.Text
@@ -60,48 +70,44 @@ import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.flowOf
 import kotlin.random.Random
 
 enum class MediaTab(val label: String) {
     Movie("Movie"), Show("Show")
 }
 
-private class CollapseOnScrollDownConnection(
-    private val thresholdPx: Float,
-    private val onThresholdReached: () -> Unit,
-) : NestedScrollConnection {
-    private var accumulated = 0f
-
-    override fun onPostScroll(
-        consumed: Offset,
-        available: Offset,
-        source: NestedScrollSource,
-    ): Offset {
-        val dy = consumed.y
-        when {
-            dy < 0f -> {
-                accumulated += -dy
-                if (accumulated >= thresholdPx) {
-                    onThresholdReached()
-                    accumulated = 0f
-                }
-            }
-
-            dy > 0f -> {
-                accumulated = 0f
-            }
-        }
-        return Offset.Zero
+val ChartItem.info: String
+    get() = when (this) {
+        is AnticipatedItem -> "$listCount lists"
+        is BoxOfficeItem -> "$revenue"
+        is FavoritedItem -> "$userCount users"
+        is PopularItem -> ""
+        is TrendingItem -> "$watchers watchers"
+        is WatchStatsItem -> "$watcherCount watchers"
     }
 
-    fun reset() {
-        accumulated = 0f
-    }
+@Composable
+fun ChartsScreen(
+    onMediaClick: (Media) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: ChartViewModel = metroViewModel()
+) {
+
+    ChartsScreen(
+        onMediaClick = onMediaClick,
+        selectedMediaTab = viewModel.mediaTab,
+        onSelectedMediaChange = viewModel::changeMediaTab,
+        selectedChart = viewModel.selectedChart,
+        onSelectedChartChange = viewModel::changeChart,
+        selectedPeriod = viewModel.selectedPeriod,
+        onSelectedPeriodChange = viewModel::changePeriod,
+        results = viewModel.results.collectAsLazyPagingItems(),
+        modifier = modifier,
+    )
 }
-
-
-val ChartItem.info: String get() = "61,000 plays"
 
 @Composable
 fun ChartsScreen(
@@ -112,7 +118,7 @@ fun ChartsScreen(
     onSelectedChartChange: (Chart) -> Unit,
     selectedPeriod: TimePeriod,
     onSelectedPeriodChange: (TimePeriod) -> Unit,
-    results: List<ChartItem>,
+    results: LazyPagingItems<ChartItem>,
     modifier: Modifier = Modifier,
 ) {
     val listState = rememberLazyListState()
@@ -133,7 +139,6 @@ fun ChartsScreen(
             }
     }
 
-
     LazyColumn(
         state = listState,
         modifier = modifier
@@ -144,7 +149,6 @@ fun ChartsScreen(
         stickyHeader("header") {
             val background = SnacColors.page
             val border = SnacColors.rule
-
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -209,6 +213,7 @@ fun ChartsScreen(
                         if (!selectorExpanded) {
                             selectorExpanded = true
                         } else {
+                            if (it == Chart.BoxOffice) onSelectedMediaChange(MediaTab.Movie)
                             onSelectedChartChange(it)
                         }
                     },
@@ -225,39 +230,144 @@ fun ChartsScreen(
                 )
             }
         }
+
         item { Spacer(Modifier.height(16.dp)) }
-        if (results.isNotEmpty()) {
+
+        when (val refreshState = results.loadState.refresh) {
+            is LoadState.Loading -> {
+                if (results.itemCount == 0) {
+                    item("refresh-loading") {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(32.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = "Loading...",
+                                style = SnacTypography.subtitle,
+                                color = SnacColors.faint,
+                            )
+                        }
+                    }
+                }
+            }
+
+            is LoadState.Error -> {
+                if (results.itemCount == 0) {
+                    item("refresh-error") {
+                        ErrorBox(
+                            description = refreshState.error.localizedMessage
+                                ?: "Failed to load charts.",
+                            onRetry = { results.retry() },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp)
+                                    .background(SnacColors.film)
+                            )
+                        }
+                    }
+                }
+            }
+
+            is LoadState.NotLoading -> {}
+        }
+
+        if (results.itemCount > 0) {
             item("top-media-card") {
-                val item = results.first()
-                TopMediaCard(
-                    title = item.media.title,
-                    imageUrl = item.media.imageUrl,
-                    year = item.media.year,
-                    info = item.info,
-                    onClick = { onMediaClick(item.media) },
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                )
+                val item = results[0]
+                if (item != null) {
+                    TopMediaCard(
+                        title = item.media.title,
+                        imageUrl = item.media.imageUrl,
+                        year = item.media.year,
+                        info = item.info,
+                        onClick = { onMediaClick(item.media) },
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                    )
+                }
             }
 
             item { Spacer(Modifier.height(16.dp)) }
-            itemsIndexed(results.drop(1), key = { _, item -> item.media.slug }) { index, item ->
-                MediaCard(
-                    position = index + 2,
-                    title = item.media.title,
-                    imageUrl = item.media.imageUrl,
-                    year = item.media.year,
-                    info = item.info,
-                    onClick = { onMediaClick(item.media) },
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .film(
-                            side = Side.Start,
-                            crossEdgeInset = 12.dp,
+
+            if (results.itemCount > 1) {
+                items(
+                    count = results.itemCount - 1,
+                    key = { index ->
+                        results.itemSnapshotList.getOrNull(index + 1)?.media?.slug ?: (index + 1)
+                    }
+                ) { index ->
+                    val item = results[index + 1]
+                    if (item != null) {
+                        MediaCard(
+                            position = index + 2,
+                            title = item.media.title,
+                            imageUrl = item.media.imageUrl,
+                            year = item.media.year,
+                            info = item.info,
+                            onClick = { onMediaClick(item.media) },
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .film(
+                                    side = Side.Start,
+                                    crossEdgeInset = 12.dp,
+                                )
+                                .background(SnacColors.film)
                         )
-                        .background(SnacColors.film)
-                )
+                    }
+                }
             }
         }
+
+        when (val appendState = results.loadState.append) {
+            is LoadState.Loading -> {
+                item("append-loading") {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = "Loading more...",
+                            style = SnacTypography.caption,
+                            color = SnacColors.faint,
+                        )
+                    }
+                }
+            }
+
+            is LoadState.Error -> {
+                item("append-error") {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                    ) {
+                        Text(
+                            text = "Error loading more: ${appendState.error.localizedMessage ?: "Unknown error"}",
+                            style = SnacTypography.caption,
+                            color = SnacColors.signal,
+                            modifier = Modifier.weight(1f),
+                        )
+                        Button(
+                            text = "Retry",
+                            onClick = { results.retry() },
+                        )
+                    }
+                }
+            }
+
+            is LoadState.NotLoading -> {}
+        }
+
         item("bottom-padding") {
             Spacer(Modifier.bottomBarPadding())
             Spacer(Modifier.navigationBarsPadding())
@@ -318,6 +428,39 @@ private fun TopMediaCard(
                 )
             }
         }
+    }
+}
+
+private class CollapseOnScrollDownConnection(
+    private val thresholdPx: Float,
+    private val onThresholdReached: () -> Unit,
+) : NestedScrollConnection {
+    private var accumulated = 0f
+
+    override fun onPostScroll(
+        consumed: Offset,
+        available: Offset,
+        source: NestedScrollSource,
+    ): Offset {
+        val dy = consumed.y
+        when {
+            dy < 0f -> {
+                accumulated += -dy
+                if (accumulated >= thresholdPx) {
+                    onThresholdReached()
+                    accumulated = 0f
+                }
+            }
+
+            dy > 0f -> {
+                accumulated = 0f
+            }
+        }
+        return Offset.Zero
+    }
+
+    fun reset() {
+        accumulated = 0f
     }
 }
 
@@ -396,10 +539,14 @@ private fun MediaCard(
 
 @Preview
 @Composable
-private fun Preview() {
+private fun PreviewContent() {
     var mediaTab by remember { mutableStateOf(MediaTab.Movie) }
     var selectedChart by remember { mutableStateOf(Chart.Trending) }
     var selectedPeriod by remember { mutableStateOf(TimePeriod.Weekly) }
+    val results = remember {
+        flowOf(PagingData.from<ChartItem>(TrendingItem.MoviePreviewSample))
+    }.collectAsLazyPagingItems()
+
     SnacTheme {
         ChartsScreen(
             onMediaClick = {},
@@ -409,7 +556,71 @@ private fun Preview() {
             onSelectedChartChange = { selectedChart = it },
             selectedPeriod = selectedPeriod,
             onSelectedPeriodChange = { selectedPeriod = it },
-            results = TrendingItem.MoviePreviewSample,
+            results = results,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewLoading() {
+    var mediaTab by remember { mutableStateOf(MediaTab.Movie) }
+    var selectedChart by remember { mutableStateOf(Chart.Trending) }
+    var selectedPeriod by remember { mutableStateOf(TimePeriod.Weekly) }
+    val results = remember {
+        flowOf(
+            PagingData.empty<ChartItem>(
+                sourceLoadStates = LoadStates(
+                    refresh = LoadState.Loading,
+                    prepend = LoadState.NotLoading(endOfPaginationReached = true),
+                    append = LoadState.NotLoading(endOfPaginationReached = true),
+                )
+            )
+        )
+    }.collectAsLazyPagingItems()
+
+    SnacTheme {
+        ChartsScreen(
+            onMediaClick = {},
+            selectedMediaTab = mediaTab,
+            onSelectedMediaChange = { mediaTab = it },
+            selectedChart = selectedChart,
+            onSelectedChartChange = { selectedChart = it },
+            selectedPeriod = selectedPeriod,
+            onSelectedPeriodChange = { selectedPeriod = it },
+            results = results,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PreviewError() {
+    var mediaTab by remember { mutableStateOf(MediaTab.Movie) }
+    var selectedChart by remember { mutableStateOf(Chart.Trending) }
+    var selectedPeriod by remember { mutableStateOf(TimePeriod.Weekly) }
+    val results = remember {
+        flowOf(
+            PagingData.empty<ChartItem>(
+                sourceLoadStates = LoadStates(
+                    refresh = LoadState.Error(Exception("Couldn't get trending films")),
+                    prepend = LoadState.NotLoading(endOfPaginationReached = true),
+                    append = LoadState.NotLoading(endOfPaginationReached = true),
+                )
+            )
+        )
+    }.collectAsLazyPagingItems()
+
+    SnacTheme {
+        ChartsScreen(
+            onMediaClick = {},
+            selectedMediaTab = mediaTab,
+            onSelectedMediaChange = { mediaTab = it },
+            selectedChart = selectedChart,
+            onSelectedChartChange = { selectedChart = it },
+            selectedPeriod = selectedPeriod,
+            onSelectedPeriodChange = { selectedPeriod = it },
+            results = results,
         )
     }
 }
