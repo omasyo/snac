@@ -1,0 +1,29 @@
+package com.omasyo.snac.core.network.movie
+
+import com.omasyo.snac.core.common.SnacResult
+import com.omasyo.snac.core.network.media.models.TrendingMovieResponse
+import com.omasyo.snac.core.network.movie.models.BoxOfficeResponse
+import com.omasyo.snac.core.network.safeCall
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+
+@ContributesBinding(AppScope::class)
+@Inject
+class MovieNetworkSourceImpl(
+    private val client: HttpClient
+) : MovieNetworkSource {
+    override suspend fun getBoxOffice(): SnacResult<List<BoxOfficeResponse>> =
+        safeCall { client.get("movies/boxoffice") }
+
+    override suspend fun getTrending(page: Int, limit: Int): SnacResult<List<TrendingMovieResponse>> =
+        safeCall {
+            client.get("movies/trending") {
+                parameter("page", page)
+                parameter("limit", limit)
+            }
+        }
+}

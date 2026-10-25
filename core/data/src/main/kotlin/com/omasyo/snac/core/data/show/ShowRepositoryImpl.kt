@@ -15,6 +15,6 @@ import dev.zacsweers.metro.Inject
 class ShowRepositoryImpl(
     private val showNetworkSource: ShowNetworkSource,
 ) : ShowRepository {
-    override suspend fun getTrendingMedia(): SnacResult<List<TrendingItem>> =
-        showNetworkSource.getTrendingMedia(1, 10).map { list -> list.map { it.toTrendingItem() } }
+    override suspend fun getTrending(): SnacResult<List<TrendingItem>> =
+        showNetworkSource.getTrending(1, 10).map { list -> list.map { it.toTrendingItem() } }
 }

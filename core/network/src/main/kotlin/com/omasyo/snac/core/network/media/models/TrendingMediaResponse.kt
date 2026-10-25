@@ -9,35 +9,35 @@ import kotlinx.serialization.json.JsonContentPolymorphicSerializer
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonObject
 
-@Serializable(with = MediaSerializer::class)
-sealed interface TrendingItemResponse {
+@Serializable(with = TrendingMediaSerializer::class)
+sealed interface TrendingMediaResponse {
     val watchers: Int
 }
 
 @Serializable
-data class MovieItemResponse(
+data class TrendingMovieResponse(
     @SerialName("watchers")
     override val watchers: Int,
     @SerialName("movie")
     val movie: Movie,
-) : TrendingItemResponse
+) : TrendingMediaResponse
 
 @Serializable
-data class ShowItemResponse(
+data class TrendingShowResponse(
     @SerialName("watchers")
     override val watchers: Int,
     @SerialName("show")
     val show: Show,
-) : TrendingItemResponse
+) : TrendingMediaResponse
 
 
-internal object MediaSerializer : JsonContentPolymorphicSerializer<TrendingItemResponse>(
-    TrendingItemResponse::class
+ object TrendingMediaSerializer : JsonContentPolymorphicSerializer<TrendingMediaResponse>(
+    TrendingMediaResponse::class
 ) {
 
     override fun selectDeserializer(element: JsonElement) = when {
-        "movie" in element.jsonObject -> MovieItemResponse.serializer()
-        "show" in element.jsonObject -> ShowItemResponse.serializer()
+        "movie" in element.jsonObject -> TrendingMovieResponse.serializer()
+        "show" in element.jsonObject -> TrendingShowResponse.serializer()
         else -> throw IllegalArgumentException("Unknown type")
     }
 }

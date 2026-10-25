@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.model.media.Media
+import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.model.media.TrendingItem
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
@@ -243,24 +244,29 @@ private fun TrendingCard(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     Column(
-        modifier = modifier.clickable(
-            interactionSource = interactionSource,
-            indication = null,
-            onClick = onClick,
-        )
+        modifier = modifier
+            .width(120.dp)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick,
+            )
     ) {
         Image(
             imageUrl = imageUrl,
             modifier = Modifier
                 .indication(interactionSource, SilhouettePressIndication())
                 .border(4.dp, SnacColors.chip)
-                .size(120.dp, 180.dp),
+                .height(180.dp)
+                .fillMaxWidth(),
         )
         Text(
             text = title,
             style = SnacTypography.subtitle,
             color = SnacColors.onFilm,
-        )
+            maxLines = 1,
+
+            )
         Text(
             text = "$watchingCount watching",
             style = SnacTypography.hand,
@@ -275,7 +281,18 @@ private fun Preview() {
     SnacTheme {
         TrendingSection(
             onMediaClick = {},
-            moviesState = UiState.Success(TrendingItem.MoviePreviewSample),
+            moviesState = UiState.Success(
+                listOf(
+                    TrendingItem(
+                        Movie(
+                            "movie-",
+                            "Frankenstein Frankenstein",
+                            2025,
+                            null
+                        ), watchers = 1204
+                    )
+                ) + TrendingItem.MoviePreviewSample
+            ),
             showsState = UiState.Success(TrendingItem.ShowPreviewSample),
             modifier = Modifier
                 .rotate(-1.5f),

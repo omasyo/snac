@@ -1,7 +1,7 @@
 package com.omasyo.snac.core.network.show
 
 import com.omasyo.snac.core.common.SnacResult
-import com.omasyo.snac.core.network.media.models.ShowItemResponse
+import com.omasyo.snac.core.network.media.models.TrendingShowResponse
 import com.omasyo.snac.core.network.safeCall
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
@@ -15,7 +15,7 @@ import io.ktor.client.request.parameter
 class ShowNetworkSourceImpl(
     private val client: HttpClient
 ) : ShowNetworkSource {
-    override suspend fun getTrendingMedia(page: Int, limit: Int): SnacResult<List<ShowItemResponse>> =
+    override suspend fun getTrending(page: Int, limit: Int): SnacResult<List<TrendingShowResponse>> =
         safeCall {
             client.get("shows/trending") {
                 parameter("page", page)

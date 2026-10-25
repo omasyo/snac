@@ -36,8 +36,8 @@ import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
 
 @Composable
 internal fun BoxOfficeSection(
@@ -71,7 +71,7 @@ internal fun BoxOfficeSection(
 
         is UiState.Success -> {
             BoxOfficeSectionLayout(modifier) {
-                state.content.forEachIndexed { index, item ->
+                state.content.take(5).forEachIndexed { index, item ->
                     Entry(
                         position = index + 1,
                         title = item.media.title,

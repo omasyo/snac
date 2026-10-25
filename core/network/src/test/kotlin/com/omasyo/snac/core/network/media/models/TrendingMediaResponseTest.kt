@@ -52,6 +52,6 @@ class TrendingMediaResponseTest {
 
         assert(true)
 
-        assertDoesNotThrow { jsonConfig.decodeFromString<List<TrendingItemResponse>>(JSON) }
+        assertDoesNotThrow { jsonConfig.decodeFromString<List<TrendingMediaResponse>>(JSON) }
     }
 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.data.media.MediaRepository
+import com.omasyo.snac.core.data.movie.MovieRepository
 import com.omasyo.snac.core.data.show.ShowRepository
 import com.omasyo.snac.core.model.media.AnticipatedItem
 import com.omasyo.snac.core.model.media.BoxOfficeItem
@@ -15,43 +16,33 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlin.random.Random
-import kotlin.time.Duration.Companion.milliseconds
 
 @Inject
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
 class HomeViewModel(
     private val mediaRepository: MediaRepository,
+    private val movieRepository: MovieRepository,
     private val showRepository: ShowRepository,
 ) : ViewModel() {
     val topTrendingMedia: StateFlow<UiState<TrendingItem?>> =
-        RefreshWrapper(viewModelScope) { mediaRepository.getTopTrendingMedia() }.response
+        RefreshWrapper(viewModelScope) { mediaRepository.getTopTrending() }.response
 
     val trendingMovies: StateFlow<UiState<List<TrendingItem>>> =
-        RefreshWrapper(viewModelScope) { mock(TrendingItem.MoviePreviewSample) }.response
+        RefreshWrapper(viewModelScope) { movieRepository.getTrending() }.response
 
     val trendingShows: StateFlow<UiState<List<TrendingItem>>> =
-        RefreshWrapper(viewModelScope) { showRepository.getTrendingMedia() }.response
+        RefreshWrapper(viewModelScope) { showRepository.getTrending() }.response
 
     val boxOffice: StateFlow<UiState<List<BoxOfficeItem>>> =
-        RefreshWrapper(viewModelScope) { mock(BoxOfficeItem.PreviewSample) }.response
+        RefreshWrapper(viewModelScope) { movieRepository.getBoxOffice() }.response
 
     val anticipated: StateFlow<UiState<List<AnticipatedItem>>> =
-        RefreshWrapper(viewModelScope) { mock(AnticipatedItem.PreviewSample) }.response
+        RefreshWrapper(viewModelScope) { mediaRepository.getAnticipated() }.response
 
-    private suspend fun <T> mock(value: T): SnacResult<T> {
-        delay(Random.nextLong(1000, 5000).milliseconds)
-        return if (Random.nextBoolean()) {
-            SnacResult.Success(value)
-        } else {
-            SnacResult.Failure(SnacResult.Error.Unexpected)
-        }
-    }
 }
 
 internal class RefreshWrapper<T>(
