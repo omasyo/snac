@@ -33,7 +33,7 @@ data class AnticipatedItem(
     }
 }
 
-data class WatchStatsItem(
+data class MediaStatsItem(
     override val media: Media,
     val watcherCount: Int,
     val playCount: Int,

@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Show(
+data class ShowResponse(
     @SerialName("ids")
     val ids: Ids,
     @SerialName("year")

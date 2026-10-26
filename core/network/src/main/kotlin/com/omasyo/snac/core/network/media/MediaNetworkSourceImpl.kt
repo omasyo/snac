@@ -16,21 +16,21 @@ import io.ktor.client.request.parameter
 class MediaNetworkSourceImpl(
     private val client: HttpClient
 ) : MediaNetworkSource {
-    override suspend fun getTopTrending(): SnacResult<List<TrendingMediaResponse>> =
-        safeCall {
-            client.get("media/trending") {
-                parameter("limit", 1)
-            }
-        }
-
     override suspend fun getAnticipated(
         page: Int,
         limit: Int
-    ): SnacResult<List<AnticipatedMediaResponse>>  =
+    ): SnacResult<List<AnticipatedMediaResponse>> =
         safeCall {
             client.get("media/anticipated") {
                 parameter("page", page)
                 parameter("limit", limit)
+            }
+        }
+
+    override suspend fun getTopTrending(): SnacResult<List<TrendingMediaResponse>> =
+        safeCall {
+            client.get("media/trending") {
+                parameter("limit", 1)
             }
         }
 }

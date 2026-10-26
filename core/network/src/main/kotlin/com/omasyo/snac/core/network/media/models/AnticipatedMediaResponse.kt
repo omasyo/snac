@@ -1,8 +1,8 @@
 package com.omasyo.snac.core.network.media.models
 
 
-import com.omasyo.snac.core.network.models.Movie
-import com.omasyo.snac.core.network.models.Show
+import com.omasyo.snac.core.network.models.MovieResponse
+import com.omasyo.snac.core.network.models.ShowResponse
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonContentPolymorphicSerializer
@@ -19,7 +19,7 @@ data class AnticipatedMovieResponse(
     @SerialName("list_count")
     override val listCount: Int,
     @SerialName("movie")
-    val movie: Movie,
+    val movie: MovieResponse,
 ) : AnticipatedMediaResponse
 
 @Serializable
@@ -27,7 +27,7 @@ data class AnticipatedShowResponse(
     @SerialName("list_count")
     override val listCount: Int,
     @SerialName("show")
-    val show: Show,
+    val show: ShowResponse,
 ) : AnticipatedMediaResponse
 
 

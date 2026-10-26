@@ -1,8 +1,13 @@
 package com.omasyo.snac.core.network.movie
 
 import com.omasyo.snac.core.common.SnacResult
+import com.omasyo.snac.core.network.media.models.AnticipatedMovieResponse
 import com.omasyo.snac.core.network.media.models.TrendingMovieResponse
+import com.omasyo.snac.core.network.models.MovieResponse
+import com.omasyo.snac.core.network.models.Period
 import com.omasyo.snac.core.network.movie.models.BoxOfficeResponse
+import com.omasyo.snac.core.network.movie.models.MostFavoritedMovieResponse
+import com.omasyo.snac.core.network.movie.models.MostMovieStatsResponse
 import com.omasyo.snac.core.network.safeCall
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
@@ -16,10 +21,77 @@ import io.ktor.client.request.parameter
 class MovieNetworkSourceImpl(
     private val client: HttpClient
 ) : MovieNetworkSource {
+    override suspend fun getAnticipated(
+        page: Int,
+        limit: Int
+    ): SnacResult<List<AnticipatedMovieResponse>> = safeCall {
+        client.get("movies/anticipated") {
+            parameter("page", page)
+            parameter("limit", limit)
+        }
+    }
+
     override suspend fun getBoxOffice(): SnacResult<List<BoxOfficeResponse>> =
         safeCall { client.get("movies/boxoffice") }
 
-    override suspend fun getTrending(page: Int, limit: Int): SnacResult<List<TrendingMovieResponse>> =
+    override suspend fun getMostCollected(
+        period: Period,
+        page: Int,
+        limit: Int
+    ): SnacResult<List<MostMovieStatsResponse>> = safeCall {
+        client.get("movies/collected/${period.slug}") {
+            parameter("page", page)
+            parameter("limit", limit)
+        }
+    }
+
+    override suspend fun getMostFavorited(
+        period: Period,
+        page: Int,
+        limit: Int
+    ): SnacResult<List<MostFavoritedMovieResponse>> = safeCall {
+        client.get("movies/favorited/${period.slug}") {
+            parameter("page", page)
+            parameter("limit", limit)
+        }
+    }
+
+    override suspend fun getMostPlayed(
+        period: Period,
+        page: Int,
+        limit: Int
+    ): SnacResult<List<MostMovieStatsResponse>> = safeCall {
+        client.get("movies/played/${period.slug}") {
+            parameter("page", page)
+            parameter("limit", limit)
+        }
+    }
+
+    override suspend fun getMostWatched(
+        period: Period,
+        page: Int,
+        limit: Int
+    ): SnacResult<List<MostMovieStatsResponse>> = safeCall {
+        client.get("movies/watched/${period.slug}") {
+            parameter("page", page)
+            parameter("limit", limit)
+        }
+    }
+
+    override suspend fun getPopular(
+        page: Int,
+        limit: Int
+    ): SnacResult<List<MovieResponse>> = safeCall {
+        client.get("movies/popular") {
+            parameter("page", page)
+            parameter("limit", limit)
+        }
+    }
+
+    override suspend fun getTrending(
+        page: Int,
+        limit: Int
+    ): SnacResult<List<TrendingMovieResponse>> =
         safeCall {
             client.get("movies/trending") {
                 parameter("page", page)

@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Movie(
+data class MovieResponse(
     @SerialName("ids")
     val ids: Ids,
     @SerialName("year")

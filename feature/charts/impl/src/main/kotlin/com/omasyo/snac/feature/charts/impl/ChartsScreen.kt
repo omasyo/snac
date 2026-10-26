@@ -38,6 +38,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -55,7 +56,7 @@ import com.omasyo.snac.core.model.media.FavoritedItem
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.PopularItem
 import com.omasyo.snac.core.model.media.TrendingItem
-import com.omasyo.snac.core.model.media.WatchStatsItem
+import com.omasyo.snac.core.model.media.MediaStatsItem
 import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
@@ -86,7 +87,7 @@ val ChartItem.info: String
         is FavoritedItem -> "$userCount users"
         is PopularItem -> ""
         is TrendingItem -> "$watchers watchers"
-        is WatchStatsItem -> "$watcherCount watchers"
+        is MediaStatsItem -> "$watcherCount watchers" //TODO this covers wathced, played and collected so use the appropriate fields
     }
 
 @Composable
@@ -153,6 +154,7 @@ fun ChartsScreen(
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier
+                    .pointerInput(Unit) {  }
                     .drawBehind {
                         drawRect(background)
 
