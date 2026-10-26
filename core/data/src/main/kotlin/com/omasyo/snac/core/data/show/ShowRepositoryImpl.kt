@@ -33,7 +33,7 @@ class ShowRepositoryImpl(
         Pager(initialKey = null, config = pagingConfig) {
             ChartPagingSource(
                 provider = { page -> showNetworkSource.getAnticipated(page, PAGE_SIZE) },
-                mapper = { it.toAnticipatedItem() }
+                mapper = { it.toAnticipatedItem() },
             )
         }.flow
 
@@ -47,7 +47,7 @@ class ShowRepositoryImpl(
                         PAGE_SIZE
                     )
                 },
-                mapper = { it.toCollectedItem() }
+                mapper = { it.toCollectedItem() },
             )
         }.flow
 
@@ -61,7 +61,7 @@ class ShowRepositoryImpl(
                         PAGE_SIZE
                     )
                 },
-                mapper = { it.toFavoritedItem() }
+                mapper = { it.toFavoritedItem() },
             )
         }.flow
 
@@ -75,7 +75,7 @@ class ShowRepositoryImpl(
                         PAGE_SIZE
                     )
                 },
-                mapper = { it.toPlayedItem() }
+                mapper = { it.toPlayedItem() },
             )
         }.flow
 
@@ -89,7 +89,7 @@ class ShowRepositoryImpl(
                         PAGE_SIZE
                     )
                 },
-                mapper = { it.toWatchedItem() }
+                mapper = { it.toWatchedItem() },
             )
         }.flow
 
@@ -97,7 +97,7 @@ class ShowRepositoryImpl(
         Pager(config = pagingConfig) {
             ChartPagingSource(
                 provider = { page -> showNetworkSource.getPopular(page, PAGE_SIZE) },
-                mapper = { it.toPopularItem() }
+                mapper = { it.toPopularItem() },
             )
         }.flow
 
@@ -108,7 +108,7 @@ class ShowRepositoryImpl(
         Pager(config = pagingConfig) {
             ChartPagingSource(
                 provider = { page -> showNetworkSource.getTrending(page, PAGE_SIZE) },
-                mapper = { it.toTrendingItem() }
+                mapper = { it.toTrendingItem() },
             )
         }.flow
 

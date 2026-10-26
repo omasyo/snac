@@ -13,6 +13,8 @@ interface MovieRepository {
 
     suspend fun getBoxOffice(): SnacResult<List<BoxOfficeItem>>
 
+    suspend fun getBoxOfficePaged(): Flow<PagingData<ChartItem>>
+
     fun getMostCollected(period: TimePeriod): Flow<PagingData<ChartItem>>
 
     fun getMostFavorited(period: TimePeriod): Flow<PagingData<ChartItem>>

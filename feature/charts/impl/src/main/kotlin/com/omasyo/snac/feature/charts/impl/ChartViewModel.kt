@@ -65,7 +65,7 @@ class ChartViewModel(
             Chart.Collected -> showRepository.getMostCollected(selectedPeriod)
             Chart.Favorited if isMovie -> movieRepository.getMostFavorited(selectedPeriod)
             Chart.Favorited -> showRepository.getMostFavorited(selectedPeriod)
-            Chart.BoxOffice -> TODO()
+            Chart.BoxOffice -> movieRepository.getBoxOfficePaged()
         }
 
     }

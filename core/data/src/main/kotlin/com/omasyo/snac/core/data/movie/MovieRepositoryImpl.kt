@@ -35,12 +35,20 @@ class MovieRepositoryImpl(
         Pager(initialKey = null, config = pagingConfig) {
             ChartPagingSource(
                 provider = { page -> movieNetworkSource.getAnticipated(page, PAGE_SIZE) },
-                mapper = { it.toAnticipatedItem() }
+                mapper = { it.toAnticipatedItem() },
             )
         }.flow
 
     override suspend fun getBoxOffice(): SnacResult<List<BoxOfficeItem>> =
         movieNetworkSource.getBoxOffice().map { list -> list.map { it.toBoxOfficeItem() } }
+
+    override suspend fun getBoxOfficePaged(): Flow<PagingData<ChartItem>> =
+        Pager(config = pagingConfig) {
+            ChartPagingSource(
+                provider = { page -> if (page == 1) movieNetworkSource.getBoxOffice() else SnacResult.Success(emptyList())  },
+                mapper = { it.toBoxOfficeItem() },
+            )
+        }.flow
 
     override fun getMostCollected(period: TimePeriod): Flow<PagingData<ChartItem>> =
         Pager(config = pagingConfig) {
@@ -52,7 +60,7 @@ class MovieRepositoryImpl(
                         PAGE_SIZE
                     )
                 },
-                mapper = { it.toCollectedItem() }
+                mapper = { it.toCollectedItem() },
             )
         }.flow
 
@@ -66,7 +74,7 @@ class MovieRepositoryImpl(
                         PAGE_SIZE
                     )
                 },
-                mapper = { it.toFavoritedItem() }
+                mapper = { it.toFavoritedItem() },
             )
         }.flow
 
@@ -80,7 +88,7 @@ class MovieRepositoryImpl(
                         PAGE_SIZE
                     )
                 },
-                mapper = { it.toPlayedItem() }
+                mapper = { it.toPlayedItem() },
             )
         }.flow
 
@@ -94,7 +102,7 @@ class MovieRepositoryImpl(
                         PAGE_SIZE
                     )
                 },
-                mapper = { it.toWatchedItem() }
+                mapper = { it.toWatchedItem() },
             )
         }.flow
 
@@ -102,7 +110,7 @@ class MovieRepositoryImpl(
         Pager(config = pagingConfig) {
             ChartPagingSource(
                 provider = { page -> movieNetworkSource.getPopular(page, PAGE_SIZE) },
-                mapper = { it.toPopularItem() }
+                mapper = { it.toPopularItem() },
             )
         }.flow
 
@@ -113,7 +121,7 @@ class MovieRepositoryImpl(
         Pager(config = pagingConfig) {
             ChartPagingSource(
                 provider = { page -> movieNetworkSource.getTrending(page, PAGE_SIZE) },
-                mapper = { it.toTrendingItem() }
+                mapper = { it.toTrendingItem() },
             )
         }.flow
 

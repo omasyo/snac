@@ -161,7 +161,7 @@ fun ChartsScreen(
                 modifier = Modifier
                     .pointerInput(Unit) { }
                     .drawBehind {
-//                        drawRect(background)
+                        drawRect(background)
 
                         val dividerAlpha = if (listState.firstVisibleItemIndex > 0) {
                             1f
