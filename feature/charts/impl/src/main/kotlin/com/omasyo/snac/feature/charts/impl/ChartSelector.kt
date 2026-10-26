@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.constrainWidth
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.util.lerp
+import com.omasyo.snac.core.model.extra.TimePeriod
 import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.ClapperboardStripes
 import com.omasyo.snac.core.ui.components.SelectableText
@@ -68,14 +69,14 @@ enum class Chart(val label: String) {
         }
 }
 
-
-enum class TimePeriod(val label: String) {
-    Daily("Daily"),
-    Weekly("Weekly"),
-    Monthly("Monthly"),
-    Yearly("Yearly"),
-    AllTime("All Time"),
-}
+val TimePeriod.label
+    get() = when (this) {
+        TimePeriod.Daily -> "Daily"
+        TimePeriod.Weekly -> "Weekly"
+        TimePeriod.Monthly -> "Monthly"
+        TimePeriod.Yearly -> "Yearly"
+        TimePeriod.AllTime -> "All Time"
+    }
 
 @Composable
 fun ChartSelector(

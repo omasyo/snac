@@ -5,5 +5,5 @@ enum class Period(val slug: String) {
     Weekly("weekly"),
     Monthly("monthly"),
     Yearly("yearly"),
-    AllTime("all"),
+    All("all"),
 }

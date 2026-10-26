@@ -8,11 +8,11 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class MostShowStatsResponse(
     @SerialName("watcher_count")
-    val watcherCount: Long,
+    val watcherCount: Int,
     @SerialName("play_count")
-    val playCount: Long,
+    val playCount: Int,
     @SerialName("collected_count")
-    val collectedCount: Long,
+    val collectedCount: Int,
     @SerialName("show")
     val show: ShowResponse,
 )

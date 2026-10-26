@@ -33,18 +33,6 @@ data class AnticipatedItem(
     }
 }
 
-data class MediaStatsItem(
-    override val media: Media,
-    val watcherCount: Int,
-    val playCount: Int,
-    val collectedCount: Int,
-    val collectorCount: Int?,
-) : ChartItem
-
-data class FavoritedItem(
-    override val media: Media,
-    val userCount: Int,
-) : ChartItem
 
 data class BoxOfficeItem(
     override val media: Movie,
@@ -60,3 +48,24 @@ data class BoxOfficeItem(
         )
     }
 }
+
+data class FavoritedItem(
+    override val media: Media,
+    val userCount: Int,
+) : ChartItem
+
+data class CollectedItem(
+    override val media: Media,
+    val collectedCount: Int,
+    val collectorCount: Int?,
+) : ChartItem
+
+data class PlayedItem(
+    override val media: Media,
+    val playCount: Int,
+) : ChartItem
+
+data class WatchedItem(
+    override val media: Media,
+    val watcherCount: Int,
+) : ChartItem

@@ -35,3 +35,8 @@ inline fun <T> SnacResult<T>.onSuccess(action: (T) -> Unit): SnacResult<T> =
 
 inline fun <T> SnacResult<T>.onFailure(action: (SnacResult.Error) -> Unit): SnacResult<T> =
     also { if (it is SnacResult.Failure) action(it.error) }
+
+fun <T> SnacResult<T>.getSuccessOrNull(): T? = when (this) {
+    is SnacResult.Success -> value
+    is SnacResult.Failure -> null
+}

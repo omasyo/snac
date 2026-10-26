@@ -7,8 +7,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MostFavoritedMovieResponse(
-    @SerialName("revenue")
-     val revenue: Long,
+    @SerialName("user_count")
+     val userCount: Int,
     @SerialName("movie")
     val movie: MovieResponse,
 )

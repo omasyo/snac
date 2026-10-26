@@ -44,19 +44,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.omasyo.snac.core.model.extra.TimePeriod
 import com.omasyo.snac.core.model.media.AnticipatedItem
 import com.omasyo.snac.core.model.media.BoxOfficeItem
 import com.omasyo.snac.core.model.media.ChartItem
+import com.omasyo.snac.core.model.media.CollectedItem
 import com.omasyo.snac.core.model.media.FavoritedItem
 import com.omasyo.snac.core.model.media.Media
+import com.omasyo.snac.core.model.media.PlayedItem
 import com.omasyo.snac.core.model.media.PopularItem
 import com.omasyo.snac.core.model.media.TrendingItem
-import com.omasyo.snac.core.model.media.MediaStatsItem
+import com.omasyo.snac.core.model.media.WatchedItem
 import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
@@ -87,7 +91,9 @@ val ChartItem.info: String
         is FavoritedItem -> "$userCount users"
         is PopularItem -> ""
         is TrendingItem -> "$watchers watchers"
-        is MediaStatsItem -> "$watcherCount watchers" //TODO this covers wathced, played and collected so use the appropriate fields
+        is CollectedItem -> "$collectedCount watchers"  //TODO shows have collectors, which seems more important
+        is PlayedItem -> "$playCount watchers"
+        is WatchedItem -> "$watcherCount watchers"
     }
 
 @Composable
@@ -96,14 +102,13 @@ fun ChartsScreen(
     modifier: Modifier = Modifier,
     viewModel: ChartViewModel = metroViewModel()
 ) {
-
     ChartsScreen(
         onMediaClick = onMediaClick,
-        selectedMediaTab = viewModel.mediaTab,
+        selectedMediaTab = viewModel.mediaTab.collectAsStateWithLifecycle().value,
         onSelectedMediaChange = viewModel::changeMediaTab,
-        selectedChart = viewModel.selectedChart,
+        selectedChart = viewModel.selectedChart.collectAsStateWithLifecycle().value,
         onSelectedChartChange = viewModel::changeChart,
-        selectedPeriod = viewModel.selectedPeriod,
+        selectedPeriod = viewModel.selectedPeriod.collectAsStateWithLifecycle().value,
         onSelectedPeriodChange = viewModel::changePeriod,
         results = viewModel.results.collectAsLazyPagingItems(),
         modifier = modifier,
@@ -154,9 +159,9 @@ fun ChartsScreen(
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier
-                    .pointerInput(Unit) {  }
+                    .pointerInput(Unit) { }
                     .drawBehind {
-                        drawRect(background)
+//                        drawRect(background)
 
                         val dividerAlpha = if (listState.firstVisibleItemIndex > 0) {
                             1f
@@ -314,6 +319,7 @@ fun ChartsScreen(
                             info = item.info,
                             onClick = { onMediaClick(item.media) },
                             modifier = Modifier
+//                                .animateItem()
                                 .padding(horizontal = 16.dp)
                                 .film(
                                     side = Side.Start,

@@ -32,10 +32,10 @@ class HomeViewModel(
         RefreshWrapper(viewModelScope) { mediaRepository.getTopTrending() }.response
 
     val trendingMovies: StateFlow<UiState<List<TrendingItem>>> =
-        RefreshWrapper(viewModelScope) { movieRepository.getTrending() }.response
+        RefreshWrapper(viewModelScope) { movieRepository.getTopTrending() }.response
 
     val trendingShows: StateFlow<UiState<List<TrendingItem>>> =
-        RefreshWrapper(viewModelScope) { showRepository.getTrending() }.response
+        RefreshWrapper(viewModelScope) { showRepository.getTopTrending() }.response
 
     val boxOffice: StateFlow<UiState<List<BoxOfficeItem>>> =
         RefreshWrapper(viewModelScope) { movieRepository.getBoxOffice() }.response
