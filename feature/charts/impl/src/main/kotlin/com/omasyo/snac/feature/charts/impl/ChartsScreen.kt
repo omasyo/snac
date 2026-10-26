@@ -290,10 +290,7 @@ fun ChartsScreen(
                 val item = results[0]
                 if (item != null) {
                     TopMediaCard(
-                        title = item.media.title,
-                        imageUrl = item.media.imageUrl,
-                        year = item.media.year,
-                        info = item.info,
+                        item = item,
                         onClick = { onMediaClick(item.media) },
                         modifier = Modifier.padding(horizontal = 16.dp),
                     )
@@ -305,21 +302,16 @@ fun ChartsScreen(
             if (results.itemCount > 1) {
                 items(
                     count = results.itemCount - 1,
-                    key = { index ->
-                        results.itemSnapshotList.getOrNull(index + 1)?.media?.slug ?: (index + 1)
-                    }
+                    key = { index -> results.peek(index + 1)?.media?.slug ?: (index + 1) }
                 ) { index ->
                     val item = results[index + 1]
                     if (item != null) {
                         MediaCard(
                             position = index + 2,
-                            title = item.media.title,
-                            imageUrl = item.media.imageUrl,
-                            year = item.media.year,
-                            info = item.info,
+                            item = item,
                             onClick = { onMediaClick(item.media) },
                             modifier = Modifier
-//                                .animateItem()
+                                .animateItem()
                                 .padding(horizontal = 16.dp)
                                 .film(
                                     side = Side.Start,
@@ -385,10 +377,7 @@ fun ChartsScreen(
 
 @Composable
 private fun TopMediaCard(
-    title: String,
-    imageUrl: String?,
-    year: Int,
-    info: String?,
+    item: ChartItem,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -407,7 +396,7 @@ private fun TopMediaCard(
             .padding(16.dp)
     ) {
         Image(
-            imageUrl = imageUrl,
+            imageUrl = item.media.imageUrl,
             modifier = Modifier
                 .rotate(-3f)
                 .silhouette(SnacColors.accent)
@@ -419,22 +408,20 @@ private fun TopMediaCard(
             verticalArrangement = Arrangement.spacedBy(4.dp),
         ) {
             Text(
-                text = title,
+                text = item.media.title,
                 style = SnacTypography.title,
                 color = SnacColors.onFilm,
             )
             Text(
-                text = year.toString(),
+                text = item.media.year.toString(),
                 style = SnacTypography.label,
                 color = SnacColors.mutedOnFilm,
             )
-            if (info != null) {
-                Text(
-                    text = info,
-                    style = SnacTypography.hand,
-                    color = SnacColors.accent,
-                )
-            }
+            Text(
+                text = item.info,
+                style = SnacTypography.hand,
+                color = SnacColors.accent,
+            )
         }
     }
 }
@@ -475,10 +462,7 @@ private class CollapseOnScrollDownConnection(
 @Composable
 private fun MediaCard(
     position: Int,
-    title: String,
-    imageUrl: String?,
-    year: Int,
-    info: String?,
+    item: ChartItem,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -513,9 +497,14 @@ private fun MediaCard(
         )
 
         Image(
-            imageUrl = imageUrl,
+            imageUrl = item.media.imageUrl,
             modifier = Modifier
-                .rotate(remember { Random.nextInt(-3, 3).toFloat() }) //TODO
+                .rotate(remember(item.media.slug) {
+                    Random(item.media.slug.hashCode()).nextInt(
+                        -3,
+                        3
+                    ).toFloat()
+                })
                 .border(2.dp, SnacColors.chip)
                 .background(SnacColors.muted)
                 .size(56.dp, 80.dp),
@@ -525,22 +514,20 @@ private fun MediaCard(
             modifier = Modifier.weight(1f),
         ) {
             Text(
-                text = title,
+                text = item.media.title,
                 style = SnacTypography.subtitle,
                 color = SnacColors.onFilm,
             )
             Text(
-                text = year.toString(),
+                text = item.media.year.toString(),
                 style = SnacTypography.label,
                 color = SnacColors.mutedOnFilm,
             )
-            if (info != null) {
-                Text(
-                    text = info,
-                    style = SnacTypography.hand,
-                    color = SnacColors.accent,
-                )
-            }
+            Text(
+                text = item.info,
+                style = SnacTypography.hand,
+                color = SnacColors.accent,
+            )
         }
     }
 }
