@@ -35,6 +35,8 @@ fun ErrorBox(
     onRetry: () -> Unit,
     modifier: Modifier = Modifier,
     error: String = "Didn't load",
+    alignment: Alignment = Alignment.Center,
+    errorPadding: PaddingValues = PaddingValues.Zero,
     content: @Composable () -> Unit,
 ) {
     val stampScale = remember { Animatable(1.8f) }
@@ -58,7 +60,7 @@ fun ErrorBox(
 
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.Center,
+        contentAlignment = alignment,
     ) {
         Box(
             Modifier.graphicsLayer {
@@ -73,6 +75,7 @@ fun ErrorBox(
         Column(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(errorPadding),
         ) {
             val color = SnacColors.signal
             Text(

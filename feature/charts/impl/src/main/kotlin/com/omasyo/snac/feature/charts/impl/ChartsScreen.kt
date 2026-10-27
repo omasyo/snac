@@ -1,13 +1,11 @@
 package com.omasyo.snac.feature.charts.impl
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -15,11 +13,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -41,9 +36,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
@@ -65,13 +58,10 @@ import com.omasyo.snac.core.model.media.TrendingItem
 import com.omasyo.snac.core.model.media.WatchedItem
 import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.ErrorBox
-import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.TabRow
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
 import com.omasyo.snac.core.ui.modifiers.Side
-import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
-import com.omasyo.snac.core.ui.modifiers.TintIndication
 import com.omasyo.snac.core.ui.modifiers.film
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
@@ -80,7 +70,6 @@ import com.omasyo.snac.core.ui.theme.colors.SnacColors
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
-import kotlin.random.Random
 
 enum class MediaTab(val label: String) {
     Movie("Movie"), Show("Show")
@@ -147,6 +136,15 @@ fun ChartsScreen(
             }
     }
 
+
+    val cardModifier = Modifier
+        .padding(horizontal = 16.dp)
+        .film(
+            side = Side.Start,
+            crossEdgeInset = 12.dp,
+        )
+        .background(SnacColors.film)
+
     LazyColumn(
         state = listState,
         modifier = modifier
@@ -164,7 +162,6 @@ fun ChartsScreen(
                     .pointerInput(Unit) { }
                     .drawBehind {
                         drawRect(background)
-
                         val dividerAlpha = if (listState.firstVisibleItemIndex > 0) {
                             1f
                         } else {
@@ -225,8 +222,11 @@ fun ChartsScreen(
                             selectorExpanded = true
                         } else {
                             val anchorPosition = listState.firstVisibleCardPosition()
-                            if (it == Chart.BoxOffice) onSelectedMediaChange(MediaTab.Movie, anchorPosition)
+                            if (it == Chart.BoxOffice) {
+                                onSelectedMediaChange(MediaTab.Movie, anchorPosition)
+                            }
                             onSelectedChartChange(it, anchorPosition)
+                            selectorExpanded = it.hasTimePeriod
                         }
                     },
                     selectedPeriod = selectedPeriod,
@@ -235,6 +235,7 @@ fun ChartsScreen(
                             selectorExpanded = true
                         } else {
                             onSelectedPeriodChange(it, listState.firstVisibleCardPosition())
+                            selectorExpanded = false
                         }
                     },
                     expanded = selectorExpanded,
@@ -245,23 +246,10 @@ fun ChartsScreen(
 
         item { Spacer(Modifier.height(16.dp)) }
 
-        when (val refreshState = results.loadState.refresh) {
+        when (val refreshState = results.loadState.refresh) { //TODO
             is LoadState.Loading -> {
                 if (results.itemCount == 0) {
-                    item("refresh-loading") {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(32.dp),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(
-                                text = "Loading...",
-                                style = SnacTypography.subtitle,
-                                color = SnacColors.faint,
-                            )
-                        }
-                    }
+                    item("refresh-loading") { Placeholder() }
                 }
             }
 
@@ -272,17 +260,9 @@ fun ChartsScreen(
                             description = refreshState.error.localizedMessage
                                 ?: "Failed to load charts.",
                             onRetry = { results.retry() },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(200.dp)
-                                    .background(SnacColors.film)
-                            )
-                        }
+                            alignment = Alignment.TopCenter,
+                            errorPadding = PaddingValues(top = 120.dp)
+                        ) { Placeholder() }
                     }
                 }
             }
@@ -293,7 +273,6 @@ fun ChartsScreen(
         items(
             count = results.itemCount,
             key = results.itemKey { it.media.slug },
-//            key = { position -> results.peek(position)?.media?.slug ?: position },
             contentType = { position -> if (position == 0) "top-media-card" else "media-card" },
         ) { position ->
             val item = results[position]
@@ -312,13 +291,12 @@ fun ChartsScreen(
                 }
             } else {
                 val cardModifier = Modifier
-                    .animateItem()
-                    .padding(horizontal = 16.dp)
-                    .film(
-                        side = Side.Start,
-                        crossEdgeInset = 12.dp,
+                    .animateItem(
+                        //TODO
+                        fadeInSpec = null,
+                        fadeOutSpec = null,
                     )
-                    .background(SnacColors.film)
+                    .then(cardModifier)
                 if (item != null) {
                     MediaCard(
                         position = position + 1,
@@ -338,18 +316,10 @@ fun ChartsScreen(
         when (val appendState = results.loadState.append) {
             is LoadState.Loading -> {
                 item("append-loading") {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = "Loading more...",
-                            style = SnacTypography.caption,
-                            color = SnacColors.faint,
-                        )
-                    }
+                    MediaCardPlaceholder(
+                        position = results.itemCount,
+                        modifier = cardModifier,
+                    )
                 }
             }
 
@@ -381,7 +351,29 @@ fun ChartsScreen(
 
         item("bottom-padding") {
             Spacer(Modifier.bottomBarPadding())
-            Spacer(Modifier.navigationBarsPadding())
+        }
+    }
+}
+
+@Composable
+private fun Placeholder() {
+    Column {
+        TopMediaCardPlaceholder(
+            modifier = Modifier
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 16.dp),
+        )
+        repeat(20) {
+            MediaCardPlaceholder(
+                position = it + 2,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .film(
+                        side = Side.Start,
+                        crossEdgeInset = 12.dp,
+                    )
+                    .background(SnacColors.film),
+            )
         }
     }
 }
@@ -399,74 +391,6 @@ private fun LazyListState.firstVisibleCardPosition(): Int {
         it.index >= ChartItemsStart && it.offset + it.size > headerBottom
     } ?: return 0
     return first.index - ChartItemsStart
-}
-
-@Composable
-private fun TopMediaCardPlaceholder(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(SnacColors.film)
-            .padding(16.dp)
-    ) {
-        Box(
-            Modifier
-                .rotate(-3f)
-                .background(SnacColors.muted)
-                .size(128.dp, 192.dp)
-        )
-    }
-}
-
-@Composable
-private fun TopMediaCard(
-    item: ChartItem,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val indicationColor = SnacColors.signal
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.Bottom,
-        modifier = modifier
-            .clickable(
-                indication = SilhouettePressIndication({ indicationColor }, DpOffset(6.dp, 6.dp)),
-                interactionSource = remember { MutableInteractionSource() },
-                onClick = onClick,
-            )
-            .fillMaxWidth()
-            .background(SnacColors.film)
-            .padding(16.dp)
-    ) {
-        Image(
-            imageUrl = item.media.imageUrl,
-            modifier = Modifier
-                .rotate(-3f)
-                .silhouette(SnacColors.accent)
-                .border(4.dp, SnacColors.chip)
-                .background(SnacColors.muted)
-                .size(128.dp, 192.dp),
-        )
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
-            Text(
-                text = item.media.title,
-                style = SnacTypography.title,
-                color = SnacColors.onFilm,
-            )
-            Text(
-                text = item.media.year.toString(),
-                style = SnacTypography.label,
-                color = SnacColors.mutedOnFilm,
-            )
-            Text(
-                text = item.info,
-                style = SnacTypography.hand,
-                color = SnacColors.accent,
-            )
-        }
-    }
 }
 
 private class CollapseOnScrollDownConnection(
@@ -499,110 +423,6 @@ private class CollapseOnScrollDownConnection(
 
     fun reset() {
         accumulated = 0f
-    }
-}
-
-@Composable
-private fun MediaCard(
-    position: Int,
-    item: ChartItem,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val borderColor = SnacColors.filmLine
-    val indicationColor = SnacColors.accent
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .padding(start = 32.dp, end = 8.dp)
-            .drawBehind {
-                drawLine(borderColor, Offset(0f, size.height), Offset(size.width, size.height))
-            }
-            .clickable(
-                onClick = onClick,
-                indication = remember { TintIndication { indicationColor } },
-                interactionSource = null,
-            )
-            .padding(end = 8.dp)
-            .padding(vertical = 8.dp),
-    ) {
-        val positionColor = when (position) {
-            1 -> SnacColors.signal
-            2, 3 -> SnacColors.onFilm
-            else -> SnacColors.faint
-        }
-        Text(
-            text = "$position",
-            style = SnacTypography.title.copy(textAlign = TextAlign.End),
-            color = positionColor,
-            modifier = Modifier.widthIn(32.dp)
-        )
-
-        Image(
-            imageUrl = item.media.imageUrl,
-            modifier = Modifier
-                .rotate(remember(item.media.slug) {
-                    Random(item.media.slug.hashCode()).nextInt(
-                        -3,
-                        3
-                    ).toFloat()
-                })
-                .border(2.dp, SnacColors.chip)
-                .background(SnacColors.muted)
-                .size(56.dp, 80.dp),
-        )
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.weight(1f),
-        ) {
-            Text(
-                text = item.media.title,
-                style = SnacTypography.subtitle,
-                color = SnacColors.onFilm,
-            )
-            Text(
-                text = item.media.year.toString(),
-                style = SnacTypography.label,
-                color = SnacColors.mutedOnFilm,
-            )
-            Text(
-                text = item.info,
-                style = SnacTypography.hand,
-                color = SnacColors.accent,
-            )
-        }
-    }
-}
-
-@Composable
-private fun MediaCardPlaceholder(
-    position: Int,
-    modifier: Modifier = Modifier,
-) {
-    val borderColor = SnacColors.filmLine
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .padding(start = 32.dp, end = 8.dp)
-            .drawBehind {
-                drawLine(borderColor, Offset(0f, size.height), Offset(size.width, size.height))
-            }
-            .padding(end = 8.dp)
-            .padding(vertical = 8.dp),
-    ) {
-        Text(
-            text = "$position",
-            style = SnacTypography.title.copy(textAlign = TextAlign.End),
-            color = SnacColors.faint,
-            modifier = Modifier.widthIn(32.dp)
-        )
-        Box(
-            Modifier
-                .background(SnacColors.muted)
-                .size(56.dp, 80.dp)
-        )
     }
 }
 
@@ -662,7 +482,7 @@ private fun PreviewLoading() {
     }
 }
 
-@Preview
+@Preview(device = "spec:width=1080px,height=1800px,dpi=440")
 @Composable
 private fun PreviewError() {
     var mediaTab by remember { mutableStateOf(MediaTab.Movie) }
