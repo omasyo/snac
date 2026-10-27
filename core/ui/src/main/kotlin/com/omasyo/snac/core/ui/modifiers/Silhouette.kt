@@ -99,7 +99,7 @@ internal class SilhouetteNode(
     private var tintedLayer: GraphicsLayer? = null
 
     fun update(color: ColorProducer, offset: DpOffset, overflow: Dp) {
-        if (this.color != color || this.offset != offset || this.overflow != overflow) {
+        if (this.color() != color() || this.offset != offset || this.overflow != overflow) {
             this.color = color
             this.offset = offset
             this.overflow = overflow
@@ -130,7 +130,8 @@ internal class SilhouetteNode(
         }
 
 
-        val m = ceil(overflow.toPx()).coerceAtLeast(0f)
+        // The 2f is padding for sampling, reducing aliasing
+        val m = ceil(overflow.toPx()).coerceAtLeast(0f) + 2f
         val margin = m.toInt()
 
         val paddedSize = IntSize(
