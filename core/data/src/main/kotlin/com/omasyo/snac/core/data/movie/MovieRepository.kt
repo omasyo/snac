@@ -9,25 +9,25 @@ import com.omasyo.snac.core.model.media.TrendingItem
 import kotlinx.coroutines.flow.Flow
 
 interface MovieRepository {
-    fun getAnticipated(): Flow<PagingData<ChartItem>>
+    fun getAnticipated(startPosition: Int): Flow<PagingData<ChartItem>>
 
     suspend fun getBoxOffice(): SnacResult<List<BoxOfficeItem>>
 
-    suspend fun getBoxOfficePaged(): Flow<PagingData<ChartItem>>
+    fun getBoxOfficePaged(): Flow<PagingData<ChartItem>>
 
-    fun getMostCollected(period: TimePeriod): Flow<PagingData<ChartItem>>
+    fun getMostCollected(period: TimePeriod, startPosition: Int): Flow<PagingData<ChartItem>>
 
-    fun getMostFavorited(period: TimePeriod): Flow<PagingData<ChartItem>>
+    fun getMostFavorited(period: TimePeriod, startPosition: Int): Flow<PagingData<ChartItem>>
 
-    fun getMostPlayed(period: TimePeriod): Flow<PagingData<ChartItem>>
+    fun getMostPlayed(period: TimePeriod, startPosition: Int): Flow<PagingData<ChartItem>>
 
-    fun getMostWatched(period: TimePeriod): Flow<PagingData<ChartItem>>
+    fun getMostWatched(period: TimePeriod, startPosition: Int): Flow<PagingData<ChartItem>>
 
-    fun getPopular(): Flow<PagingData<ChartItem>>
+    fun getPopular(startPosition: Int): Flow<PagingData<ChartItem>>
 
 
     suspend fun getTopTrending(): SnacResult<List<TrendingItem>>
 
 
-    fun getTrending(): Flow<PagingData<ChartItem>>
+    fun getTrending(startPosition: Int): Flow<PagingData<ChartItem>>
 }

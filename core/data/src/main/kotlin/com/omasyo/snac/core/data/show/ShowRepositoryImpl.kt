@@ -29,17 +29,19 @@ import kotlinx.coroutines.flow.Flow
 class ShowRepositoryImpl(
     private val showNetworkSource: ShowNetworkSource,
 ) : ShowRepository {
-    override fun getAnticipated(): Flow<PagingData<ChartItem>> =
-        Pager(initialKey = null, config = pagingConfig) {
+    override fun getAnticipated(startPosition: Int): Flow<PagingData<ChartItem>> =
+        Pager(initialKey = startPosition, config = pagingConfig) {
             ChartPagingSource(
+                pageSize = PAGE_SIZE,
                 provider = { page -> showNetworkSource.getAnticipated(page, PAGE_SIZE) },
                 mapper = { it.toAnticipatedItem() },
             )
         }.flow
 
-    override fun getMostCollected(period: TimePeriod): Flow<PagingData<ChartItem>> =
-        Pager(config = pagingConfig) {
+    override fun getMostCollected(period: TimePeriod, startPosition: Int): Flow<PagingData<ChartItem>> =
+        Pager(initialKey = startPosition, config = pagingConfig) {
             ChartPagingSource(
+                pageSize = PAGE_SIZE,
                 provider = { page ->
                     showNetworkSource.getMostCollected(
                         period.toPeriod(),
@@ -51,9 +53,10 @@ class ShowRepositoryImpl(
             )
         }.flow
 
-    override fun getMostFavorited(period: TimePeriod): Flow<PagingData<ChartItem>> =
-        Pager(config = pagingConfig) {
+    override fun getMostFavorited(period: TimePeriod, startPosition: Int): Flow<PagingData<ChartItem>> =
+        Pager(initialKey = startPosition, config = pagingConfig) {
             ChartPagingSource(
+                pageSize = PAGE_SIZE,
                 provider = { page ->
                     showNetworkSource.getMostFavorited(
                         period.toPeriod(),
@@ -65,9 +68,10 @@ class ShowRepositoryImpl(
             )
         }.flow
 
-    override fun getMostPlayed(period: TimePeriod): Flow<PagingData<ChartItem>> =
-        Pager(config = pagingConfig) {
+    override fun getMostPlayed(period: TimePeriod, startPosition: Int): Flow<PagingData<ChartItem>> =
+        Pager(initialKey = startPosition, config = pagingConfig) {
             ChartPagingSource(
+                pageSize = PAGE_SIZE,
                 provider = { page ->
                     showNetworkSource.getMostPlayed(
                         period.toPeriod(),
@@ -79,9 +83,10 @@ class ShowRepositoryImpl(
             )
         }.flow
 
-    override fun getMostWatched(period: TimePeriod): Flow<PagingData<ChartItem>> =
-        Pager(config = pagingConfig) {
+    override fun getMostWatched(period: TimePeriod, startPosition: Int): Flow<PagingData<ChartItem>> =
+        Pager(initialKey = startPosition, config = pagingConfig) {
             ChartPagingSource(
+                pageSize = PAGE_SIZE,
                 provider = { page ->
                     showNetworkSource.getMostCollected(
                         period.toPeriod(),
@@ -93,9 +98,10 @@ class ShowRepositoryImpl(
             )
         }.flow
 
-    override fun getPopular(): Flow<PagingData<ChartItem>> =
-        Pager(config = pagingConfig) {
+    override fun getPopular(startPosition: Int): Flow<PagingData<ChartItem>> =
+        Pager(initialKey = startPosition, config = pagingConfig) {
             ChartPagingSource(
+                pageSize = PAGE_SIZE,
                 provider = { page -> showNetworkSource.getPopular(page, PAGE_SIZE) },
                 mapper = { it.toPopularItem() },
             )
@@ -104,9 +110,10 @@ class ShowRepositoryImpl(
     override suspend fun getTopTrending(): SnacResult<List<TrendingItem>> =
         showNetworkSource.getTrending(1, 10).map { list -> list.map { it.toTrendingItem() } }
 
-    override fun getTrending(): Flow<PagingData<ChartItem>> =
-        Pager(config = pagingConfig) {
+    override fun getTrending(startPosition: Int): Flow<PagingData<ChartItem>> =
+        Pager(initialKey = startPosition, config = pagingConfig) {
             ChartPagingSource(
+                pageSize = PAGE_SIZE,
                 provider = { page -> showNetworkSource.getTrending(page, PAGE_SIZE) },
                 mapper = { it.toTrendingItem() },
             )
@@ -116,7 +123,9 @@ class ShowRepositoryImpl(
         private const val PAGE_SIZE = 30
 
         private val pagingConfig = PagingConfig(
-            pageSize = PAGE_SIZE, enablePlaceholders = false
+            pageSize = PAGE_SIZE,
+            enablePlaceholders = true,
+            jumpThreshold = PAGE_SIZE * 3,
         )
     }
 }

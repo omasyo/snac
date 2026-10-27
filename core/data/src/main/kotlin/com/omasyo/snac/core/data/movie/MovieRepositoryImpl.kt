@@ -31,9 +31,10 @@ import kotlinx.coroutines.flow.Flow
 class MovieRepositoryImpl(
     private val movieNetworkSource: MovieNetworkSource,
 ) : MovieRepository {
-    override fun getAnticipated(): Flow<PagingData<ChartItem>> =
-        Pager(initialKey = null, config = pagingConfig) {
+    override fun getAnticipated(startPosition: Int): Flow<PagingData<ChartItem>> =
+        Pager(initialKey = startPosition, config = pagingConfig) {
             ChartPagingSource(
+                pageSize = PAGE_SIZE,
                 provider = { page -> movieNetworkSource.getAnticipated(page, PAGE_SIZE) },
                 mapper = { it.toAnticipatedItem() },
             )
@@ -42,17 +43,25 @@ class MovieRepositoryImpl(
     override suspend fun getBoxOffice(): SnacResult<List<BoxOfficeItem>> =
         movieNetworkSource.getBoxOffice().map { list -> list.map { it.toBoxOfficeItem() } }
 
-    override suspend fun getBoxOfficePaged(): Flow<PagingData<ChartItem>> =
+    override fun getBoxOfficePaged(): Flow<PagingData<ChartItem>> =
         Pager(config = pagingConfig) {
             ChartPagingSource(
-                provider = { page -> if (page == 1) movieNetworkSource.getBoxOffice() else SnacResult.Success(emptyList())  },
+                pageSize = PAGE_SIZE,
+                provider = { page ->
+                    if (page == 1) movieNetworkSource.getBoxOffice()
+                    else SnacResult.Success(emptyList())
+                },
                 mapper = { it.toBoxOfficeItem() },
             )
         }.flow
 
-    override fun getMostCollected(period: TimePeriod): Flow<PagingData<ChartItem>> =
-        Pager(config = pagingConfig) {
+    override fun getMostCollected(
+        period: TimePeriod,
+        startPosition: Int,
+    ): Flow<PagingData<ChartItem>> =
+        Pager(initialKey = startPosition, config = pagingConfig) {
             ChartPagingSource(
+                pageSize = PAGE_SIZE,
                 provider = { page ->
                     movieNetworkSource.getMostCollected(
                         period.toPeriod(),
@@ -64,9 +73,13 @@ class MovieRepositoryImpl(
             )
         }.flow
 
-    override fun getMostFavorited(period: TimePeriod): Flow<PagingData<ChartItem>> =
-        Pager(config = pagingConfig) {
+    override fun getMostFavorited(
+        period: TimePeriod,
+        startPosition: Int,
+    ): Flow<PagingData<ChartItem>> =
+        Pager(initialKey = startPosition, config = pagingConfig) {
             ChartPagingSource(
+                pageSize = PAGE_SIZE,
                 provider = { page ->
                     movieNetworkSource.getMostFavorited(
                         period.toPeriod(),
@@ -78,9 +91,13 @@ class MovieRepositoryImpl(
             )
         }.flow
 
-    override fun getMostPlayed(period: TimePeriod): Flow<PagingData<ChartItem>> =
-        Pager(config = pagingConfig) {
+    override fun getMostPlayed(
+        period: TimePeriod,
+        startPosition: Int,
+    ): Flow<PagingData<ChartItem>> =
+        Pager(initialKey = startPosition, config = pagingConfig) {
             ChartPagingSource(
+                pageSize = PAGE_SIZE,
                 provider = { page ->
                     movieNetworkSource.getMostPlayed(
                         period.toPeriod(),
@@ -92,11 +109,15 @@ class MovieRepositoryImpl(
             )
         }.flow
 
-    override fun getMostWatched(period: TimePeriod): Flow<PagingData<ChartItem>> =
-        Pager(config = pagingConfig) {
+    override fun getMostWatched(
+        period: TimePeriod,
+        startPosition: Int,
+    ): Flow<PagingData<ChartItem>> =
+        Pager(initialKey = startPosition, config = pagingConfig) {
             ChartPagingSource(
+                pageSize = PAGE_SIZE,
                 provider = { page ->
-                    movieNetworkSource.getMostCollected(
+                    movieNetworkSource.getMostWatched(
                         period.toPeriod(),
                         page,
                         PAGE_SIZE
@@ -106,9 +127,10 @@ class MovieRepositoryImpl(
             )
         }.flow
 
-    override fun getPopular(): Flow<PagingData<ChartItem>> =
-        Pager(config = pagingConfig) {
+    override fun getPopular(startPosition: Int): Flow<PagingData<ChartItem>> =
+        Pager(initialKey = startPosition, config = pagingConfig) {
             ChartPagingSource(
+                pageSize = PAGE_SIZE,
                 provider = { page -> movieNetworkSource.getPopular(page, PAGE_SIZE) },
                 mapper = { it.toPopularItem() },
             )
@@ -117,9 +139,10 @@ class MovieRepositoryImpl(
     override suspend fun getTopTrending(): SnacResult<List<TrendingItem>> =
         movieNetworkSource.getTrending(1, 10).map { list -> list.map { it.toTrendingItem() } }
 
-    override fun getTrending(): Flow<PagingData<ChartItem>> =
-        Pager(config = pagingConfig) {
+    override fun getTrending(startPosition: Int): Flow<PagingData<ChartItem>> =
+        Pager(initialKey = startPosition, config = pagingConfig) {
             ChartPagingSource(
+                pageSize = PAGE_SIZE,
                 provider = { page -> movieNetworkSource.getTrending(page, PAGE_SIZE) },
                 mapper = { it.toTrendingItem() },
             )
@@ -129,7 +152,9 @@ class MovieRepositoryImpl(
         private const val PAGE_SIZE = 30
 
         private val pagingConfig = PagingConfig(
-            pageSize = PAGE_SIZE, enablePlaceholders = false
+            pageSize = PAGE_SIZE,
+            enablePlaceholders = true,
+            jumpThreshold = PAGE_SIZE * 3,
         )
     }
 }

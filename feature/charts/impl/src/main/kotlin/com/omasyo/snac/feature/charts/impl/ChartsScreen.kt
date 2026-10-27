@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,6 +51,7 @@ import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import com.omasyo.snac.core.model.extra.TimePeriod
 import com.omasyo.snac.core.model.media.AnticipatedItem
 import com.omasyo.snac.core.model.media.BoxOfficeItem
@@ -119,11 +121,11 @@ fun ChartsScreen(
 fun ChartsScreen(
     onMediaClick: (Media) -> Unit,
     selectedMediaTab: MediaTab,
-    onSelectedMediaChange: (MediaTab) -> Unit,
+    onSelectedMediaChange: (MediaTab, anchorPosition: Int) -> Unit,
     selectedChart: Chart,
-    onSelectedChartChange: (Chart) -> Unit,
+    onSelectedChartChange: (Chart, anchorPosition: Int) -> Unit,
     selectedPeriod: TimePeriod,
-    onSelectedPeriodChange: (TimePeriod) -> Unit,
+    onSelectedPeriodChange: (TimePeriod, anchorPosition: Int) -> Unit,
     results: LazyPagingItems<ChartItem>,
     modifier: Modifier = Modifier,
 ) {
@@ -152,7 +154,7 @@ fun ChartsScreen(
             .nestedScroll(collapseConnection)
             .background(SnacColors.page)
     ) {
-        stickyHeader("header") {
+        stickyHeader(HeaderKey) {
             val background = SnacColors.page
             val border = SnacColors.rule
 
@@ -200,7 +202,9 @@ fun ChartsScreen(
                     ) {
                         TabRow(
                             selectedTab = selectedMediaTab,
-                            onSelectedTabChange = onSelectedMediaChange,
+                            onSelectedTabChange = {
+                                onSelectedMediaChange(it, listState.firstVisibleCardPosition())
+                            },
                             name = { it.label },
                         )
                         Button(
@@ -220,8 +224,9 @@ fun ChartsScreen(
                         if (!selectorExpanded) {
                             selectorExpanded = true
                         } else {
-                            if (it == Chart.BoxOffice) onSelectedMediaChange(MediaTab.Movie)
-                            onSelectedChartChange(it)
+                            val anchorPosition = listState.firstVisibleCardPosition()
+                            if (it == Chart.BoxOffice) onSelectedMediaChange(MediaTab.Movie, anchorPosition)
+                            onSelectedChartChange(it, anchorPosition)
                         }
                     },
                     selectedPeriod = selectedPeriod,
@@ -229,7 +234,7 @@ fun ChartsScreen(
                         if (!selectorExpanded) {
                             selectorExpanded = true
                         } else {
-                            onSelectedPeriodChange(it)
+                            onSelectedPeriodChange(it, listState.firstVisibleCardPosition())
                         }
                     },
                     expanded = selectorExpanded,
@@ -285,41 +290,47 @@ fun ChartsScreen(
             is LoadState.NotLoading -> {}
         }
 
-        if (results.itemCount > 0) {
-            item("top-media-card") {
-                val item = results[0]
+        items(
+            count = results.itemCount,
+            key = results.itemKey { it.media.slug },
+//            key = { position -> results.peek(position)?.media?.slug ?: position },
+            contentType = { position -> if (position == 0) "top-media-card" else "media-card" },
+        ) { position ->
+            val item = results[position]
+            if (position == 0) {
+                val cardModifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 16.dp)
                 if (item != null) {
                     TopMediaCard(
                         item = item,
                         onClick = { onMediaClick(item.media) },
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = cardModifier,
                     )
+                } else {
+                    TopMediaCardPlaceholder(cardModifier)
                 }
-            }
-
-            item { Spacer(Modifier.height(16.dp)) }
-
-            if (results.itemCount > 1) {
-                items(
-                    count = results.itemCount - 1,
-                    key = { index -> results.peek(index + 1)?.media?.slug ?: (index + 1) }
-                ) { index ->
-                    val item = results[index + 1]
-                    if (item != null) {
-                        MediaCard(
-                            position = index + 2,
-                            item = item,
-                            onClick = { onMediaClick(item.media) },
-                            modifier = Modifier
-                                .animateItem()
-                                .padding(horizontal = 16.dp)
-                                .film(
-                                    side = Side.Start,
-                                    crossEdgeInset = 12.dp,
-                                )
-                                .background(SnacColors.film)
-                        )
-                    }
+            } else {
+                val cardModifier = Modifier
+                    .animateItem()
+                    .padding(horizontal = 16.dp)
+                    .film(
+                        side = Side.Start,
+                        crossEdgeInset = 12.dp,
+                    )
+                    .background(SnacColors.film)
+                if (item != null) {
+                    MediaCard(
+                        position = position + 1,
+                        item = item,
+                        onClick = { onMediaClick(item.media) },
+                        modifier = cardModifier,
+                    )
+                } else {
+                    MediaCardPlaceholder(
+                        position = position + 1,
+                        modifier = cardModifier,
+                    )
                 }
             }
         }
@@ -372,6 +383,38 @@ fun ChartsScreen(
             Spacer(Modifier.bottomBarPadding())
             Spacer(Modifier.navigationBarsPadding())
         }
+    }
+}
+
+private const val HeaderKey = "header"
+
+private const val ChartItemsStart = 2
+
+private fun LazyListState.firstVisibleCardPosition(): Int {
+    val visibleItems = layoutInfo.visibleItemsInfo
+    val headerBottom = visibleItems.firstOrNull { it.key == HeaderKey }
+        ?.let { it.offset + it.size }
+        ?: layoutInfo.viewportStartOffset
+    val first = visibleItems.firstOrNull {
+        it.index >= ChartItemsStart && it.offset + it.size > headerBottom
+    } ?: return 0
+    return first.index - ChartItemsStart
+}
+
+@Composable
+private fun TopMediaCardPlaceholder(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(SnacColors.film)
+            .padding(16.dp)
+    ) {
+        Box(
+            Modifier
+                .rotate(-3f)
+                .background(SnacColors.muted)
+                .size(128.dp, 192.dp)
+        )
     }
 }
 
@@ -532,6 +575,37 @@ private fun MediaCard(
     }
 }
 
+@Composable
+private fun MediaCardPlaceholder(
+    position: Int,
+    modifier: Modifier = Modifier,
+) {
+    val borderColor = SnacColors.filmLine
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .padding(start = 32.dp, end = 8.dp)
+            .drawBehind {
+                drawLine(borderColor, Offset(0f, size.height), Offset(size.width, size.height))
+            }
+            .padding(end = 8.dp)
+            .padding(vertical = 8.dp),
+    ) {
+        Text(
+            text = "$position",
+            style = SnacTypography.title.copy(textAlign = TextAlign.End),
+            color = SnacColors.faint,
+            modifier = Modifier.widthIn(32.dp)
+        )
+        Box(
+            Modifier
+                .background(SnacColors.muted)
+                .size(56.dp, 80.dp)
+        )
+    }
+}
+
 @Preview
 @Composable
 private fun PreviewContent() {
@@ -546,11 +620,11 @@ private fun PreviewContent() {
         ChartsScreen(
             onMediaClick = {},
             selectedMediaTab = mediaTab,
-            onSelectedMediaChange = { mediaTab = it },
+            onSelectedMediaChange = { value, _ -> mediaTab = value },
             selectedChart = selectedChart,
-            onSelectedChartChange = { selectedChart = it },
+            onSelectedChartChange = { value, _ -> selectedChart = value },
             selectedPeriod = selectedPeriod,
-            onSelectedPeriodChange = { selectedPeriod = it },
+            onSelectedPeriodChange = { value, _ -> selectedPeriod = value },
             results = results,
         )
     }
@@ -578,11 +652,11 @@ private fun PreviewLoading() {
         ChartsScreen(
             onMediaClick = {},
             selectedMediaTab = mediaTab,
-            onSelectedMediaChange = { mediaTab = it },
+            onSelectedMediaChange = { value, _ -> mediaTab = value },
             selectedChart = selectedChart,
-            onSelectedChartChange = { selectedChart = it },
+            onSelectedChartChange = { value, _ -> selectedChart = value },
             selectedPeriod = selectedPeriod,
-            onSelectedPeriodChange = { selectedPeriod = it },
+            onSelectedPeriodChange = { value, _ -> selectedPeriod = value },
             results = results,
         )
     }
@@ -610,11 +684,11 @@ private fun PreviewError() {
         ChartsScreen(
             onMediaClick = {},
             selectedMediaTab = mediaTab,
-            onSelectedMediaChange = { mediaTab = it },
+            onSelectedMediaChange = { value, _ -> mediaTab = value },
             selectedChart = selectedChart,
-            onSelectedChartChange = { selectedChart = it },
+            onSelectedChartChange = { value, _ -> selectedChart = value },
             selectedPeriod = selectedPeriod,
-            onSelectedPeriodChange = { selectedPeriod = it },
+            onSelectedPeriodChange = { value, _ -> selectedPeriod = value },
             results = results,
         )
     }
