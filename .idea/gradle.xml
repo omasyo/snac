@@ -43,6 +43,12 @@
             <option value="$PROJECT_DIR$/feature/home" />
             <option value="$PROJECT_DIR$/feature/home/api" />
             <option value="$PROJECT_DIR$/feature/home/impl" />
+            <option value="$PROJECT_DIR$/feature/media" />
+            <option value="$PROJECT_DIR$/feature/media/api" />
+            <option value="$PROJECT_DIR$/feature/media/impl" />
+            <option value="$PROJECT_DIR$/feature/person" />
+            <option value="$PROJECT_DIR$/feature/person/api" />
+            <option value="$PROJECT_DIR$/feature/person/impl" />
             <option value="$PROJECT_DIR$/feature/search" />
             <option value="$PROJECT_DIR$/feature/search/api" />
             <option value="$PROJECT_DIR$/feature/search/impl" />

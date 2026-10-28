@@ -1,0 +1,7 @@
+package com.omasyo.snac.feature.person.api.navigation
+
+import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.Serializable
+
+@Serializable
+data object PersonNavKey : NavKey

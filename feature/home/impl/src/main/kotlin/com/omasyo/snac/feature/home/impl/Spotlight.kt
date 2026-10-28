@@ -30,15 +30,10 @@ import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.TintIndication
 import com.omasyo.snac.core.ui.modifiers.film
 import com.omasyo.snac.core.ui.modifiers.silhouette
+import com.omasyo.snac.core.ui.theme.CapHeightLineHeightStyle
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
-
-private val CapHeightLineHeightStyle = LineHeightStyle(
-    alignment = LineHeightStyle.Alignment.Center,
-    trim = LineHeightStyle.Trim.Both,
-    mode = LineHeightStyle.Mode.Tight,
-)
 
 @Composable
 internal fun TrendingSpotlight(
@@ -95,13 +90,12 @@ internal fun TrendingSpotlight(
                             Alignment.BottomStart
                         )
                     ) {
-                        val titleColor = SnacColors.onFilm
                         Text(
                             text = item.media.title,
                             style = SnacTypography.display.copy(
                                 lineHeightStyle = CapHeightLineHeightStyle,
                             ),
-                            color = titleColor,
+                            color = SnacColors.onFilm,
                             modifier = Modifier.silhouette(SnacColors.signal)
 
                         )

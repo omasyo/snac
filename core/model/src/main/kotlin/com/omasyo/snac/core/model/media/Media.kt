@@ -12,7 +12,11 @@ data class Movie(
     override val title: String,
     override val year: Int,
     override val imageUrl: String?,
-) : Media
+) : Media {
+    companion object {
+        val PreviewSample = List(10) { Movie("movie-$it", "Frankenstein", 2025, null) }
+    }
+}
 
 data class Show(
     override val slug: String,

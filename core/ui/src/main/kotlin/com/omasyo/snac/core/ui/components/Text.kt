@@ -1,6 +1,7 @@
 package com.omasyo.snac.core.ui.components
 
 import androidx.compose.foundation.text.BasicText
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
@@ -35,6 +36,7 @@ fun Text(
     color: Color = Color.Unspecified,
     maxLines: Int = Int.MAX_VALUE,
     overflow: TextOverflow = TextOverflow.Ellipsis,
+    autoSize: TextAutoSize?  = null,
 ) {
     val color = color.takeOrElse { LocalContentColor.current }
     BasicText(
@@ -43,6 +45,7 @@ fun Text(
         color = { color },
         maxLines = maxLines,
         overflow = overflow,
+        autoSize = autoSize,
         modifier = modifier,
     )
 }
