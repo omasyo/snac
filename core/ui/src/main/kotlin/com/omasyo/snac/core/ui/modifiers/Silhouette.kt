@@ -260,7 +260,7 @@ private fun SilhouettePreview() {
                     .background(Color.Yellow)
                     .silhouette(Color.Black, overflow = 10.dp)
             )
-            Box(
+             Box(
                 Modifier
                     .size(100.dp)
                     .rotate(-10f)

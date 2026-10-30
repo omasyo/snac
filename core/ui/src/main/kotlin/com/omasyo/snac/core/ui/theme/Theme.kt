@@ -5,16 +5,19 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
+import com.omasyo.snac.core.ui.theme.colors.ColorScheme
+import com.omasyo.snac.core.ui.theme.colors.Colors
 import com.omasyo.snac.core.ui.theme.colors.CuttingRoom
 import com.omasyo.snac.core.ui.theme.colors.LocalColors
 
 @Composable
 fun SnacTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
+    colors: Colors = CuttingRoom.light,
+//    darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
     CompositionLocalProvider(
-        LocalColors provides CuttingRoom.light,
+        LocalColors provides colors,
         LocalIndication provides SilhouettePressIndication(),
         content = content
     )

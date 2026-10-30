@@ -32,6 +32,7 @@ import com.omasyo.snac.core.ui.models.transpose
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
+import com.omasyo.snac.core.ui.theme.colors.CuttingRoom
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
@@ -133,7 +134,7 @@ internal fun HomeScreen(
 @Preview(device = "spec:width=1080px,height=12340px,dpi=440")
 @Composable
 private fun Preview() {
-    SnacTheme {
+    SnacTheme(CuttingRoom.dark) {
         HomeScreen(
             onSignInClick = {},
             onMediaClick = {},
