@@ -4,18 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalGridApi
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Grid
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -26,7 +22,7 @@ import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
 
-@OptIn(ExperimentalLayoutApi::class, ExperimentalGridApi::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun MediaInfoClapper(
     info: List<Pair<String, String>>,
@@ -53,8 +49,7 @@ fun MediaInfoClapper(
                         .weight(1f)
                         .fillMaxRowHeight()
                         .border(0.5.dp, SnacColors.filmLine)
-                        .padding(8.dp)
-                    ,
+                        .padding(8.dp),
                 ) {
                     Text(
                         text = key,

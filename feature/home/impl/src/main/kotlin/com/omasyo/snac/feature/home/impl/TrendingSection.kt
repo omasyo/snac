@@ -202,7 +202,7 @@ private fun Row(
 private fun PlaceholderRow(scrollable: Boolean) {
     Row(Modifier.horizontalScroll(rememberScrollState(), scrollable)) {
         repeat(10) {
-            val rotation = Random(it + 80).nextInt(-2, 3).toFloat()
+            val rotation = remember(it) { Random(it + 80).nextInt(-2, 3).toFloat() }
 
             Column(
                 modifier = Modifier

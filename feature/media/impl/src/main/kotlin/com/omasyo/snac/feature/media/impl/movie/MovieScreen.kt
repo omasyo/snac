@@ -25,6 +25,30 @@ import java.time.LocalDate
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
+data class Person(
+    val name: String,
+    val slug: String,
+    val imageUrl: String?,
+)
+
+data class Cast(
+    val character: String,
+    val person: Person,
+) {
+    companion object {
+        val PreviewSample = List(10) {
+            Cast(
+                character = "Victor",
+                person = Person(
+                    name = "Oscar Isaac",
+                    slug = "person-$it",
+                    imageUrl = null,
+                ),
+            )
+        }
+    }
+}
+
 data class Genre(val name: String)
 
 enum class ReleaseStatus { Released }
@@ -40,12 +64,14 @@ data class Rating(
 
 data class Ratings(
     val traktRating: Double,
+    val voteCount: Int,
     val distribution: Map<String, Int>,
     val externalRatings: List<Rating>,
 ) {
     companion object {
         val PreviewSample = Ratings(
             traktRating = 8.56438,
+            voteCount = 40067,
             distribution = mapOf(
                 "1" to 89,
                 "2" to 83,
@@ -153,7 +179,7 @@ data class MovieDetails(
 fun MovieScreen(
     movie: MovieDetails,
     ratings: Ratings,
-    cast: List<Any>,
+    cast: List<Cast>,
     relatedMovies: List<Movie>,
     modifier: Modifier = Modifier,
 ) {
