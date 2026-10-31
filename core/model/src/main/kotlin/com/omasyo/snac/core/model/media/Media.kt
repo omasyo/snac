@@ -23,7 +23,11 @@ data class Show(
     override val title: String,
     override val year: Int,
     override val imageUrl: String?,
-) : Media
+) : Media {
+    companion object {
+        val PreviewSample = List(10) { Show("show-$it", "Dark", 2017, null) }
+    }
+}
 
 data class Episode(
     val season: Int,

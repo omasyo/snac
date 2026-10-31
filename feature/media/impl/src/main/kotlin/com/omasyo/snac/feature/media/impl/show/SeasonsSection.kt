@@ -1,4 +1,4 @@
-package com.omasyo.snac.feature.media.impl.movie
+package com.omasyo.snac.feature.media.impl.show
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,8 +30,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.common.SnacResult
-import com.omasyo.snac.core.data.models.Cast
-import com.omasyo.snac.core.data.models.Person
+import com.omasyo.snac.core.data.models.Season
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
@@ -44,49 +43,25 @@ import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
+import com.omasyo.snac.feature.media.impl.components.SectionHeader
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-internal fun CastSection(
-    onPersonClick: (Person) -> Unit,
-    onSeeAllClick: () -> Unit,
-    state: UiState<List<Cast>>,
+internal fun SeasonsSection(
+    onSeasonClick: (Season) -> Unit,
+    state: UiState<List<Season>>,
     modifier: Modifier = Modifier,
 ) {
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-            Text(
-                text = "CAST",
-                style = SnacTypography.title,
-                color = SnacColors.ink,
-                modifier = Modifier
-                    .weight(1f)
-                    .alignByBaseline()
-                    .silhouette(SnacColors.accent),
-            )
-            val tintColor = SnacColors.page
-            Text(
-                text = "SEE ALL →",
-                style = SnacTypography.label,
-                color = SnacColors.signal,
-                modifier = Modifier
-                    .alignByBaseline()
-                    .clickable(
-                        interactionSource = null,
-                        indication = TintIndication(
-                            contentOnly = true,
-                            focusOpacity = 0.2f,
-                            pressOpacity = 0.5f
-                        ) { tintColor },
-                        onClick = onSeeAllClick,
-                    ),
-            )
-        }
+        SectionHeader(
+            title = "SEASONS",
+            modifier = Modifier.padding(horizontal = 16.dp),
+        )
 
         val placeholder =
             remember { movableContentOf<Boolean> { scrollable -> Placeholder(scrollable) } }
@@ -109,10 +84,10 @@ internal fun CastSection(
                     contentPadding = PaddingValues(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
-                    items(state.content, key = { it.person.slug }) { item ->
-                        CastCard(
-                            cast = item,
-                            onClick = { onPersonClick(item.person) },
+                    items(state.content, key = { it.number }) { item ->
+                        SeasonCard(
+                            season = item,
+                            onClick = { onSeasonClick(item) },
                         )
                     }
                 }
@@ -122,41 +97,36 @@ internal fun CastSection(
 }
 
 @Composable
-private fun CastCard(
-    cast: Cast,
+private fun SeasonCard(
+    season: Season,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-
     val rotation =
-        remember(cast) { Random(cast.person.slug.hashCode()).nextInt(-3, 3).toFloat() }
+        remember(season) { Random(season.number).nextInt(-3, 3).toFloat() }
 
-    val tintColor = SnacColors.page
     Column(
-        modifier =
-
-            modifier
-                .rotate(rotation)
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = null,
-                    onClick = onClick,
-                )
-
+        modifier = modifier
+            .rotate(rotation)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick,
+            )
     ) {
         Image(
-            imageUrl = cast.person.imageUrl,
+            imageUrl = season.posterUrl,
             modifier = Modifier
                 .indication(interactionSource, SilhouettePressIndication())
                 .border(2.dp, SnacColors.ink)
                 .background(SnacColors.card)
-                .padding(horizontal = 6.dp)
-                .padding(top = 6.dp, bottom = 16.dp)
-                .size(72.dp, 104.dp),
+                .padding(6.dp)
+                .size(100.dp, 160.dp),
         )
+        val tintColor = SnacColors.page
         Text(
-            text = cast.person.name,
+            text = season.title,
             style = SnacTypography.tag,
             modifier = Modifier
                 .indication(
@@ -167,7 +137,7 @@ private fun CastCard(
                     ) { tintColor })
         )
         Text(
-            text = cast.character,
+            text = season.caption(),
             style = SnacTypography.hand,
             color = SnacColors.signal,
             modifier = Modifier
@@ -181,39 +151,45 @@ private fun CastCard(
     }
 }
 
+private fun Season.caption(): String {
+    val episodes =
+        if (airedEpisodes < episodeCount) "$airedEpisodes/$episodeCount eps" else "$episodeCount eps"
+    return listOfNotNull(episodes, firstAired?.year?.toString()).joinToString(" · ")
+}
+
 @Composable
 private fun Placeholder(scrollable: Boolean) {
-
     Row(
         modifier = Modifier
             .horizontalScroll(rememberScrollState(), scrollable)
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16f.dp),
     ) {
-        repeat(10) {
+        repeat(5) {
             val rotation = remember(it) { Random(it + 80).nextInt(-3, 3).toFloat() }
+
             Column(Modifier.rotate(rotation)) {
                 Box(
                     modifier = Modifier
                         .silhouette()
                         .border(2.dp, SnacColors.ink)
                         .background(SnacColors.card)
-                        .padding(horizontal = 6.dp)
-                        .padding(top = 6.dp, bottom = 16.dp)
-                        .size(72.dp, 104.dp)
+                        .padding(6.dp)
+                        .size(100.dp, 160.dp)
+                        .border(2.dp, SnacColors.ink)
                         .background(imageGradient())
                 )
                 Box(
                     Modifier
                         .padding(top = 8.dp)
-                        .width(64.dp)
+                        .width(72.dp)
                         .height(14.dp)
                         .background(SnacColors.faint)
                 )
                 Box(
                     Modifier
                         .padding(vertical = 4.dp)
-                        .width(48.dp)
+                        .width(56.dp)
                         .height(12.dp)
                         .background(SnacColors.faint)
                 )
@@ -227,10 +203,9 @@ private fun Placeholder(scrollable: Boolean) {
 private fun Preview() {
     SnacTheme {
         Box(Modifier.background(SnacColors.page)) {
-            CastSection(
-                onPersonClick = { },
-                onSeeAllClick = { },
-                state = UiState.Success(Cast.PreviewSample),
+            SeasonsSection(
+                onSeasonClick = { },
+                state = UiState.Success(Season.PreviewSample),
                 modifier = Modifier.padding(vertical = 16.dp)
             )
         }
@@ -240,7 +215,7 @@ private fun Preview() {
 @Preview
 @Composable
 private fun LoadingToErrorPreview() {
-    var state by remember { mutableStateOf<UiState<List<Cast>>>(UiState.Loading) }
+    var state by remember { mutableStateOf<UiState<List<Season>>>(UiState.Loading) }
 
     LaunchedEffect(Unit) {
         delay(3.seconds)
@@ -249,9 +224,8 @@ private fun LoadingToErrorPreview() {
 
     SnacTheme {
         Box(Modifier.background(SnacColors.page)) {
-            CastSection(
-                onPersonClick = { },
-                onSeeAllClick = { },
+            SeasonsSection(
+                onSeasonClick = { },
                 state = state,
                 modifier = Modifier.padding(vertical = 16.dp)
             )
