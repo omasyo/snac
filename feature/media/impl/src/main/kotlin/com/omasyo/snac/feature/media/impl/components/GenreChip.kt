@@ -2,7 +2,9 @@ package com.omasyo.snac.feature.media.impl.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,10 +29,32 @@ fun GenreChip(
     )
 }
 
+@Composable
+fun GenreChipPlaceholder(
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+            .border(2.dp, SnacColors.ink)
+            .background(SnacColors.chip)
+            .padding(12.dp, 2.dp)
+            .padding(vertical = 3.dp)
+            .size(48.dp, 16.dp)
+    )
+}
+
 @Preview
 @Composable
 private fun Preview() {
     SnacTheme {
         GenreChip("Drama", Modifier.padding(8.dp))
+    }
+}
+
+@Preview
+@Composable
+private fun PlaceholderPreview() {
+    SnacTheme {
+        GenreChipPlaceholder(Modifier.padding(8.dp))
     }
 }

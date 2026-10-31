@@ -30,6 +30,8 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.common.SnacResult
+import com.omasyo.snac.core.data.models.Cast
+import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
@@ -42,8 +44,6 @@ import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
-import com.omasyo.snac.feature.media.impl.movie.Cast
-import com.omasyo.snac.feature.media.impl.movie.Person
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds

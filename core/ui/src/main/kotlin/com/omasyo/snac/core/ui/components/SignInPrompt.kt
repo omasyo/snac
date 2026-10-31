@@ -44,7 +44,7 @@ fun SignInPrompt(
                 .padding(top = 8.dp, bottom = 16.dp)
         ) {
             Text(
-                text = title,
+                text = title.uppercase(),
                 style = SnacTypography.title,
             )
             Text(

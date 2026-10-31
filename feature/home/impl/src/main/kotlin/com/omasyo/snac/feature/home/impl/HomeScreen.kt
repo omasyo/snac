@@ -105,7 +105,7 @@ internal fun HomeScreen(
             )
         }
         SignInPrompt(
-            title = "TRACK WHAT YOU WATCH",
+            title = "Track what you watch",
             message = "Sign in to get Up Next, check-ins, paused playback and recommendations from your Trakt account.",
             onSignInClick = {},
             modifier = Modifier.padding(horizontal = 16.dp)
