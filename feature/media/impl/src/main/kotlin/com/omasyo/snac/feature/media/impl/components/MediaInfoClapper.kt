@@ -2,6 +2,7 @@ package com.omasyo.snac.feature.media.impl.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -65,7 +67,55 @@ fun MediaInfoClapper(
             }
         }
     }
+}
 
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun MediaInfoClapperPlaceholder(
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .silhouette(SnacColors.signal, offset = DpOffset(6.dp, 6.dp))
+            .border(4.dp, SnacColors.ink)
+            .background(SnacColors.film)
+    ) {
+        ClapperboardStripes(
+            modifier = Modifier
+                .height(20.dp)
+                .fillMaxWidth()
+        )
+        FlowRow(
+            maxItemsInEachRow = 4,
+        ) {
+            repeat(8) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier
+                        .widthIn(80.dp)
+                        .weight(1f)
+                        .fillMaxRowHeight()
+                        .border(0.5.dp, SnacColors.filmLine)
+                        .padding(8.dp),
+                ) {
+                    Box(
+                        Modifier
+                            .padding(vertical = 8.dp)
+                            .width(40.dp)
+                            .height(10.dp)
+                            .background(SnacColors.faint)
+                    )
+
+                    Box(
+                        Modifier
+                            .width(64.dp)
+                            .height(16.dp)
+                            .background(SnacColors.faint)
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Preview
@@ -88,6 +138,20 @@ private fun Preview() {
                     "Language" to "en",
                 )
             )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PlaceholderPreview() {
+    SnacTheme {
+        Box(
+            modifier = Modifier
+                .background(SnacColors.page)
+                .padding(16.dp)
+        ) {
+            MediaInfoClapperPlaceholder()
         }
     }
 }
