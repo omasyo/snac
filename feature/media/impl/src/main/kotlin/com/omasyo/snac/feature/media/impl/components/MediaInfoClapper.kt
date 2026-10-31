@@ -105,7 +105,6 @@ fun MediaInfoClapperPlaceholder(
                             .height(10.dp)
                             .background(SnacColors.faint)
                     )
-
                     Box(
                         Modifier
                             .width(64.dp)

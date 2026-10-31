@@ -113,7 +113,7 @@ private fun Content(ratings: Ratings) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Spacer(Modifier.height(4.dp))
                         Text(
-                            text = DecimalFormat("#.#").format(ratings.traktRating),
+                            text = DecimalFormat("#.#").format(ratings.traktRating), // TODO have formatting in one place
                             style = SnacTypography.headline.copy(
                                 lineHeightStyle = CapHeightLineHeightStyle,
                             ),
@@ -310,7 +310,8 @@ private fun Placeholder() {
     }
 }
 
-private val PlaceholderBarHeights = listOf(0.1f, 0.1f, 0.1f, 0.1f, 0.15f, 0.25f, 0.4f, 0.75f, 0.5f, 1f)
+private val PlaceholderBarHeights =
+    listOf(0.1f, 0.1f, 0.1f, 0.1f, 0.15f, 0.25f, 0.4f, 0.75f, 0.5f, 1f)
 
 @Preview
 @Composable

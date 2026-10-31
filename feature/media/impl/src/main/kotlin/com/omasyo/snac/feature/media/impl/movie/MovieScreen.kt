@@ -33,11 +33,11 @@ import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.Movie
+import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.SignInPrompt
 import com.omasyo.snac.core.ui.components.Text
-import com.omasyo.snac.core.ui.components.imageGradient
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.map
 import com.omasyo.snac.core.ui.models.message
@@ -53,73 +53,96 @@ import com.omasyo.snac.feature.media.impl.components.GenreChipPlaceholder
 import com.omasyo.snac.feature.media.impl.components.MediaInfoClapper
 import com.omasyo.snac.feature.media.impl.components.MediaInfoClapperPlaceholder
 import com.omasyo.snac.feature.media.impl.components.RatingsSection
+import com.omasyo.snac.feature.media.impl.components.Review
 import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
 @Composable
 fun MovieScreen(
+    onBackClick: () -> Unit,
     onPersonClick: (Person) -> Unit,
     onSeeAllCastClick: () -> Unit,
     onMediaClick: (Media) -> Unit,
+    onReviewClick: (Review) -> Unit,
+    onSeeAllReviewClick: () -> Unit,
+    onCommentClick: () -> Unit,
     onSeeAllRelatedClick: () -> Unit,
     movie: UiState<MovieDetails>,
     ratings: UiState<Ratings>,
     cast: UiState<List<Cast>>,
+    review: UiState<List<Review>>,
     relatedMovies: UiState<List<Movie>>,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(24.dp),
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .background(SnacColors.page)
-            .navigationBarsPadding(),
-    ) {
-        Hero(state = movie)
-        movie.map { it.tagline }.transpose()?.let {
-            Tagline(
-                state = it,
+    Box(modifier) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(24.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .background(SnacColors.page)
+                .navigationBarsPadding(),
+        ) {
+            Hero(state = movie)
+            movie.map { it.tagline }.transpose()?.let {
+                Tagline(
+                    state = it,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                )
+            }
+            Info(
+                state = movie.map { it.info() },
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+            )
+            Genres(
+                state = movie.map { it.genres },
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
+            Overview(
+                state = movie.map { it.overview },
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+            )
+            SignInPrompt(
+                title = "Track this film",
+                message = "Sign in to check in, rate it, mark it seen, and add it to your watchlist, favorites or lists.",
+                onSignInClick = {},
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            RatingsSection(
+                state = ratings,
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            CastSection(
+                onPersonClick = onPersonClick,
+                onSeeAllClick = onSeeAllCastClick,
+                state = cast,
+            )
+            ReviewSection(
+                onReviewClick = onReviewClick,
+                onSeeAllClick = onSeeAllReviewClick,
+                onCommentClick = onCommentClick,
+                state = review,
+            )
+            RelatedSection(
+                onMediaClick = onMediaClick,
+                onSeeAllClick = onSeeAllRelatedClick,
+                state = relatedMovies,
+                modifier = Modifier.padding(bottom = 16.dp),
+            )
         }
-        Info(
-            state = movie.map { it.info() },
+        Button(
+            onClick = onBackClick,
+            backgroundColor = SnacColors.chip,
             modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth(),
-        )
-        Genres(
-            state = movie.map { it.genres },
-            modifier = Modifier.padding(horizontal = 16.dp),
-        )
-        Overview(
-            state = movie.map { it.overview },
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth(),
-        )
-        SignInPrompt(
-            title = "Track this film",
-            message = "Sign in to check in, rate it, mark it seen, and add it to your watchlist, favorites or lists.",
-            onSignInClick = {},
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-        RatingsSection(
-            state = ratings,
-            modifier = Modifier.padding(horizontal = 16.dp),
-        )
-        CastSection(
-            onPersonClick = onPersonClick,
-            onSeeAllClick = onSeeAllCastClick,
-            state = cast,
-        )
-        RelatedSection(
-            onMediaClick = onMediaClick,
-            onSeeAllClick = onSeeAllRelatedClick,
-            state = relatedMovies,
-            modifier = Modifier.padding(bottom = 16.dp),
-        )
+                .padding(start = 32.dp, top = 24.dp)
+                .size(48.dp),
+        ) {
+
+        }
     }
 }
 
@@ -150,29 +173,35 @@ private fun Hero(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.Bottom,
                     modifier = Modifier
-                        .rotate(-4f)
+//                        .rotate(-4f)
                         .padding(horizontal = 32.dp, vertical = 32.dp)
                         .align(Alignment.BottomStart),
                 ) {
+//                    Box(
+//                        modifier = Modifier
+//                            .silhouette(SnacColors.signal)
+//                            .border(4.dp, SnacColors.chip)
+//                            .size(112.dp, 168.dp)
+//                            .background(imageGradient())
+//                    )
+//                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+//                        Box(
+//                            Modifier
+//                                .size(280.dp, 40.dp)
+//                                .background(SnacColors.faint)
+//                        )
+//                        Box(
+//                            Modifier
+//                                .size(200.dp, 40.dp)
+//                                .background(SnacColors.faint)
+//                        )
+//                    }
+
                     Box(
-                        modifier = Modifier
-                            .silhouette(SnacColors.signal)
-                            .border(4.dp, SnacColors.chip)
-                            .size(112.dp, 168.dp)
-                            .background(imageGradient())
+                        Modifier
+                            .size(240.dp, 40.dp)
+                            .background(SnacColors.faint)
                     )
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Box(
-                            Modifier
-                                .size(280.dp, 40.dp)
-                                .background(SnacColors.faint)
-                        )
-                        Box(
-                            Modifier
-                                .size(200.dp, 40.dp)
-                                .background(SnacColors.faint)
-                        )
-                    }
                 }
             }
 
@@ -235,7 +264,7 @@ private fun Tagline(
             Box(
                 modifier
                     .size(200.dp, 16.dp)
-                    .background(SnacColors.faint)
+                    .background(SnacColors.signal.copy(0.4f))
             )
         }
     }
@@ -332,13 +361,18 @@ private fun MovieDetails.info(): List<Pair<String, String>> = listOf(
 private fun Preview() {
     SnacTheme {
         MovieScreen(
+            onBackClick = {},
             onPersonClick = {},
             onSeeAllCastClick = {},
             onMediaClick = {},
+            onReviewClick = {},
+            onSeeAllReviewClick = {},
+            onCommentClick = {},
             onSeeAllRelatedClick = {},
             movie = UiState.Success(MovieDetails.PreviewSample),
             ratings = UiState.Success(Ratings.PreviewSample),
             cast = UiState.Success(Cast.PreviewSample),
+            review = UiState.Success(Review.PreviewSample.take(2)),
             relatedMovies = UiState.Success(Movie.PreviewSample),
             modifier = Modifier.fillMaxSize(),
         )
@@ -350,13 +384,18 @@ private fun Preview() {
 private fun LoadingPreview() {
     SnacTheme {
         MovieScreen(
+            onBackClick = {},
             onPersonClick = {},
             onSeeAllCastClick = {},
             onMediaClick = {},
+            onReviewClick = {},
+            onSeeAllReviewClick = {},
+            onCommentClick = {},
             onSeeAllRelatedClick = {},
             movie = UiState.Loading,
             ratings = UiState.Loading,
             cast = UiState.Loading,
+            review = UiState.Loading,
             relatedMovies = UiState.Loading,
             modifier = Modifier.fillMaxSize(),
         )
@@ -369,13 +408,18 @@ private fun ErrorPreview() {
     val error = UiState.Error(SnacResult.Error.Unexpected) {}
     SnacTheme {
         MovieScreen(
+            onBackClick = {},
             onPersonClick = {},
             onSeeAllCastClick = {},
             onMediaClick = {},
+            onReviewClick = {},
+            onSeeAllReviewClick = {},
+            onCommentClick = {},
             onSeeAllRelatedClick = {},
             movie = error,
             ratings = error,
             cast = error,
+            review = error,
             relatedMovies = error,
             modifier = Modifier.fillMaxSize(),
         )
