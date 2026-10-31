@@ -1,4 +1,4 @@
-package com.omasyo.snac.feature.media.impl.components
+package com.omasyo.snac.feature.media.impl.movie
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

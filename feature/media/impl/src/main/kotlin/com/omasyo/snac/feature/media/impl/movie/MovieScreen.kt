@@ -48,13 +48,11 @@ import com.omasyo.snac.core.ui.theme.CapHeightLineHeightStyle
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
-import com.omasyo.snac.feature.media.impl.components.CastSection
 import com.omasyo.snac.feature.media.impl.components.GenreChip
 import com.omasyo.snac.feature.media.impl.components.GenreChipPlaceholder
 import com.omasyo.snac.feature.media.impl.components.MediaInfoClapper
 import com.omasyo.snac.feature.media.impl.components.MediaInfoClapperPlaceholder
 import com.omasyo.snac.feature.media.impl.components.RatingsSection
-import com.omasyo.snac.feature.media.impl.components.RelatedSection
 import java.time.format.DateTimeFormatter
 import kotlin.random.Random
 
