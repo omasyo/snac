@@ -75,6 +75,7 @@ data class Season(
     val rating: Double,
     val episodeCount: Int,
     val airedEpisodes: Int,
+    val totalRuntime: Duration,
     val firstAired: LocalDate?,
     val network: String?,
 ) {
@@ -88,6 +89,7 @@ data class Season(
                 rating = 8.5,
                 episodeCount = 10,
                 airedEpisodes = if (it == 2) 4 else 10,
+                totalRuntime = 520.minutes,
                 firstAired = LocalDate.of(2017 + it, 12, 1),
                 network = "Netflix",
             )
