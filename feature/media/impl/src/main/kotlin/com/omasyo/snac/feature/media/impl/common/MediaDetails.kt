@@ -79,7 +79,7 @@ internal fun MediaDetailsLayout(
             contentColor = SnacColors.ink,
             modifier = Modifier
                 .statusBarsPadding()
-                .padding(start = 32.dp, top = 24.dp)
+                .padding(start = 32.dp, top = 16.dp)
                 .size(48.dp),
         )
     }

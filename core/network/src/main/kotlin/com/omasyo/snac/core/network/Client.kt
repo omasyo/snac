@@ -50,7 +50,10 @@ fun createClient(tokenStorage: TokenStorage) = HttpClient(OkHttp) {
             }
             refreshTokens {
                 val refreshToken = oldTokens?.refreshToken ?: run {
-                    Log.e("HttpClient", "401 on a request sent without credentials: ${response.request.url}")
+                    Log.e(
+                        "HttpClient",
+                        "401 on a request sent without credentials: ${response.request.url}"
+                    )
                     return@refreshTokens null
                 }
 
@@ -61,6 +64,7 @@ fun createClient(tokenStorage: TokenStorage) = HttpClient(OkHttp) {
                             clientId = TraktConfig.CLIENT_ID,
                             redirectUri = TraktConfig.REDIRECT_URI,
                             refreshToken = refreshToken,
+                            grantType = "refresh_token"
                         )
                     )
                 }
@@ -71,10 +75,12 @@ fun createClient(tokenStorage: TokenStorage) = HttpClient(OkHttp) {
                         tokenStorage.saveToken(content)
                         BearerTokens(content.access, content.refresh)
                     }
+
                     response.status == HttpStatusCode.Unauthorized -> {
                         tokenStorage.expireToken()
                         null
                     }
+
                     else -> throw ResponseException(response, response.bodyAsText())
                 }
             }

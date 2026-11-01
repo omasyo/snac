@@ -172,7 +172,7 @@ fun EpisodeScreen(
         contentColor = SnacColors.ink,
         modifier = Modifier
             .statusBarsPadding()
-            .padding(start = 16.dp, top = 32.dp)
+            .padding(start = 16.dp, top = 16.dp)
             .size(48.dp),
     )
 
