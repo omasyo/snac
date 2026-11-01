@@ -34,6 +34,8 @@ import com.omasyo.snac.feature.media.api.navigation.MovieNavKey
 import com.omasyo.snac.feature.media.api.navigation.SeasonNavKey
 import com.omasyo.snac.feature.media.api.navigation.ShowNavKey
 import com.omasyo.snac.feature.media.impl.navigation.mediaEntry
+import com.omasyo.snac.feature.person.api.navigation.PersonNavKey
+import com.omasyo.snac.feature.person.impl.navigation.personEntry
 import com.omasyo.snac.feature.search.api.navigation.SearchNavKey
 import com.omasyo.snac.feature.search.impl.navigation.searchEntry
 import com.omasyo.snac.feature.settings.api.navigation.SettingsNavKey
@@ -50,6 +52,7 @@ val config = SavedStateConfiguration {
             subclass(EpisodeNavKey::class, EpisodeNavKey.serializer())
             subclass(HomeNavKey::class, HomeNavKey.serializer())
             subclass(MovieNavKey::class, MovieNavKey.serializer())
+            subclass(PersonNavKey::class, PersonNavKey.serializer())
             subclass(SearchNavKey::class, SearchNavKey.serializer())
             subclass(SeasonNavKey::class, SeasonNavKey.serializer())
             subclass(SettingsNavKey::class, SettingsNavKey.serializer())
@@ -116,6 +119,11 @@ fun AppNavHost(
                     onMediaClick = onMediaClick,
                     onSeasonClick = { backStack.add(it) },
                     onEpisodeClick = { backStack.add(it) },
+                    onPersonClick = { backStack.add(PersonNavKey(it.slug)) },
+                )
+                personEntry(
+                    onBackClick = { backStack.removeLastOrNull() },
+                    onMediaClick = onMediaClick,
                 )
                 searchEntry()
                 settingsEntry()

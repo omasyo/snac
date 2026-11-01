@@ -4,4 +4,4 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object PersonNavKey : NavKey
+data class PersonNavKey(val slug: String) : NavKey

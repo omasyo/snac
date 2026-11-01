@@ -2,6 +2,7 @@ package com.omasyo.snac.feature.media.impl.navigation
 
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
+import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.feature.media.api.navigation.EpisodeNavKey
 import com.omasyo.snac.feature.media.api.navigation.MovieNavKey
@@ -17,11 +18,12 @@ fun EntryProviderScope<NavKey>.mediaEntry(
     onMediaClick: (Media) -> Unit,
     onSeasonClick: (SeasonNavKey) -> Unit,
     onEpisodeClick: (EpisodeNavKey) -> Unit,
+    onPersonClick: (Person) -> Unit,
 ) {
     entry<MovieNavKey> {
         MovieScreen(
             onBackClick = onBackClick,
-            onPersonClick = {},
+            onPersonClick = onPersonClick,
             onSeeAllCastClick = {},
             onMediaClick = onMediaClick,
             onReviewClick = {},
@@ -34,7 +36,7 @@ fun EntryProviderScope<NavKey>.mediaEntry(
         ShowScreen(
             onBackClick = onBackClick,
             onSeasonClick = { onSeasonClick(SeasonNavKey(key.slug, it.number)) },
-            onPersonClick = {},
+            onPersonClick = onPersonClick,
             onSeeAllCastClick = {},
             onMediaClick = onMediaClick,
             onReviewClick = {},
@@ -47,7 +49,7 @@ fun EntryProviderScope<NavKey>.mediaEntry(
         SeasonScreen(
             onBackClick = onBackClick,
             onEpisodeClick = { onEpisodeClick(EpisodeNavKey(key.showSlug, it.season, it.number)) },
-            onPersonClick = {},
+            onPersonClick = onPersonClick,
             onSeeAllCastClick = {},
             onReviewClick = {},
             onSeeAllReviewClick = {},
@@ -57,7 +59,7 @@ fun EntryProviderScope<NavKey>.mediaEntry(
     entry<EpisodeNavKey> {
         EpisodeScreen(
             onBackClick = onBackClick,
-            onPersonClick = {},
+            onPersonClick = onPersonClick,
             onSeeAllCastClick = {},
             onReviewClick = {},
             onSeeAllReviewClick = {},

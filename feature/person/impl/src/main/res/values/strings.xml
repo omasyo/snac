@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="back">Back</string>
+
+    <string name="known_for">Known for: %1$s</string>
+
+    <string name="info_born">Born</string>
+    <string name="info_age">Age %1$d</string>
+    <string name="info_from">From</string>
+    <string name="info_in_lists">In lists</string>
+    <string name="info_on_trakt">on Trakt</string>
+
+    <string name="biography">Biography</string>
+    <string name="read_more">Read more</string>
+
+    <string name="credit_as">as %1$s</string>
+    <string name="credit_regular">Regular</string>
+    <string name="credits_empty">Nothing here yet</string>
+    <plurals name="credit_episodes">
+        <item quantity="one">%1$d episode</item>
+        <item quantity="other">%1$d episodes</item>
+    </plurals>
+</resources>
