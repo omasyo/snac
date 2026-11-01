@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.EpisodeDetails
@@ -32,6 +33,37 @@ import com.omasyo.snac.feature.media.impl.common.MediaTagline
 import com.omasyo.snac.feature.media.impl.common.ReviewSection
 import com.omasyo.snac.feature.media.impl.components.RatingsSection
 import com.omasyo.snac.feature.media.impl.components.Review
+import dev.zacsweers.metrox.viewmodel.metroViewModel
+
+@Composable
+fun SeasonScreen(
+    onBackClick: () -> Unit,
+    onEpisodeClick: (EpisodeDetails) -> Unit,
+    onPersonClick: (Person) -> Unit,
+    onSeeAllCastClick: () -> Unit,
+    onReviewClick: (Review) -> Unit,
+    onSeeAllReviewClick: () -> Unit,
+    onCommentClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: SeasonViewModel = metroViewModel(),
+) {
+    SeasonScreen(
+        onBackClick = onBackClick,
+        onEpisodeClick = onEpisodeClick,
+        onPersonClick = onPersonClick,
+        onSeeAllCastClick = onSeeAllCastClick,
+        onReviewClick = onReviewClick,
+        onSeeAllReviewClick = onSeeAllReviewClick,
+        onCommentClick = onCommentClick,
+        showTitle = viewModel.showTitle.collectAsStateWithLifecycle().value,
+        season = viewModel.season.collectAsStateWithLifecycle().value,
+        ratings = viewModel.ratings.collectAsStateWithLifecycle().value,
+        episodes = viewModel.episodes.collectAsStateWithLifecycle().value,
+        cast = viewModel.cast.collectAsStateWithLifecycle().value,
+        review = viewModel.review.collectAsStateWithLifecycle().value,
+        modifier = modifier,
+    )
+}
 
 @Composable
 fun SeasonScreen(

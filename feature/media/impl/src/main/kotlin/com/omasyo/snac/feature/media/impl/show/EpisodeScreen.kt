@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -22,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.EpisodeDetails
@@ -34,6 +36,7 @@ import com.omasyo.snac.core.ui.components.IconButton
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.SignInPrompt
 import com.omasyo.snac.core.ui.components.Text
+import com.omasyo.snac.core.ui.components.bottomBarPadding
 import com.omasyo.snac.core.ui.format.formatDayMonth
 import com.omasyo.snac.core.ui.format.formatRuntime
 import com.omasyo.snac.core.ui.models.UiState
@@ -57,6 +60,34 @@ import com.omasyo.snac.feature.media.impl.common.MediaTagline
 import com.omasyo.snac.feature.media.impl.common.ReviewSection
 import com.omasyo.snac.feature.media.impl.components.RatingsSection
 import com.omasyo.snac.feature.media.impl.components.Review
+import dev.zacsweers.metrox.viewmodel.metroViewModel
+
+@Composable
+fun EpisodeScreen(
+    onBackClick: () -> Unit,
+    onPersonClick: (Person) -> Unit,
+    onSeeAllCastClick: () -> Unit,
+    onReviewClick: (Review) -> Unit,
+    onSeeAllReviewClick: () -> Unit,
+    onCommentClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: EpisodeViewModel = metroViewModel(),
+) {
+    EpisodeScreen(
+        onBackClick = onBackClick,
+        onPersonClick = onPersonClick,
+        onSeeAllCastClick = onSeeAllCastClick,
+        onReviewClick = onReviewClick,
+        onSeeAllReviewClick = onSeeAllReviewClick,
+        onCommentClick = onCommentClick,
+        showTitle = viewModel.showTitle.collectAsStateWithLifecycle().value,
+        episode = viewModel.episode.collectAsStateWithLifecycle().value,
+        ratings = viewModel.ratings.collectAsStateWithLifecycle().value,
+        cast = viewModel.cast.collectAsStateWithLifecycle().value,
+        review = viewModel.review.collectAsStateWithLifecycle().value,
+        modifier = modifier,
+    )
+}
 
 @Composable
 fun EpisodeScreen(
@@ -79,6 +110,7 @@ fun EpisodeScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .background(SnacColors.page)
+            .bottomBarPadding()
             .navigationBarsPadding(),
     ) {
 
@@ -139,6 +171,7 @@ fun EpisodeScreen(
         backgroundColor = SnacColors.chip,
         contentColor = SnacColors.ink,
         modifier = Modifier
+            .statusBarsPadding()
             .padding(start = 16.dp, top = 32.dp)
             .size(48.dp),
     )

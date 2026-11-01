@@ -57,6 +57,7 @@ dependencies {
     implementation(projects.feature.settings.impl)
 
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 
     implementation(libs.metrox.android)
     implementation(libs.metrox.viewmodel)

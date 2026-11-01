@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -32,6 +33,7 @@ import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.IconButton
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
+import com.omasyo.snac.core.ui.components.bottomBarPadding
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.film
@@ -65,6 +67,7 @@ internal fun MediaDetailsLayout(
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .background(SnacColors.page)
+                .bottomBarPadding()
                 .navigationBarsPadding(),
             content = content,
         )
@@ -75,6 +78,7 @@ internal fun MediaDetailsLayout(
             backgroundColor = SnacColors.chip,
             contentColor = SnacColors.ink,
             modifier = Modifier
+                .statusBarsPadding()
                 .padding(start = 32.dp, top = 24.dp)
                 .size(48.dp),
         )

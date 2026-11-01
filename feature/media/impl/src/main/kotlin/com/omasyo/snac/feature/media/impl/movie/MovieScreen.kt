@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.MovieDetails
@@ -36,6 +37,38 @@ import com.omasyo.snac.feature.media.impl.common.RelatedSection
 import com.omasyo.snac.feature.media.impl.common.ReviewSection
 import com.omasyo.snac.feature.media.impl.components.RatingsSection
 import com.omasyo.snac.feature.media.impl.components.Review
+import dev.zacsweers.metrox.viewmodel.metroViewModel
+
+@Composable
+fun MovieScreen(
+    onBackClick: () -> Unit,
+    onPersonClick: (Person) -> Unit,
+    onSeeAllCastClick: () -> Unit,
+    onMediaClick: (Media) -> Unit,
+    onReviewClick: (Review) -> Unit,
+    onSeeAllReviewClick: () -> Unit,
+    onCommentClick: () -> Unit,
+    onSeeAllRelatedClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: MovieViewModel = metroViewModel(),
+) {
+    MovieScreen(
+        onBackClick = onBackClick,
+        onPersonClick = onPersonClick,
+        onSeeAllCastClick = onSeeAllCastClick,
+        onMediaClick = onMediaClick,
+        onReviewClick = onReviewClick,
+        onSeeAllReviewClick = onSeeAllReviewClick,
+        onCommentClick = onCommentClick,
+        onSeeAllRelatedClick = onSeeAllRelatedClick,
+        movie = viewModel.movie.collectAsStateWithLifecycle().value,
+        ratings = viewModel.ratings.collectAsStateWithLifecycle().value,
+        cast = viewModel.cast.collectAsStateWithLifecycle().value,
+        review = viewModel.review.collectAsStateWithLifecycle().value,
+        relatedMovies = viewModel.relatedMovies.collectAsStateWithLifecycle().value,
+        modifier = modifier,
+    )
+}
 
 @Composable
 fun MovieScreen(
