@@ -1,5 +1,6 @@
 package com.omasyo.snac.feature.media.impl.components
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -29,9 +30,13 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import com.omasyo.snac.core.ui.R as UiR
+import com.omasyo.snac.core.ui.components.Icon
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.imageGradient
@@ -174,25 +179,58 @@ fun ReviewCard(
                 )
             }
         }
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            // TODO Add like icon
-            Text(
-                text = "❤️ ${review.likesCount.formatCount()}",
-                style = SnacTypography.overline,
-                color = SnacColors.muted
-            )
-            Text(
-                text = pluralStringResource( //TODO add message bubble icon
-                    R.plurals.replies,
-                    review.repliesCount,
-                    review.repliesCount.formatCount(),
-                ),
-                style = SnacTypography.overline,
-                color = SnacColors.muted
-            )
-        }
+        ReviewStats(review)
+    }
+}
+
+@Composable
+private fun ReviewStats(review: Review) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    ) {
+        ReviewStat(
+            icon = UiR.drawable.heart_bold,
+            count = review.likesCount,
+            description = pluralStringResource(
+                R.plurals.likes,
+                review.likesCount,
+                review.likesCount.formatCount(),
+            ),
+        )
+        ReviewStat(
+            icon = UiR.drawable.chat_circle_bold,
+            count = review.repliesCount,
+            description = pluralStringResource(
+                R.plurals.replies,
+                review.repliesCount,
+                review.repliesCount.formatCount(),
+            ),
+        )
+    }
+}
+
+@Composable
+private fun ReviewStat(
+    @DrawableRes icon: Int,
+    count: Int,
+    description: String,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.clearAndSetSemantics { contentDescription = description },
+    ) {
+        Icon(
+            icon = icon,
+            contentDescription = null,
+            tint = SnacColors.muted,
+            modifier = Modifier.size(14.dp),
+        )
+        Text(
+            text = count.formatCount(),
+            style = SnacTypography.overline,
+            color = SnacColors.muted
+        )
     }
 }
 
@@ -253,25 +291,7 @@ fun ReviewPreviewCard(
             modifier = if (blurred) Modifier.blur(8.dp, BlurredEdgeTreatment.Unbounded)
             else Modifier
         )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
-            // TODO Add like icon
-            Text(
-                text = "❤️ ${review.likesCount.formatCount()}",
-                style = SnacTypography.overline,
-                color = SnacColors.muted
-            )
-            Text(
-                text = pluralStringResource( //TODO add message bubble icon
-                    R.plurals.replies,
-                    review.repliesCount,
-                    review.repliesCount.formatCount(),
-                ),
-                style = SnacTypography.overline,
-                color = SnacColors.muted
-            )
-        }
+        ReviewStats(review)
     }
 }
 

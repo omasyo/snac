@@ -17,6 +17,7 @@ import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
@@ -26,12 +27,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.data.models.EpisodeDetails
+import com.omasyo.snac.core.ui.R as UiR
 import com.omasyo.snac.core.ui.components.ErrorBox
+import com.omasyo.snac.core.ui.components.Icon
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
+import com.omasyo.snac.core.ui.format.MetaSeparator
 import com.omasyo.snac.core.ui.format.formatFullDate
 import com.omasyo.snac.core.ui.format.formatRating
-import com.omasyo.snac.core.ui.format.metaLine
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.Side
@@ -139,11 +142,29 @@ private fun EpisodeRow(
                 style = SnacTypography.tag,
                 color = SnacColors.onFilm,
             )
-            Text(
-                text = episode.caption(),
-                style = SnacTypography.hand,
-                color = SnacColors.mutedOnFilm,
-            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                episode.firstAired?.let {
+                    Text(
+                        text = "${it.formatFullDate()} $MetaSeparator",
+                        style = SnacTypography.hand,
+                        color = SnacColors.mutedOnFilm,
+                    )
+                }
+                Icon(
+                    icon = UiR.drawable.star_fill,
+                    contentDescription = null,
+                    tint = SnacColors.mutedOnFilm,
+                    modifier = Modifier.size(14.dp),
+                )
+                Text(
+                    text = episode.rating.formatRating(),
+                    style = SnacTypography.hand,
+                    color = SnacColors.mutedOnFilm,
+                )
+            }
         }
     }
 }
@@ -151,11 +172,6 @@ private fun EpisodeRow(
 @Composable
 internal fun EpisodeDetails.displayTitle(): String =
     title ?: stringResource(R.string.episode_fallback_title, number)
-
-private fun EpisodeDetails.caption(): String = metaLine(
-    firstAired?.formatFullDate(),
-    "★ ${rating.formatRating()}", //TODO use an actual star icon
-)
 
 @Composable
 private fun Placeholder() {

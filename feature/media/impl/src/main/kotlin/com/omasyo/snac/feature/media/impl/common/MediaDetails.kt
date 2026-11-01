@@ -23,11 +23,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.data.models.Genre
-import com.omasyo.snac.core.ui.components.Button
+import com.omasyo.snac.core.ui.R as UiR
 import com.omasyo.snac.core.ui.components.ErrorBox
+import com.omasyo.snac.core.ui.components.IconButton
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.models.UiState
@@ -37,6 +39,7 @@ import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.CapHeightLineHeightStyle
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
+import com.omasyo.snac.feature.media.impl.R
 import com.omasyo.snac.feature.media.impl.components.GenreChip
 import com.omasyo.snac.feature.media.impl.components.GenreChipPlaceholder
 import com.omasyo.snac.feature.media.impl.components.MediaInfoClapper
@@ -65,15 +68,16 @@ internal fun MediaDetailsLayout(
                 .navigationBarsPadding(),
             content = content,
         )
-        Button(
+        IconButton(
+            icon = UiR.drawable.caret_left_bold,
+            contentDescription = stringResource(R.string.back),
             onClick = onBackClick,
             backgroundColor = SnacColors.chip,
+            contentColor = SnacColors.ink,
             modifier = Modifier
                 .padding(start = 32.dp, top = 24.dp)
                 .size(48.dp),
-        ) {
-
-        }
+        )
     }
 }
 

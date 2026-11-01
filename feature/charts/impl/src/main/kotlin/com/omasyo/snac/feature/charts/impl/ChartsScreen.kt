@@ -38,6 +38,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -58,8 +59,10 @@ import com.omasyo.snac.core.model.media.PlayedItem
 import com.omasyo.snac.core.model.media.PopularItem
 import com.omasyo.snac.core.model.media.TrendingItem
 import com.omasyo.snac.core.model.media.WatchedItem
+import com.omasyo.snac.core.ui.R as UiR
 import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.ErrorBox
+import com.omasyo.snac.core.ui.components.IconButton
 import com.omasyo.snac.core.ui.components.TabRow
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
@@ -214,14 +217,14 @@ fun ChartsScreen(
                             },
                             name = { it.label },
                         )
-                        Button(
+                        IconButton(
+                            icon = UiR.drawable.funnel_simple_bold,
+                            contentDescription = stringResource(R.string.filters),
                             onClick = { selectorExpanded = !selectorExpanded },
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .aspectRatio(1f),
-                        ) {
-
-                        }
+                        )
                     }
                 }
 

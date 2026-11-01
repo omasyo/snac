@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.model.media.AnticipatedItem
 import com.omasyo.snac.core.model.media.Media
+import com.omasyo.snac.core.ui.components.ArrowLink
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Stamp
@@ -72,22 +73,10 @@ internal fun AnticipatedSection(
                     .alignByBaseline()
                     .silhouette(SnacColors.accent),
             )
-            val tintColor = SnacColors.page
-            Text(
-                text = "ALL CHARTS →",
-                style = SnacTypography.label,
-                color = SnacColors.signal,
-                modifier = Modifier
-                    .alignByBaseline()
-                    .clickable(
-                        interactionSource = null,
-                        indication = TintIndication(
-                            contentOnly = true,
-                            focusOpacity = 0.2f,
-                            pressOpacity = 0.5f
-                        ) { tintColor },
-                        onClick = onAllChartsClick,
-                    ),
+            ArrowLink(
+                text = "ALL CHARTS",
+                onClick = onAllChartsClick,
+                modifier = Modifier.alignByBaseline(),
             )
         }
 

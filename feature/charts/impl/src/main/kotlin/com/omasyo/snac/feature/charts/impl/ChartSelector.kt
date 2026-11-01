@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Placeable
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.DpOffset
@@ -37,8 +38,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
 import androidx.compose.ui.util.lerp
 import com.omasyo.snac.core.model.extra.TimePeriod
-import com.omasyo.snac.core.ui.components.Button
+import com.omasyo.snac.core.ui.R as UiR
 import com.omasyo.snac.core.ui.components.ClapperboardStripes
+import com.omasyo.snac.core.ui.components.IconButton
 import com.omasyo.snac.core.ui.components.SelectableText
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
@@ -302,12 +304,12 @@ private fun Preview() {
                 expanded = expanded,
             )
 
-            Button(
+            IconButton(
+                icon = UiR.drawable.funnel_simple_bold,
+                contentDescription = stringResource(R.string.filters),
                 onClick = { expanded = !expanded },
                 modifier = Modifier.size(40.dp),
-            ) {
-
-            }
+            )
         }
     }
 }

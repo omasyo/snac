@@ -28,8 +28,9 @@ import com.omasyo.snac.core.data.models.EpisodeDetails
 import com.omasyo.snac.core.data.models.EpisodeType
 import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.data.models.Ratings
-import com.omasyo.snac.core.ui.components.Button
+import com.omasyo.snac.core.ui.R as UiR
 import com.omasyo.snac.core.ui.components.ErrorBox
+import com.omasyo.snac.core.ui.components.IconButton
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.SignInPrompt
 import com.omasyo.snac.core.ui.components.Text
@@ -131,15 +132,16 @@ fun EpisodeScreen(
             modifier = Modifier.padding(bottom = 16.dp),
         )
     }
-    Button(
+    IconButton(
+        icon = UiR.drawable.caret_left_bold,
+        contentDescription = stringResource(R.string.back),
         onClick = onBackClick,
         backgroundColor = SnacColors.chip,
+        contentColor = SnacColors.ink,
         modifier = Modifier
             .padding(start = 16.dp, top = 32.dp)
             .size(48.dp),
-    ) {
-
-    }
+    )
 
 
 }

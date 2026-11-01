@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="back">Back</string>
+
+    <plurals name="likes">
+        <item quantity="one">%1$s like</item>
+        <item quantity="other">%1$s likes</item>
+    </plurals>
     <plurals name="votes">
         <item quantity="one">%1$s vote</item>
         <item quantity="other">%1$s votes</item>
