@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.MovieDetails
+import com.omasyo.snac.core.data.models.ReleaseStatus
 import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.model.media.Media
@@ -117,12 +118,16 @@ private fun MovieDetails.info(): List<Pair<String, String>> = listOf(
     "Year" to year.toString(),
     "Runtime" to runtime.toRuntimeLabel(),
     "Cert" to certification,
-    "Status" to status.name,
+    "Status" to status.label(),
     "Released" to releaseDate.format(DateTimeFormatter.ofPattern("d MMM")),
     "Country" to country.uppercase(),
     "Language" to language.uppercase(),
 //    "Trakt" to DecimalFormat("#.#").format(rating),
 )
+
+private fun ReleaseStatus.label(): String = when (this) {
+    ReleaseStatus.Released -> "Released"
+}
 
 @Preview(device = "spec:width=1080px,height=7000px,dpi=440")
 @Composable

@@ -1,5 +1,6 @@
 package com.omasyo.snac.feature.charts.impl
 
+import androidx.annotation.PluralsRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,6 +37,7 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -61,6 +63,8 @@ import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.TabRow
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
+import com.omasyo.snac.core.ui.format.formatCount
+import com.omasyo.snac.core.ui.format.formatRevenue
 import com.omasyo.snac.core.ui.modifiers.Side
 import com.omasyo.snac.core.ui.modifiers.film
 import com.omasyo.snac.core.ui.modifiers.silhouette
@@ -75,17 +79,23 @@ enum class MediaTab(val label: String) {
     Movie("Movie"), Show("Show")
 }
 
-val ChartItem.info: String
-    get() = when (this) {
-        is AnticipatedItem -> "$listCount lists"
-        is BoxOfficeItem -> "$revenue"
-        is FavoritedItem -> "$userCount users"
-        is PopularItem -> ""
-        is TrendingItem -> "$watchers watchers"
-        is CollectedItem -> "$collectedCount watchers"  //TODO shows have collectors, which seems more important
-        is PlayedItem -> "$playCount watchers"
-        is WatchedItem -> "$watcherCount watchers"
-    }
+@Composable
+fun ChartItem.info(): String = when (this) {
+    is AnticipatedItem -> countLabel(R.plurals.chart_lists, listCount)
+    is BoxOfficeItem -> revenue.formatRevenue()
+    is FavoritedItem -> countLabel(R.plurals.chart_users, userCount)
+    is PopularItem -> ""
+    is TrendingItem -> countLabel(R.plurals.chart_watchers, watchers)
+    is CollectedItem -> collectorCount?.let { countLabel(R.plurals.chart_collectors, it) }
+        ?: countLabel(R.plurals.chart_collected, collectedCount)
+
+    is PlayedItem -> countLabel(R.plurals.chart_plays, playCount)
+    is WatchedItem -> countLabel(R.plurals.chart_watchers, watcherCount)
+}
+
+@Composable
+private fun countLabel(@PluralsRes id: Int, count: Int): String =
+    pluralStringResource(id, count, count.formatCount())
 
 @Composable
 fun ChartsScreen(
@@ -246,7 +256,7 @@ fun ChartsScreen(
 
         item { Spacer(Modifier.height(16.dp)) }
 
-        when (val refreshState = results.loadState.refresh) { //TODO
+        when (val refreshState = results.loadState.refresh) {
             is LoadState.Loading -> {
                 if (results.itemCount == 0) {
                     item("refresh-loading") { Placeholder() }

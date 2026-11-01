@@ -6,7 +6,7 @@ import kotlin.time.Duration.Companion.minutes
 
 data class Genre(val name: String)
 
-enum class ReleaseStatus { Released }
+enum class ReleaseStatus { Released } //TODO other release statuses
 
 data class SocialIds(val instagram: String?)
 

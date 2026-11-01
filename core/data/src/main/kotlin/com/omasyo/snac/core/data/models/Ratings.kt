@@ -3,7 +3,8 @@ package com.omasyo.snac.core.data.models
 data class Rating(
     val title: String,
     val rating: String,
-    val extra: String,
+    val voteCount: Int? = null, // TODO you have this backwards format directly to the extra remove this field, worst case scenario we use some sort of sealed type so we can pass the necessary data and format in the ui
+    val extra: String? = null,
     val outOf: String? = null,
 )
 
@@ -33,13 +34,13 @@ data class Ratings(
                 Rating(
                     title = "TMDB",
                     rating = "8.5",
-                    extra = "6,209 votes",
+                    voteCount = 6209,
                     outOf = "10",
                 ),
                 Rating(
                     title = "IMDb",
                     rating = "7.9",
-                    extra = "366,130 votes",
+                    voteCount = 366130,
                     outOf = "10",
                 ),
                 Rating(
@@ -61,7 +62,7 @@ data class Ratings(
                 Rating(
                     title = "Letterboxd",
                     rating = "4.03",
-                    extra = "4,621,098 votes",
+                    voteCount = 4621098,
                     outOf = "5",
                 ),
             ),

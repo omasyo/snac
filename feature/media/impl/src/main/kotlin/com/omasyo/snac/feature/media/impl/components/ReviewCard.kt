@@ -34,11 +34,13 @@ import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.imageGradient
+import com.omasyo.snac.core.ui.format.formatRelative
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
+import java.time.LocalDateTime
 
 data class User(
     val slug: String,
@@ -56,6 +58,7 @@ data class Review(
     val likesCount: Int,
     val rating: Int,
     val user: User,
+    val createdAt: LocalDateTime,
 ) {
     companion object {
         val PreviewSample = List(20) {
@@ -72,7 +75,8 @@ data class Review(
                     slug = "user",
                     name = "omasyo",
                     imageUrl = null
-                )
+                ),
+                createdAt = LocalDateTime.now().minusDays(6),
             )
         }
     }
@@ -114,7 +118,7 @@ fun ReviewCard(
                     style = SnacTypography.label,
                 )
                 Text(
-                    text = "6d ago", //TODO
+                    text = review.createdAt.formatRelative(),
                     style = SnacTypography.caption,
                     color = SnacColors.muted
                 )
@@ -177,7 +181,7 @@ fun ReviewCard(
                 color = SnacColors.muted
             )
             Text(
-                text = "${review.repliesCount} replies", //TODO
+                text = "${review.repliesCount} replies", //TODO add message bubble icon
                 style = SnacTypography.overline,
                 color = SnacColors.muted
             )
@@ -252,7 +256,7 @@ fun ReviewPreviewCard(
                 color = SnacColors.muted
             )
             Text(
-                text = "${review.repliesCount} replies", //TODO
+                text = "${review.repliesCount} replies", //TODO add message bubble icon
                 style = SnacTypography.overline,
                 color = SnacColors.muted
             )

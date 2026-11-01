@@ -29,6 +29,7 @@ import com.omasyo.snac.core.model.media.BoxOfficeItem
 import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Text
+import com.omasyo.snac.core.ui.format.formatRevenue
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.TintIndication
@@ -75,7 +76,7 @@ internal fun BoxOfficeSection(
                     Entry(
                         position = index + 1,
                         title = item.media.title,
-                        revenue = formatRevenue(item.revenue),
+                        revenue = item.revenue.formatRevenue(),
                         onClick = { onMovieClick(item.media) },
                         modifier = Modifier,
                     )
@@ -114,12 +115,6 @@ internal fun BoxOfficeSectionLayout(
         }
         content()
     }
-}
-
-private fun formatRevenue(dollars: Long): String = when { //TODO who asked for this?
-    dollars >= 1_000_000 -> "$%.1fM".format(dollars / 1_000_000.0)
-    dollars >= 1_000 -> "$%.1fK".format(dollars / 1_000.0)
-    else -> "$$dollars"
 }
 
 @Composable

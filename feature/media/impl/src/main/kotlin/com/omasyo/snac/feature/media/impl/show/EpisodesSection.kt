@@ -28,6 +28,7 @@ import com.omasyo.snac.core.data.models.EpisodeDetails
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
+import com.omasyo.snac.core.ui.format.formatRating
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.Side
@@ -148,7 +149,7 @@ internal fun EpisodeDetails.displayTitle(): String = title ?: "Episode $number"
 
 private fun EpisodeDetails.caption(): String = listOfNotNull(
     firstAired?.format(DateTimeFormatter.ofPattern("d MMM yyyy")),
-    "★ $rating",
+    "★ ${rating.formatRating()}", //TODO use an actual star icon
 ).joinToString(" · ")
 
 @Composable

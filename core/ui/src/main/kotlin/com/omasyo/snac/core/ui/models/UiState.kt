@@ -6,8 +6,7 @@ sealed interface UiState<out T> {
 
     data object Loading : UiState<Nothing>
 
-    data class Error(val error: SnacResult.Error, val refresh: () -> Unit) :
-        UiState<Nothing> //TODO error type
+    data class Error(val error: SnacResult.Error, val refresh: () -> Unit) : UiState<Nothing>
 
     data class Success<T>(val content: T, val isRefreshing: Boolean = false) : UiState<T>
 }

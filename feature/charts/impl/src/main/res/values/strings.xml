@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="chart_lists">
+        <item quantity="one">%1$s list</item>
+        <item quantity="other">%1$s lists</item>
+    </plurals>
+    <plurals name="chart_users">
+        <item quantity="one">%1$s user</item>
+        <item quantity="other">%1$s users</item>
+    </plurals>
+    <plurals name="chart_watchers">
+        <item quantity="one">%1$s watcher</item>
+        <item quantity="other">%1$s watchers</item>
+    </plurals>
+    <plurals name="chart_collectors">
+        <item quantity="one">%1$s collector</item>
+        <item quantity="other">%1$s collectors</item>
+    </plurals>
+    <plurals name="chart_collected">
+        <item quantity="one">%1$s collected</item>
+        <item quantity="other">%1$s collected</item>
+    </plurals>
+    <plurals name="chart_plays">
+        <item quantity="one">%1$s play</item>
+        <item quantity="other">%1$s plays</item>
+    </plurals>
+</resources>

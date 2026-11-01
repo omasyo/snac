@@ -18,7 +18,6 @@ interface NetworkSource {
         get() = this::class.simpleName.toString()
 }
 
-//TODO review logging
 internal suspend inline fun <reified T> NetworkSource.safeCall(block: () -> HttpResponse): SnacResult<T> {
     val error = try {
         val response = block()

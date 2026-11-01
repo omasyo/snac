@@ -93,7 +93,7 @@ internal fun MediaCard(
                 color = SnacColors.mutedOnFilm,
             )
             Text(
-                text = item.info,
+                text = item.info(),
                 style = SnacTypography.hand,
                 color = SnacColors.accent,
             )

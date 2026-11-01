@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,6 +39,8 @@ import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.LocalContentColor
 import com.omasyo.snac.core.ui.components.Text
+import com.omasyo.snac.core.ui.format.formatCount
+import com.omasyo.snac.core.ui.format.formatRating
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.silhouette
@@ -45,8 +48,8 @@ import com.omasyo.snac.core.ui.theme.CapHeightLineHeightStyle
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
+import com.omasyo.snac.feature.media.impl.R
 import kotlinx.coroutines.delay
-import java.text.DecimalFormat
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 
@@ -113,7 +116,7 @@ private fun Content(ratings: Ratings) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Spacer(Modifier.height(4.dp))
                         Text(
-                            text = DecimalFormat("#.#").format(ratings.traktRating), // TODO have formatting in one place
+                            text = ratings.traktRating.formatRating(),
                             style = SnacTypography.headline.copy(
                                 lineHeightStyle = CapHeightLineHeightStyle,
                             ),
@@ -128,7 +131,11 @@ private fun Content(ratings: Ratings) {
                 }
 
                 Text(
-                    text = "${ratings.voteCount} votes", //TODO: pluralize
+                    text = pluralStringResource(
+                        R.plurals.votes,
+                        ratings.voteCount,
+                        ratings.voteCount.formatCount(),
+                    ),
                     color = SnacColors.muted,
                     style = SnacTypography.overline,
                 )
@@ -237,7 +244,9 @@ private fun RatingCard(
                 color = { contentColor },
             )
             Text(
-                text = rating.extra,
+                text = rating.voteCount
+                    ?.let { pluralStringResource(R.plurals.votes, it, it.formatCount()) }
+                    ?: rating.extra.orEmpty(),
                 style = SnacTypography.caption,
             )
         }

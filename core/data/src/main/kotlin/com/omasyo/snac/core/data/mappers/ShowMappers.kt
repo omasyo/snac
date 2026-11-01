@@ -31,7 +31,7 @@ fun AnticipatedShowResponse.toAnticipatedItem() = AnticipatedItem(
 fun MostShowStatsResponse.toCollectedItem() = CollectedItem(
     media = show.toShow(),
     collectedCount = collectedCount,
-    collectorCount = null,
+    collectorCount = collectorCount,
 )
 
 fun MostFavoritedShowResponse.toFavoritedItem() = FavoritedItem(
