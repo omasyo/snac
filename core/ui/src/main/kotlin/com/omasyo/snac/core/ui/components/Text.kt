@@ -5,19 +5,15 @@ import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.compositionLocalWithComputedDefaultOf
 import androidx.compose.runtime.structuralEqualityPolicy
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
+import com.omasyo.snac.core.ui.theme.LocalContentColor
 import com.omasyo.snac.core.ui.theme.SnacTypography
-import com.omasyo.snac.core.ui.theme.colors.LocalColors
 
-
-val LocalContentColor =
-    compositionLocalWithComputedDefaultOf { LocalColors.currentValue.ink } //TODO move out of here
 
 val LocalTextStyle = compositionLocalOf(structuralEqualityPolicy()) { SnacTypography.body }
 

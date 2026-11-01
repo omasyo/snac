@@ -4,11 +4,15 @@ import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalWithComputedDefaultOf
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.theme.colors.ColorScheme
 import com.omasyo.snac.core.ui.theme.colors.Colors
 import com.omasyo.snac.core.ui.theme.colors.CuttingRoom
 import com.omasyo.snac.core.ui.theme.colors.LocalColors
+
+val LocalContentColor =
+    compositionLocalWithComputedDefaultOf { LocalColors.currentValue.ink }
 
 @Composable
 fun SnacTheme(
