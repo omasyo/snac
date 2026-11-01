@@ -152,7 +152,7 @@ private fun AccountSection(
     }
 }
 
-@Preview(device = "spec:width=1080px,height=3000px,dpi=440")
+@Preview(device = "spec:width=1080px,height=5000px,dpi=440")
 @Composable
 private fun Preview() {
     SnacTheme {

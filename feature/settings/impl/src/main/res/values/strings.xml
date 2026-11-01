@@ -11,7 +11,6 @@
     <string name="appearance_title">APPEARANCE</string>
     <string name="theme_label">THEME</string>
     <string name="mode_label">MODE</string>
-    <string name="appearance_saved">Saved on this device.</string>
 
     <string name="mode_light">LIGHT</string>
     <string name="mode_dark">DARK</string>

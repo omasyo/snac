@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.selection.selectable
@@ -18,7 +17,7 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,6 +37,7 @@ import com.omasyo.snac.core.ui.theme.colors.SnacColors
 import com.omasyo.snac.core.ui.theme.colors.colorScheme
 import com.omasyo.snac.core.ui.theme.colors.colors
 import com.omasyo.snac.core.ui.theme.isDark
+import kotlin.random.Random
 
 @Composable
 internal fun AppearanceCard(
@@ -68,12 +68,16 @@ internal fun AppearanceCard(
             AppTheme.entries.chunked(2).forEach { row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     row.forEach { theme ->
+
+                        val rotation = Random(theme.hashCode()).nextInt(-2, 2).toFloat()
                         ThemeOption(
                             name = stringResource(theme.label),
                             colors = theme.colorScheme.colors(darkTheme),
                             selected = theme == settings.theme,
                             onClick = { onThemeChange(theme) },
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier
+                                .rotate(rotation)
+                                .weight(1f),
                         )
                     }
                     if (row.size == 1) Spacer(Modifier.weight(1f))
@@ -92,15 +96,9 @@ internal fun AppearanceCard(
             equalWidth = true,
             modifier = Modifier.fillMaxWidth(),
         )
-        Text(
-            text = stringResource(R.string.appearance_saved),
-            style = SnacTypography.caption,
-            color = SnacColors.muted,
-        )
     }
 }
 
-/** Drawn in the colors of the theme it represents, not the current one. */
 @Composable
 private fun ThemeOption(
     name: String,
@@ -122,20 +120,23 @@ private fun ThemeOption(
                 onClick = onClick,
             )
             .border(2.dp, if (selected) selectionColor else colors.ink)
-            .background(colors.page),
+            .background(SnacColors.film)
+            .padding(top = 16.dp)
+            .background(colors.page)
+            .padding(12.dp),
     ) {
-        Box(
-            Modifier
-                .fillMaxWidth()
-                .height(12.dp)
-                .background(colors.film)
-        )
         Row(
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-            modifier = Modifier.padding(start = 6.dp, end = 6.dp, top = 8.dp, bottom = 4.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             listOf(colors.accent, colors.signal, colors.tape, colors.card).forEach {
-                Swatch(color = it, borderColor = colors.ink)
+                val rotation = Random(it.hashCode()).nextInt(-3, 3).toFloat()
+                Box(
+                    Modifier
+                        .rotate(rotation)
+                        .size(24.dp)
+                        .border(1.5.dp, colors.ink)
+                        .background(it)
+                )
             }
         }
         Text(
@@ -143,22 +144,8 @@ private fun ThemeOption(
             style = SnacTypography.subtitle,
             color = colors.ink,
             maxLines = 1,
-            modifier = Modifier.padding(start = 6.dp, end = 6.dp, bottom = 6.dp),
         )
     }
-}
-
-@Composable
-private fun Swatch(
-    color: Color,
-    borderColor: Color,
-) {
-    Box(
-        Modifier
-            .size(20.dp)
-            .border(1.5.dp, borderColor)
-            .background(color)
-    )
 }
 
 @get:StringRes
