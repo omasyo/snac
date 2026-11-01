@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,6 +22,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.ui.modifiers.bleedHorizontally
+import com.omasyo.snac.core.ui.theme.LocalContentColor
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
 
@@ -42,16 +44,18 @@ fun <T> BottomBar(
             .background(SnacColors.tape)
             .padding(horizontal = 24.dp, vertical = 8.dp),
     ) {
-        for (destination in destinations) {
-            Box(
-                modifier = Modifier.widthIn(64.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                SelectableText(
-                    label = label(destination),
-                    isSelected = currentDestination == destination,
-                    onClick = { onCurrentDestinationChange(destination) },
-                )
+        CompositionLocalProvider(LocalContentColor provides SnacColors.onAccent) {
+            for (destination in destinations) {
+                Box(
+                    modifier = Modifier.widthIn(64.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    SelectableText(
+                        label = label(destination),
+                        isSelected = currentDestination == destination,
+                        onClick = { onCurrentDestinationChange(destination) },
+                    )
+                }
             }
         }
     }

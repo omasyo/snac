@@ -3,6 +3,8 @@ package com.omasyo.snac
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.omasyo.snac.core.data.auth.AuthRepository
+import com.omasyo.snac.core.data.settings.SettingsRepository
+import com.omasyo.snac.core.model.settings.ThemeSettings
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
@@ -20,6 +22,7 @@ import kotlinx.coroutines.runBlocking
 @ContributesIntoMap(AppScope::class)
 class MainViewModel(
     private val authRepository: AuthRepository,
+    private val settingsRepository: SettingsRepository,
 ) : ViewModel() {
     private val initialAuthenticatedState = runBlocking {
         authRepository.isSignedIn.first()
@@ -29,6 +32,16 @@ class MainViewModel(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
         initialValue = initialAuthenticatedState
+    )
+
+    private val initialThemeSettings = runBlocking {
+        settingsRepository.themeSettings.first()
+    }
+
+    val themeSettings: StateFlow<ThemeSettings> = settingsRepository.themeSettings.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = initialThemeSettings
     )
 
 }

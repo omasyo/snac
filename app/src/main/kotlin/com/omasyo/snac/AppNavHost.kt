@@ -8,6 +8,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,6 +24,7 @@ import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.model.media.Show
 import com.omasyo.snac.core.ui.components.BottomBar
+import com.omasyo.snac.core.ui.theme.colors.SnacColors
 import com.omasyo.snac.feature.calendar.api.navigation.CalendarNavKey
 import com.omasyo.snac.feature.calendar.impl.navigation.calendarEntry
 import com.omasyo.snac.feature.charts.api.navigation.ChartsNavKey
@@ -77,6 +79,7 @@ fun AppNavHost(
     val onMediaClick: (Media) -> Unit = { backStack.add(it.navKey()) }
 
     RootScreenLayout(
+        modifier = Modifier.background(SnacColors.page),
         bottomBar = {
             BottomBar(
                 currentDestination = destination,
@@ -113,7 +116,10 @@ fun AppNavHost(
             entryProvider = entryProvider {
                 calendarEntry()
                 chartsEntry(onMediaClick = onMediaClick)
-                homeEntry(onMediaClick = onMediaClick)
+                homeEntry(
+                    onMediaClick = onMediaClick,
+                    onSettingsClick = { backStack.add(SettingsNavKey) },
+                )
                 mediaEntry(
                     onBackClick = { backStack.removeLastOrNull() },
                     onMediaClick = onMediaClick,
@@ -126,7 +132,7 @@ fun AppNavHost(
                     onMediaClick = onMediaClick,
                 )
                 searchEntry()
-                settingsEntry()
+                settingsEntry(onBackClick = { backStack.removeLastOrNull() })
             },
         )
 

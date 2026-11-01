@@ -39,6 +39,7 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 @Composable
 internal fun HomeScreen(
     onSignInClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     onMediaClick: (Media) -> Unit,
     onAllChartsClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -46,6 +47,7 @@ internal fun HomeScreen(
 ) {
     HomeScreen(
         onSignInClick = onSignInClick,
+        onSettingsClick = onSettingsClick,
         onMediaClick = onMediaClick,
         onAllChartsClick = onAllChartsClick,
         topTrendingMedia = viewModel.topTrendingMedia.collectAsStateWithLifecycle().value,
@@ -60,6 +62,7 @@ internal fun HomeScreen(
 @Composable
 internal fun HomeScreen(
     onSignInClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     onMediaClick: (Media) -> Unit,
     onAllChartsClick: () -> Unit,
     topTrendingMedia: UiState<TrendingItem?>,
@@ -93,9 +96,13 @@ internal fun HomeScreen(
                     .rotate(-3f)
                     .silhouette(SnacColors.signal),
             )
+//            Button(
+//                text = "SIGN IN",
+//                onClick = onSignInClick,
+//            )
             Button(
-                text = "SIGN IN",
-                onClick = onSignInClick,
+                text = "SETTINGS",
+                onClick = onSettingsClick,
             )
         }
         topTrendingMedia.transpose()?.let {
@@ -137,6 +144,7 @@ private fun Preview() {
     SnacTheme(CuttingRoom.dark) {
         HomeScreen(
             onSignInClick = {},
+            onSettingsClick = {},
             onMediaClick = {},
             onAllChartsClick = {},
             topTrendingMedia = UiState.Success(TrendingItem.MoviePreviewSample.first()),

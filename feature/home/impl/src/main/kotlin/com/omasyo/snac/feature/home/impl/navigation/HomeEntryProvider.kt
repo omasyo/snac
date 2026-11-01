@@ -9,12 +9,14 @@ import com.omasyo.snac.feature.home.impl.HomeScreen
 
 fun EntryProviderScope<NavKey>.homeEntry(
     onMediaClick: (Media) -> Unit,
+    onSettingsClick: () -> Unit,
 ) {
     entry<HomeNavKey> {
         val authenticator = rememberAuthenticator()
 
         HomeScreen(
             onSignInClick = { authenticator.signIn() },
+            onSettingsClick = onSettingsClick,
             onMediaClick = onMediaClick,
             onAllChartsClick = {},
         )

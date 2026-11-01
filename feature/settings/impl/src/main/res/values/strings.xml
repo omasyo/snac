@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="back">Back</string>
+    <string name="settings_title">SETTINGS</string>
+
+    <string name="sign_in_title">Sign in for more</string>
+    <string name="sign_in_message">Spoiler controls, streaming services, privacy and sharing settings come with your Trakt account.</string>
+    <string name="sign_out">SIGN OUT</string>
+    <string name="profile_loading">Loading profile…</string>
+
+    <string name="appearance_title">APPEARANCE</string>
+    <string name="theme_label">THEME</string>
+    <string name="mode_label">MODE</string>
+    <string name="appearance_saved">Saved on this device.</string>
+
+    <string name="mode_light">LIGHT</string>
+    <string name="mode_dark">DARK</string>
+    <string name="mode_auto">AUTO</string>
+
+    <string name="theme_cutting_room">Cutting Room</string>
+    <string name="theme_two_strip">Two-Strip</string>
+    <string name="theme_noir">Noir</string>
+    <string name="theme_nitrate">Nitrate</string>
+    <string name="theme_synthwave">Synthwave</string>
+    <string name="theme_phosphor">Phosphor</string>
+    <string name="theme_blueprint">Blueprint</string>
+    <string name="theme_drive_in">Drive-In</string>
+    <string name="theme_marigold">Marigold</string>
+    <string name="theme_gothic">Gothic</string>
+    <string name="theme_pastel_hotel">Pastel Hotel</string>
+</resources>

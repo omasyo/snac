@@ -12,6 +12,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.ui.modifiers.TintIndication
@@ -25,6 +27,7 @@ inline fun <reified Tab : Enum<Tab>> TabRow(
     selectedTab: Tab,
     noinline onSelectedTabChange: (Tab) -> Unit,
     modifier: Modifier = Modifier,
+    equalWidth: Boolean = false,
     noinline name: (Tab) -> String = { it.name },
 ) {
     val tabs = enumValues<Tab>().toList()
@@ -34,6 +37,7 @@ inline fun <reified Tab : Enum<Tab>> TabRow(
         tabs = tabs,
         name = name,
         modifier = modifier,
+        equalWidth = equalWidth,
     )
 }
 
@@ -44,6 +48,7 @@ fun <Tab> TabRow(
     tabs: List<Tab>,
     name: (Tab) -> String,
     modifier: Modifier = Modifier,
+    equalWidth: Boolean = false,
 ) {
     Row(
         modifier = modifier
@@ -56,7 +61,9 @@ fun <Tab> TabRow(
             Text(
                 text = name(tab),
                 color = if (selected) SnacColors.accent else SnacColors.ink,
+                style = TextStyle(textAlign = TextAlign.Center),
                 modifier = Modifier
+                    .then(if (equalWidth) Modifier.weight(1f) else Modifier)
                     .background(if (selected) SnacColors.film else SnacColors.chip)
                     .clickable(
                         interactionSource = null,

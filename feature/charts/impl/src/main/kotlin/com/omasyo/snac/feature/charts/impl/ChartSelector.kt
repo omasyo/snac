@@ -264,6 +264,7 @@ fun ChartFilterItem(
         Text(
             text = chart.label,
             style = SnacTypography.tag,
+            color = if (selected) SnacColors.onAccent else SnacColors.ink,
             modifier = Modifier
                 .padding(horizontal = 12.dp, vertical = 4.dp)
         )
