@@ -244,9 +244,7 @@ private fun RatingCard(
                 color = { contentColor },
             )
             Text(
-                text = rating.voteCount
-                    ?.let { pluralStringResource(R.plurals.votes, it, it.formatCount()) }
-                    ?: rating.extra.orEmpty(),
+                text = rating.extra,
                 style = SnacTypography.caption,
             )
         }

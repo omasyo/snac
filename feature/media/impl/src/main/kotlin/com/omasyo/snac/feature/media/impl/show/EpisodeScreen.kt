@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,6 +33,8 @@ import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.SignInPrompt
 import com.omasyo.snac.core.ui.components.Text
+import com.omasyo.snac.core.ui.format.formatDayMonth
+import com.omasyo.snac.core.ui.format.formatRuntime
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.map
 import com.omasyo.snac.core.ui.models.message
@@ -44,16 +47,15 @@ import com.omasyo.snac.core.ui.theme.CapHeightLineHeightStyle
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
+import com.omasyo.snac.feature.media.impl.R
 import com.omasyo.snac.feature.media.impl.common.CastSection
 import com.omasyo.snac.feature.media.impl.common.MediaHeroContent
 import com.omasyo.snac.feature.media.impl.common.MediaInfo
 import com.omasyo.snac.feature.media.impl.common.MediaOverview
 import com.omasyo.snac.feature.media.impl.common.MediaTagline
 import com.omasyo.snac.feature.media.impl.common.ReviewSection
-import com.omasyo.snac.feature.media.impl.common.toRuntimeLabel
 import com.omasyo.snac.feature.media.impl.components.RatingsSection
 import com.omasyo.snac.feature.media.impl.components.Review
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun EpisodeScreen(
@@ -224,23 +226,25 @@ private fun MediaHero(
     }
 }
 
+@Composable
 private fun EpisodeDetails.info(): List<Pair<String, String>> = listOfNotNull(
-    "Season" to season.toString(),
-    "Episode" to number.toString(),
-    "Runtime" to runtime.toRuntimeLabel(),
-    firstAired?.let { "Year" to it.format(DateTimeFormatter.ofPattern("yyyy")) },
-    firstAired?.let { "Aired" to it.format(DateTimeFormatter.ofPattern("d MMM")) },
-    type.label()?.let { "Type" to it },
+    stringResource(R.string.info_season) to season.toString(),
+    stringResource(R.string.info_episode) to number.toString(),
+    stringResource(R.string.info_runtime) to runtime.formatRuntime(),
+    firstAired?.let { stringResource(R.string.info_year) to it.year.toString() },
+    firstAired?.let { stringResource(R.string.info_aired) to it.formatDayMonth() },
+    type.label()?.let { stringResource(R.string.info_type) to it },
 )
 
+@Composable
 private fun EpisodeType.label(): String? = when (this) {
     EpisodeType.Standard -> null
-    EpisodeType.SeriesPremiere -> "Series Premiere"
-    EpisodeType.SeasonPremiere -> "Season Premiere"
-    EpisodeType.MidSeasonFinale -> "Mid-Season Finale"
-    EpisodeType.MidSeasonPremiere -> "Mid-Season Premiere"
-    EpisodeType.SeasonFinale -> "Season Finale"
-    EpisodeType.SeriesFinale -> "Series Finale"
+    EpisodeType.SeriesPremiere -> stringResource(R.string.episode_type_series_premiere)
+    EpisodeType.SeasonPremiere -> stringResource(R.string.episode_type_season_premiere)
+    EpisodeType.MidSeasonFinale -> stringResource(R.string.episode_type_mid_season_finale)
+    EpisodeType.MidSeasonPremiere -> stringResource(R.string.episode_type_mid_season_premiere)
+    EpisodeType.SeasonFinale -> stringResource(R.string.episode_type_season_finale)
+    EpisodeType.SeriesFinale -> stringResource(R.string.episode_type_series_finale)
 }
 
 @Preview(device = "spec:width=1080px,height=6000px,dpi=440")

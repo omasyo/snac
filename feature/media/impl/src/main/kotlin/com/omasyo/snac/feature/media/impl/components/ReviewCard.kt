@@ -28,18 +28,21 @@ import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.imageGradient
+import com.omasyo.snac.core.ui.format.formatCount
 import com.omasyo.snac.core.ui.format.formatRelative
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
+import com.omasyo.snac.feature.media.impl.R
 import java.time.LocalDateTime
 
 data class User(
@@ -176,12 +179,16 @@ fun ReviewCard(
         ) {
             // TODO Add like icon
             Text(
-                text = "❤️ ${review.likesCount}",
+                text = "❤️ ${review.likesCount.formatCount()}",
                 style = SnacTypography.overline,
                 color = SnacColors.muted
             )
             Text(
-                text = "${review.repliesCount} replies", //TODO add message bubble icon
+                text = pluralStringResource( //TODO add message bubble icon
+                    R.plurals.replies,
+                    review.repliesCount,
+                    review.repliesCount.formatCount(),
+                ),
                 style = SnacTypography.overline,
                 color = SnacColors.muted
             )
@@ -251,12 +258,16 @@ fun ReviewPreviewCard(
         ) {
             // TODO Add like icon
             Text(
-                text = "❤️ ${review.likesCount}",
+                text = "❤️ ${review.likesCount.formatCount()}",
                 style = SnacTypography.overline,
                 color = SnacColors.muted
             )
             Text(
-                text = "${review.repliesCount} replies", //TODO add message bubble icon
+                text = pluralStringResource( //TODO add message bubble icon
+                    R.plurals.replies,
+                    review.repliesCount,
+                    review.repliesCount.formatCount(),
+                ),
                 style = SnacTypography.overline,
                 color = SnacColors.muted
             )

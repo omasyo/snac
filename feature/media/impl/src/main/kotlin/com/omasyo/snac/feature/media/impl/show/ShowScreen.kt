@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.common.SnacResult
@@ -17,10 +18,13 @@ import com.omasyo.snac.core.data.models.ShowStatus
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.Show
 import com.omasyo.snac.core.ui.components.SignInPrompt
+import com.omasyo.snac.core.ui.format.formatDayMonth
+import com.omasyo.snac.core.ui.format.formatRuntime
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.map
 import com.omasyo.snac.core.ui.models.transpose
 import com.omasyo.snac.core.ui.theme.SnacTheme
+import com.omasyo.snac.feature.media.impl.R
 import com.omasyo.snac.feature.media.impl.common.CastSection
 import com.omasyo.snac.feature.media.impl.common.MediaDetailsLayout
 import com.omasyo.snac.feature.media.impl.common.MediaGenres
@@ -31,10 +35,8 @@ import com.omasyo.snac.feature.media.impl.common.MediaOverview
 import com.omasyo.snac.feature.media.impl.common.MediaTagline
 import com.omasyo.snac.feature.media.impl.common.RelatedSection
 import com.omasyo.snac.feature.media.impl.common.ReviewSection
-import com.omasyo.snac.feature.media.impl.common.toRuntimeLabel
 import com.omasyo.snac.feature.media.impl.components.RatingsSection
 import com.omasyo.snac.feature.media.impl.components.Review
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun ShowScreen(
@@ -121,27 +123,29 @@ fun ShowScreen(
     }
 }
 
+@Composable
 private fun ShowDetails.info(): List<Pair<String, String>> = listOfNotNull(
-    year?.let { "Year" to it.toString() },
-    "Runtime" to runtime.toRuntimeLabel(),
-    certification?.let { "Cert" to it },
-    "Status" to status.label(),
-    network?.let { "Network" to it },
-    "Episodes" to airedEpisodes.toString(),
-    firstAired?.let { "Premiered" to it.format(DateTimeFormatter.ofPattern("d MMM")) },
-    "Country" to country.uppercase(),
-    "Language" to language.uppercase(),
+    year?.let { stringResource(R.string.info_year) to it.toString() },
+    stringResource(R.string.info_runtime) to runtime.formatRuntime(),
+    certification?.let { stringResource(R.string.info_cert) to it },
+    stringResource(R.string.info_status) to status.label(),
+    network?.let { stringResource(R.string.info_network) to it },
+    stringResource(R.string.info_episodes) to airedEpisodes.toString(),
+    firstAired?.let { stringResource(R.string.info_premiered) to it.formatDayMonth() },
+    stringResource(R.string.info_country) to country.uppercase(),
+    stringResource(R.string.info_language) to language.uppercase(),
 )
 
+@Composable
 private fun ShowStatus.label(): String = when (this) {
-    ShowStatus.ReturningSeries -> "Returning"
-    ShowStatus.Continuing -> "Continuing"
-    ShowStatus.InProduction -> "In Production"
-    ShowStatus.Planned -> "Planned"
-    ShowStatus.Upcoming -> "Upcoming"
-    ShowStatus.Pilot -> "Pilot"
-    ShowStatus.Canceled -> "Canceled"
-    ShowStatus.Ended -> "Ended"
+    ShowStatus.ReturningSeries -> stringResource(R.string.show_status_returning)
+    ShowStatus.Continuing -> stringResource(R.string.show_status_continuing)
+    ShowStatus.InProduction -> stringResource(R.string.show_status_in_production)
+    ShowStatus.Planned -> stringResource(R.string.show_status_planned)
+    ShowStatus.Upcoming -> stringResource(R.string.show_status_upcoming)
+    ShowStatus.Pilot -> stringResource(R.string.show_status_pilot)
+    ShowStatus.Canceled -> stringResource(R.string.show_status_canceled)
+    ShowStatus.Ended -> stringResource(R.string.show_status_ended)
 }
 
 @Preview(device = "spec:width=1080px,height=7000px,dpi=440")

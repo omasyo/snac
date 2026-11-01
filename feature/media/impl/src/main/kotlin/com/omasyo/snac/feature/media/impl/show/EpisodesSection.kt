@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.common.SnacResult
@@ -28,7 +29,9 @@ import com.omasyo.snac.core.data.models.EpisodeDetails
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
+import com.omasyo.snac.core.ui.format.formatFullDate
 import com.omasyo.snac.core.ui.format.formatRating
+import com.omasyo.snac.core.ui.format.metaLine
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.Side
@@ -37,8 +40,8 @@ import com.omasyo.snac.core.ui.modifiers.film
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
+import com.omasyo.snac.feature.media.impl.R
 import kotlinx.coroutines.delay
-import java.time.format.DateTimeFormatter
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
@@ -145,12 +148,14 @@ private fun EpisodeRow(
     }
 }
 
-internal fun EpisodeDetails.displayTitle(): String = title ?: "Episode $number"
+@Composable
+internal fun EpisodeDetails.displayTitle(): String =
+    title ?: stringResource(R.string.episode_fallback_title, number)
 
-private fun EpisodeDetails.caption(): String = listOfNotNull(
-    firstAired?.format(DateTimeFormatter.ofPattern("d MMM yyyy")),
+private fun EpisodeDetails.caption(): String = metaLine(
+    firstAired?.formatFullDate(),
     "★ ${rating.formatRating()}", //TODO use an actual star icon
-).joinToString(" · ")
+)
 
 @Composable
 private fun Placeholder() {

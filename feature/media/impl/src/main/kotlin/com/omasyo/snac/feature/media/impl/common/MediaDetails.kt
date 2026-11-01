@@ -42,7 +42,6 @@ import com.omasyo.snac.feature.media.impl.components.GenreChipPlaceholder
 import com.omasyo.snac.feature.media.impl.components.MediaInfoClapper
 import com.omasyo.snac.feature.media.impl.components.MediaInfoClapperPlaceholder
 import kotlin.random.Random
-import kotlin.time.Duration
 
 internal data class MediaHeroContent(
     val title: String,
@@ -273,8 +272,4 @@ internal fun MediaOverview(
             }
         }
     }
-}
-
-internal fun Duration.toRuntimeLabel(): String = toComponents { hours, minutes, _, _ ->
-    if (hours > 0) "${hours}h ${minutes}m" else "${minutes}m"
 }

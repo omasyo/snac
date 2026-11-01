@@ -5,21 +5,25 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.MovieDetails
-import com.omasyo.snac.core.data.models.ReleaseStatus
 import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.data.models.Ratings
+import com.omasyo.snac.core.data.models.ReleaseStatus
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.ui.components.SignInPrompt
+import com.omasyo.snac.core.ui.format.formatDayMonth
+import com.omasyo.snac.core.ui.format.formatRuntime
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.map
 import com.omasyo.snac.core.ui.models.transpose
 import com.omasyo.snac.core.ui.theme.SnacTheme
+import com.omasyo.snac.feature.media.impl.R
 import com.omasyo.snac.feature.media.impl.common.CastSection
 import com.omasyo.snac.feature.media.impl.common.MediaDetailsLayout
 import com.omasyo.snac.feature.media.impl.common.MediaGenres
@@ -30,10 +34,8 @@ import com.omasyo.snac.feature.media.impl.common.MediaOverview
 import com.omasyo.snac.feature.media.impl.common.MediaTagline
 import com.omasyo.snac.feature.media.impl.common.RelatedSection
 import com.omasyo.snac.feature.media.impl.common.ReviewSection
-import com.omasyo.snac.feature.media.impl.common.toRuntimeLabel
 import com.omasyo.snac.feature.media.impl.components.RatingsSection
 import com.omasyo.snac.feature.media.impl.components.Review
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun MovieScreen(
@@ -114,19 +116,21 @@ fun MovieScreen(
     }
 }
 
+@Composable
 private fun MovieDetails.info(): List<Pair<String, String>> = listOf(
-    "Year" to year.toString(),
-    "Runtime" to runtime.toRuntimeLabel(),
-    "Cert" to certification,
-    "Status" to status.label(),
-    "Released" to releaseDate.format(DateTimeFormatter.ofPattern("d MMM")),
-    "Country" to country.uppercase(),
-    "Language" to language.uppercase(),
-//    "Trakt" to DecimalFormat("#.#").format(rating),
+    stringResource(R.string.info_year) to year.toString(),
+    stringResource(R.string.info_runtime) to runtime.formatRuntime(),
+    stringResource(R.string.info_cert) to certification,
+    stringResource(R.string.info_status) to status.label(),
+    stringResource(R.string.info_released) to releaseDate.formatDayMonth(),
+    stringResource(R.string.info_country) to country.uppercase(),
+    stringResource(R.string.info_language) to language.uppercase(),
+//    "Trakt" to rating.formatRating(),
 )
 
+@Composable
 private fun ReleaseStatus.label(): String = when (this) {
-    ReleaseStatus.Released -> "Released"
+    ReleaseStatus.Released -> stringResource(R.string.release_status_released)
 }
 
 @Preview(device = "spec:width=1080px,height=7000px,dpi=440")

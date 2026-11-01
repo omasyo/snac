@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.common.SnacResult
@@ -14,10 +15,13 @@ import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.data.models.Season
 import com.omasyo.snac.core.ui.components.SignInPrompt
+import com.omasyo.snac.core.ui.format.formatDayMonth
+import com.omasyo.snac.core.ui.format.formatRuntime
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.map
 import com.omasyo.snac.core.ui.models.transpose
 import com.omasyo.snac.core.ui.theme.SnacTheme
+import com.omasyo.snac.feature.media.impl.R
 import com.omasyo.snac.feature.media.impl.common.CastSection
 import com.omasyo.snac.feature.media.impl.common.MediaDetailsLayout
 import com.omasyo.snac.feature.media.impl.common.MediaHero
@@ -26,10 +30,8 @@ import com.omasyo.snac.feature.media.impl.common.MediaInfo
 import com.omasyo.snac.feature.media.impl.common.MediaOverview
 import com.omasyo.snac.feature.media.impl.common.MediaTagline
 import com.omasyo.snac.feature.media.impl.common.ReviewSection
-import com.omasyo.snac.feature.media.impl.common.toRuntimeLabel
 import com.omasyo.snac.feature.media.impl.components.RatingsSection
 import com.omasyo.snac.feature.media.impl.components.Review
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun SeasonScreen(
@@ -106,12 +108,15 @@ fun SeasonScreen(
     }
 }
 
+@Composable
 private fun Season.info(): List<Pair<String, String>> = listOfNotNull(
-    "Episodes" to if (airedEpisodes < episodeCount) "$airedEpisodes/$episodeCount" else episodeCount.toString(),
-    "Runtime" to totalRuntime.toRuntimeLabel(),
-    firstAired?.let { "Year" to it.year.toString() },
-    firstAired?.let { "Premiered" to it.format(DateTimeFormatter.ofPattern("d MMM")) },
-    network?.let { "Network" to it },
+    stringResource(R.string.info_episodes) to
+        if (airedEpisodes < episodeCount) stringResource(R.string.aired_of_total, airedEpisodes, episodeCount)
+        else episodeCount.toString(),
+    stringResource(R.string.info_runtime) to totalRuntime.formatRuntime(),
+    firstAired?.let { stringResource(R.string.info_year) to it.year.toString() },
+    firstAired?.let { stringResource(R.string.info_premiered) to it.formatDayMonth() },
+    network?.let { stringResource(R.string.info_network) to it },
 )
 
 @Preview(device = "spec:width=1080px,height=7000px,dpi=440")

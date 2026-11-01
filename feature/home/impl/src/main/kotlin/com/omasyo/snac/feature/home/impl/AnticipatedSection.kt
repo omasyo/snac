@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.common.SnacResult
@@ -38,6 +39,7 @@ import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Stamp
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.imageGradient
+import com.omasyo.snac.core.ui.format.formatCount
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
@@ -151,7 +153,11 @@ private fun AnticipatedCard(
                 modifier = Modifier.matchParentSize(),
             )
             Stamp(
-                text = "in $listCount lists", //TODO should have comma seperator
+                text = pluralStringResource(
+                    R.plurals.anticipated_lists,
+                    listCount,
+                    listCount.formatCount(),
+                ),
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .rotate(-4f)

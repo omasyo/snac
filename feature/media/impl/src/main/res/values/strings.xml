@@ -4,4 +4,52 @@
         <item quantity="one">%1$s vote</item>
         <item quantity="other">%1$s votes</item>
     </plurals>
+    <plurals name="replies">
+        <item quantity="one">%1$s reply</item>
+        <item quantity="other">%1$s replies</item>
+    </plurals>
+    <plurals name="season_episodes">
+        <item quantity="one">%1$d ep</item>
+        <item quantity="other">%1$d eps</item>
+    </plurals>
+    <plurals name="season_aired_episodes">
+        <item quantity="one">%1$d/%2$d ep</item>
+        <item quantity="other">%1$d/%2$d eps</item>
+    </plurals>
+
+    <string name="episode_fallback_title">Episode %1$d</string>
+    <string name="aired_of_total">%1$d/%2$d</string>
+
+    <string name="info_year">Year</string>
+    <string name="info_runtime">Runtime</string>
+    <string name="info_cert">Cert</string>
+    <string name="info_status">Status</string>
+    <string name="info_released">Released</string>
+    <string name="info_country">Country</string>
+    <string name="info_language">Language</string>
+    <string name="info_network">Network</string>
+    <string name="info_episodes">Episodes</string>
+    <string name="info_premiered">Premiered</string>
+    <string name="info_season">Season</string>
+    <string name="info_episode">Episode</string>
+    <string name="info_aired">Aired</string>
+    <string name="info_type">Type</string>
+
+    <string name="release_status_released">Released</string>
+
+    <string name="show_status_returning">Returning</string>
+    <string name="show_status_continuing">Continuing</string>
+    <string name="show_status_in_production">In Production</string>
+    <string name="show_status_planned">Planned</string>
+    <string name="show_status_upcoming">Upcoming</string>
+    <string name="show_status_pilot">Pilot</string>
+    <string name="show_status_canceled">Canceled</string>
+    <string name="show_status_ended">Ended</string>
+
+    <string name="episode_type_series_premiere">Series Premiere</string>
+    <string name="episode_type_season_premiere">Season Premiere</string>
+    <string name="episode_type_mid_season_finale">Mid-Season Finale</string>
+    <string name="episode_type_mid_season_premiere">Mid-Season Premiere</string>
+    <string name="episode_type_season_finale">Season Finale</string>
+    <string name="episode_type_series_finale">Series Finale</string>
 </resources>

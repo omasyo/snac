@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -25,6 +26,7 @@ import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Stamp
 import com.omasyo.snac.core.ui.components.Text
+import com.omasyo.snac.core.ui.format.formatCount
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.TintIndication
@@ -101,7 +103,11 @@ internal fun TrendingSpotlight(
                         )
                         val infoColor = SnacColors.accent
                         Text(
-                            text = "${item.watchers} watching now", //TODO should have comma seperator
+                            text = pluralStringResource(
+                                R.plurals.watching_now,
+                                item.watchers,
+                                item.watchers.formatCount(),
+                            ),
                             style = SnacTypography.hand,
                             color = infoColor
 

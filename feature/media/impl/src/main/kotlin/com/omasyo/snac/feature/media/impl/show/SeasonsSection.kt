@@ -27,6 +27,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.common.SnacResult
@@ -35,6 +36,7 @@ import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.imageGradient
+import com.omasyo.snac.core.ui.format.metaLine
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
@@ -43,6 +45,7 @@ import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
+import com.omasyo.snac.feature.media.impl.R
 import com.omasyo.snac.feature.media.impl.components.SectionHeader
 import kotlinx.coroutines.delay
 import kotlin.random.Random
@@ -151,10 +154,15 @@ private fun SeasonCard(
     }
 }
 
+@Composable
 private fun Season.caption(): String {
     val episodes =
-        if (airedEpisodes < episodeCount) "$airedEpisodes/$episodeCount eps" else "$episodeCount eps"
-    return listOfNotNull(episodes, firstAired?.year?.toString()).joinToString(" · ")
+        if (airedEpisodes < episodeCount) {
+            pluralStringResource(R.plurals.season_aired_episodes, episodeCount, airedEpisodes, episodeCount)
+        } else {
+            pluralStringResource(R.plurals.season_episodes, episodeCount, episodeCount)
+        }
+    return metaLine(episodes, firstAired?.year?.toString())
 }
 
 @Composable

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="anticipated_lists">
+        <item quantity="one">in %1$s list</item>
+        <item quantity="other">in %1$s lists</item>
+    </plurals>
+    <plurals name="watching_now">
+        <item quantity="one">%1$s watching now</item>
+        <item quantity="other">%1$s watching now</item>
+    </plurals>
+    <plurals name="watching">
+        <item quantity="one">%1$s watching</item>
+        <item quantity="other">%1$s watching</item>
+    </plurals>
+</resources>
