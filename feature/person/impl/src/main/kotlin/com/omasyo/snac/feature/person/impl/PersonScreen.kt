@@ -36,8 +36,11 @@ import com.omasyo.snac.core.data.models.CreditRole
 import com.omasyo.snac.core.data.models.PersonCredit
 import com.omasyo.snac.core.data.models.PersonDetails
 import com.omasyo.snac.core.model.media.Media
+import com.omasyo.snac.core.ui.components.ClapperInfo
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.IconButton
+import com.omasyo.snac.core.ui.components.InfoClapper
+import com.omasyo.snac.core.ui.components.InfoClapperPlaceholder
 import com.omasyo.snac.core.ui.components.TabRow
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
@@ -111,14 +114,18 @@ fun PersonScreen(
                         )
                     }
                     when (person) {
-                        is UiState.Success -> PersonInfoClapper(
+                        is UiState.Success -> InfoClapper(
                             info = person.content.info(),
+                            maxItemsInEachRow = 3,
                             modifier = Modifier
                                 .padding(horizontal = 16.dp)
                                 .fillMaxWidth(),
                         )
 
-                        else -> PersonInfoClapperPlaceholder(
+                        else -> InfoClapperPlaceholder(
+                            itemCount = 3,
+                            maxItemsInEachRow = 3,
+                            showDetail = true,
                             modifier = Modifier
                                 .padding(horizontal = 16.dp)
                                 .fillMaxWidth(),
@@ -285,10 +292,10 @@ private fun PersonSummary(
 }
 
 @Composable
-private fun PersonDetails.info(): List<PersonInfo> = buildList {
+private fun PersonDetails.info(): List<ClapperInfo> = buildList {
     birthday?.let {
         add(
-            PersonInfo(
+            ClapperInfo(
                 label = stringResource(R.string.info_born),
                 value = it.formatFullDate(),
                 detail = stringResource(
@@ -300,7 +307,7 @@ private fun PersonDetails.info(): List<PersonInfo> = buildList {
     }
     birthCity?.let {
         add(
-            PersonInfo(
+            ClapperInfo(
                 label = stringResource(R.string.info_from),
                 value = it,
                 detail = birthCountry,
@@ -308,7 +315,7 @@ private fun PersonDetails.info(): List<PersonInfo> = buildList {
         )
     }
     add(
-        PersonInfo(
+        ClapperInfo(
             label = stringResource(R.string.info_in_lists),
             value = listCount.formatCount(),
             detail = stringResource(R.string.info_on_trakt),

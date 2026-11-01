@@ -29,9 +29,12 @@ import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.data.models.Genre
 import com.omasyo.snac.core.ui.R as UiR
+import com.omasyo.snac.core.ui.components.ClapperInfo
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.IconButton
 import com.omasyo.snac.core.ui.components.Image
+import com.omasyo.snac.core.ui.components.InfoClapper
+import com.omasyo.snac.core.ui.components.InfoClapperPlaceholder
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
 import com.omasyo.snac.core.ui.models.UiState
@@ -44,8 +47,6 @@ import com.omasyo.snac.core.ui.theme.colors.SnacColors
 import com.omasyo.snac.feature.media.impl.R
 import com.omasyo.snac.feature.media.impl.components.GenreChip
 import com.omasyo.snac.feature.media.impl.components.GenreChipPlaceholder
-import com.omasyo.snac.feature.media.impl.components.MediaInfoClapper
-import com.omasyo.snac.feature.media.impl.components.MediaInfoClapperPlaceholder
 import kotlin.random.Random
 
 internal data class MediaHeroContent(
@@ -215,8 +216,12 @@ internal fun MediaInfo(
     modifier: Modifier = Modifier,
 ) {
     when (state) {
-        is UiState.Success -> MediaInfoClapper(info = state.content, modifier = modifier)
-        else -> MediaInfoClapperPlaceholder(modifier = modifier)
+        is UiState.Success -> InfoClapper(
+            info = state.content.map { (label, value) -> ClapperInfo(label, value) },
+            modifier = modifier,
+        )
+
+        else -> InfoClapperPlaceholder(modifier = modifier)
     }
 }
 

@@ -1,7 +1,6 @@
-package com.omasyo.snac.feature.media.impl.common
+package com.omasyo.snac.core.ui.models
 
 import com.omasyo.snac.core.common.SnacResult
-import com.omasyo.snac.core.ui.models.UiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -11,7 +10,7 @@ import kotlinx.coroutines.launch
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.milliseconds
 
-internal class RefreshWrapper<T>(
+class RefreshWrapper<T>(
     private val scope: CoroutineScope,
     private val request: suspend () -> SnacResult<T>,
 ) {
@@ -35,7 +34,7 @@ internal class RefreshWrapper<T>(
     }
 }
 
-internal suspend fun <T> mock(value: T): SnacResult<T> {
+suspend fun <T> mock(value: T): SnacResult<T> {
     delay(Random.nextLong(1000, 5000).milliseconds)
     return if (Random.nextBoolean()) {
         SnacResult.Success(value)
