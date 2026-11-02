@@ -11,19 +11,20 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
-import androidx.navigation3.runtime.rememberNavBackStack
-import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import androidx.savedstate.serialization.SavedStateConfiguration
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.model.media.Show
 import com.omasyo.snac.core.ui.components.BottomBar
+import com.omasyo.snac.core.ui.navigation.Navigator
+import com.omasyo.snac.core.ui.navigation.rememberNavigationState
+import com.omasyo.snac.core.ui.navigation.toDecoratedEntries
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
 import com.omasyo.snac.feature.calendar.api.navigation.CalendarNavKey
 import com.omasyo.snac.feature.calendar.impl.navigation.calendarEntry
@@ -72,35 +73,39 @@ private fun Media.navKey(): NavKey = when (this) {
 fun AppNavHost(
     modifier: Modifier = Modifier,
 ) {
-    val backStack = rememberNavBackStack(config, HomeNavKey)
 
-    val destination = backStack.last { it in TOP_LEVEL_NAV_ITEMS }
+    val navigationState = rememberNavigationState(
+        startRoute = HomeNavKey,
+        topLevelRoutes = TOP_LEVEL_NAV_ITEMS.keys
+    )
 
-    val onMediaClick: (Media) -> Unit = { backStack.add(it.navKey()) }
+    val navigator = remember { Navigator(navigationState) }
+
+    val destination = navigationState.topLevelRoute
+
+    val onMediaClick: (Media) -> Unit = { navigator.navigate(it.navKey()) }
 
     RootScreenLayout(
         modifier = Modifier.background(SnacColors.page),
         bottomBar = {
-            BottomBar(
-                currentDestination = destination,
-                onCurrentDestinationChange = {
+           if (navigationState.currentRoute in TOP_LEVEL_NAV_ITEMS.keys) {
+               BottomBar(
+                   currentDestination = destination,
+                   onCurrentDestinationChange = {
 //                    backStack.clear()
-                    backStack.add(it)
-                },
-                destinations = TOP_LEVEL_NAV_ITEMS.keys.toList(),
-                label = { TOP_LEVEL_NAV_ITEMS.getValue(it).label },
-                modifier = Modifier
-                    .padding(vertical = 8.dp)
-            )
+                       navigator.navigate(it)
+                   },
+                   destinations = TOP_LEVEL_NAV_ITEMS.keys.toList(),
+                   label = { TOP_LEVEL_NAV_ITEMS.getValue(it).label },
+                   modifier = Modifier
+                       .padding(vertical = 8.dp)
+               )
+           }
         }
     ) {
         NavDisplay(
             modifier = modifier,
-            entryDecorators = listOf(
-                rememberSaveableStateHolderNavEntryDecorator(),
-                rememberViewModelStoreNavEntryDecorator(),
-            ),
-            backStack = backStack,
+            onBack = { navigator.goBack() },
             transitionSpec = {
                 slideIntoContainer(
                     AnimatedContentTransitionScope.SlideDirection.Left,
@@ -113,27 +118,28 @@ fun AppNavHost(
                     spring(stiffness = Spring.StiffnessMediumLow)
                 )
             },
-            entryProvider = entryProvider {
-                calendarEntry()
-                chartsEntry(onMediaClick = onMediaClick)
-                homeEntry(
-                    onMediaClick = onMediaClick,
-                    onSettingsClick = { backStack.add(SettingsNavKey) },
-                )
-                mediaEntry(
-                    onBackClick = { backStack.removeLastOrNull() },
-                    onMediaClick = onMediaClick,
-                    onSeasonClick = { backStack.add(it) },
-                    onEpisodeClick = { backStack.add(it) },
-                    onPersonClick = { backStack.add(PersonNavKey(it.slug)) },
-                )
-                personEntry(
-                    onBackClick = { backStack.removeLastOrNull() },
-                    onMediaClick = onMediaClick,
-                )
-                searchEntry()
-                settingsEntry(onBackClick = { backStack.removeLastOrNull() })
-            },
+            entries = navigationState.toDecoratedEntries(
+                entryProvider {
+                    calendarEntry()
+                    chartsEntry(onMediaClick = onMediaClick)
+                    homeEntry(
+                        onMediaClick = onMediaClick,
+                        onSettingsClick = { navigator.navigate(SettingsNavKey) },
+                    )
+                    mediaEntry(
+                        onBackClick = { navigator.goBack() },
+                        onMediaClick = onMediaClick,
+                        onSeasonClick = { navigator.navigate(it) },
+                        onEpisodeClick = { navigator.navigate(it) },
+                        onPersonClick = { navigator.navigate(PersonNavKey(it.slug)) },
+                    )
+                    personEntry(
+                        onBackClick = { navigator.goBack() },
+                        onMediaClick = onMediaClick,
+                    )
+                    searchEntry()
+                    settingsEntry(onBackClick = { navigator.goBack() })
+                }),
         )
 
     }

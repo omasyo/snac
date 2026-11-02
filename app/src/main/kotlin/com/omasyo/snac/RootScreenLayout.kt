@@ -27,23 +27,22 @@ fun RootScreenLayout(
     content: @Composable () -> Unit,
 ) {
     SubcomposeLayout(modifier) { constraints ->
-        val bottomBarPlaceable = subcompose("bottomBar", bottomBar).first().measure(constraints)
+        val bottomBarPlaceables = subcompose("bottomBar", bottomBar).map { it.measure(constraints) }
 
         val layoutHeight = constraints.maxHeight
-        val bottomBarHeight = bottomBarPlaceable.height
+        val bottomBarHeight = bottomBarPlaceables.maxOfOrNull { it.height } ?: 0
 
         val contentPlaceable =
             subcompose("content") {
                 CompositionLocalProvider(LocalBottomBarPadding provides PaddingValues(bottom = bottomBarHeight.toDp())) {
                     content()
                 }
-            }.first()
-                .measure(constraints)
+            }.map { it.measure(constraints) }
 
 
         layout(constraints.maxWidth, constraints.maxHeight) {
-            contentPlaceable.placeRelative(0, 0)
-            bottomBarPlaceable.placeRelative(0, layoutHeight - bottomBarHeight)
+            contentPlaceable.forEach { it.placeRelative(0, 0) }
+            bottomBarPlaceables.forEach { it.placeRelative(0, layoutHeight - bottomBarHeight) }
         }
     }
 }
@@ -73,7 +72,11 @@ private fun Preview() {
                 )
             }
         ) {
-            Box(Modifier.fillMaxSize().background(SnacColors.page))
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(SnacColors.page)
+            )
         }
     }
 }
