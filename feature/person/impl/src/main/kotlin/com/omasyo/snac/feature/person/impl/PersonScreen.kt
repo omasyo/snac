@@ -279,12 +279,12 @@ private fun PersonSummary(
                     modifier
                         .height(16.dp)
                         .fillMaxWidth()
-                        .background(SnacColors.faint)
+                        .background(SnacColors.placeholder)
                 )
                 Box(
                     modifier
                         .size(200.dp, 16.dp)
-                        .background(SnacColors.faint)
+                        .background(SnacColors.placeholder)
                 )
             }
         }

@@ -36,8 +36,8 @@ fun InfoClapper(
 ) {
     Column(
         modifier = modifier
-            .silhouette(SnacColors.signal, offset = DpOffset(6.dp, 6.dp))
-            .border(4.dp, SnacColors.ink)
+            .silhouette(SnacColors.signalShadow, offset = DpOffset(6.dp, 6.dp))
+            .border(4.dp, SnacColors.outline)
             .background(SnacColors.film)
     ) {
         ClapperboardStripes(
@@ -88,8 +88,8 @@ fun InfoClapperPlaceholder(
 ) {
     Column(
         modifier = modifier
-            .silhouette(SnacColors.signal, offset = DpOffset(6.dp, 6.dp))
-            .border(4.dp, SnacColors.ink)
+            .silhouette(SnacColors.signalShadow, offset = DpOffset(6.dp, 6.dp))
+            .border(4.dp, SnacColors.outline)
             .background(SnacColors.film)
     ) {
         ClapperboardStripes(
@@ -113,20 +113,20 @@ fun InfoClapperPlaceholder(
                                 .padding(vertical = 8.dp)
                                 .width(40.dp)
                                 .height(10.dp)
-                                .background(SnacColors.faint)
+                                .background(SnacColors.placeholder)
                         )
                         Box(
                             Modifier
                                 .width(64.dp)
                                 .height(16.dp)
-                                .background(SnacColors.faint)
+                                .background(SnacColors.placeholder)
                         )
                         if (showDetail) {
                             Box(
                                 Modifier
                                     .width(32.dp)
                                     .height(12.dp)
-                                    .background(SnacColors.faint)
+                                    .background(SnacColors.placeholder)
                             )
                         }
                     }

@@ -23,7 +23,7 @@ fun GenreChip(
         text = label,
         style = SnacTypography.tag,
         modifier = modifier
-            .border(2.dp, SnacColors.ink)
+            .border(2.dp, SnacColors.outline)
             .background(SnacColors.chip)
             .padding(12.dp, 2.dp)
     )
@@ -35,7 +35,7 @@ fun GenreChipPlaceholder(
 ) {
     Box(
         modifier = modifier
-            .border(2.dp, SnacColors.ink)
+            .border(2.dp, SnacColors.outline)
             .background(SnacColors.chip)
             .padding(12.dp, 2.dp)
             .padding(vertical = 3.dp)

@@ -219,14 +219,14 @@ private fun Placeholder() {
                             .padding(vertical = 8.dp)
                             .width(64.dp)
                             .height(12.dp)
-                            .background(SnacColors.faint)
+                            .background(SnacColors.placeholder)
                     )
                     Box(
                         Modifier
                             .padding(vertical = 8.dp)
                             .width(120.dp)
                             .height(12.dp)
-                            .background(SnacColors.faint)
+                            .background(SnacColors.placeholder)
                     )
                 }
             }

@@ -122,7 +122,7 @@ private fun SeasonCard(
             imageUrl = season.posterUrl,
             modifier = Modifier
                 .indication(interactionSource, SilhouettePressIndication())
-                .border(2.dp, SnacColors.ink)
+                .border(2.dp, SnacColors.outline)
                 .background(SnacColors.card)
                 .padding(6.dp)
                 .size(100.dp, 160.dp),
@@ -180,11 +180,11 @@ private fun Placeholder(scrollable: Boolean) {
                 Box(
                     modifier = Modifier
                         .silhouette()
-                        .border(2.dp, SnacColors.ink)
+                        .border(2.dp, SnacColors.outline)
                         .background(SnacColors.card)
                         .padding(6.dp)
                         .size(100.dp, 160.dp)
-                        .border(2.dp, SnacColors.ink)
+                        .border(2.dp, SnacColors.outline)
                         .background(imageGradient())
                 )
                 Box(
@@ -192,14 +192,14 @@ private fun Placeholder(scrollable: Boolean) {
                         .padding(top = 8.dp)
                         .width(72.dp)
                         .height(14.dp)
-                        .background(SnacColors.faint)
+                        .background(SnacColors.placeholder)
                 )
                 Box(
                     Modifier
                         .padding(vertical = 4.dp)
                         .width(56.dp)
                         .height(12.dp)
-                        .background(SnacColors.faint)
+                        .background(SnacColors.placeholder)
                 )
             }
         }

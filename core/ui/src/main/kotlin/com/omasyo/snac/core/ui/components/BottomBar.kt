@@ -44,7 +44,7 @@ fun <T> BottomBar(
             .background(SnacColors.tape)
             .padding(horizontal = 24.dp, vertical = 8.dp),
     ) {
-        CompositionLocalProvider(LocalContentColor provides SnacColors.onAccent) {
+        CompositionLocalProvider(LocalContentColor provides SnacColors.onTape) {
             for (destination in destinations) {
                 Box(
                     modifier = Modifier.widthIn(64.dp),

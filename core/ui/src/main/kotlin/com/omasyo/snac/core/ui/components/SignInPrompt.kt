@@ -28,8 +28,8 @@ fun SignInPrompt(
     Column(
         modifier = modifier
             .rotate(-1f)
-            .silhouette(SnacColors.signal, offset = DpOffset(6.dp, 6.dp))
-            .border(4.dp, SnacColors.ink)
+            .silhouette(SnacColors.signalShadow, offset = DpOffset(6.dp, 6.dp))
+            .border(4.dp, SnacColors.outline)
             .background(SnacColors.chip)
     ) {
         ClapperboardStripes(

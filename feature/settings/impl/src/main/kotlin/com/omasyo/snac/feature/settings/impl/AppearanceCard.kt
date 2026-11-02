@@ -53,7 +53,7 @@ internal fun AppearanceCard(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = modifier
             .silhouette(offset = DpOffset(4.dp, 4.dp))
-            .border(2.dp, SnacColors.ink)
+            .border(2.dp, SnacColors.outline)
             .background(SnacColors.card)
             .padding(16.dp),
     ) {
@@ -119,7 +119,7 @@ private fun ThemeOption(
                 role = Role.RadioButton,
                 onClick = onClick,
             )
-            .border(2.dp, if (selected) selectionColor else colors.ink)
+            .border(2.dp, if (selected) selectionColor else colors.outline)
             .background(SnacColors.film)
             .padding(top = 16.dp)
             .background(colors.page)
@@ -134,7 +134,7 @@ private fun ThemeOption(
                     Modifier
                         .rotate(rotation)
                         .size(24.dp)
-                        .border(1.5.dp, colors.ink)
+                        .border(1.5.dp, colors.outline)
                         .background(it)
                 )
             }

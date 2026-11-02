@@ -39,7 +39,7 @@ internal fun TopMediaCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val indicationColor = SnacColors.signal
+    val indicationColor = SnacColors.signalShadow
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.Bottom,
@@ -57,7 +57,7 @@ internal fun TopMediaCard(
             imageUrl = item.media.imageUrl,
             modifier = Modifier
                 .rotate(-3f)
-                .silhouette(SnacColors.accent)
+                .silhouette(SnacColors.accentShadow)
                 .border(4.dp, SnacColors.chip)
                 .size(128.dp, 192.dp),
         )
@@ -89,7 +89,7 @@ internal fun TopMediaCardPlaceholder(modifier: Modifier = Modifier) {
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.Bottom,
         modifier = modifier
-            .silhouette(SnacColors.signal)
+            .silhouette(SnacColors.signalShadow)
             .fillMaxWidth()
             .background(SnacColors.film)
             .padding(16.dp)
@@ -97,7 +97,7 @@ internal fun TopMediaCardPlaceholder(modifier: Modifier = Modifier) {
         Box(
             modifier = Modifier
                 .rotate(-3f)
-                .silhouette(SnacColors.accent)
+                .silhouette(SnacColors.accentShadow)
                 .border(4.dp, SnacColors.chip)
                 .background(imageGradient())
                 .size(128.dp, 192.dp),
@@ -110,20 +110,20 @@ internal fun TopMediaCardPlaceholder(modifier: Modifier = Modifier) {
                     .padding(vertical = 4.dp)
                     .width(160.dp)
                     .height(24.dp)
-                    .background(SnacColors.faint)
+                    .background(SnacColors.placeholder)
             )
             Box(
                 Modifier
                     .padding(vertical = 8.dp)
                     .width(40.dp)
                     .height(12.dp)
-                    .background(SnacColors.faint)
+                    .background(SnacColors.placeholder)
             )
             Box(
                 Modifier
                     .width(104.dp)
                     .height(16.dp)
-                    .background(SnacColors.faint)
+                    .background(SnacColors.placeholder)
             )
         }
     }

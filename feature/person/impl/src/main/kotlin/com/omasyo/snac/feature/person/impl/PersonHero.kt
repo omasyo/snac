@@ -88,7 +88,7 @@ internal fun PersonHero(
                                 lineHeightStyle = CapHeightLineHeightStyle,
                             ),
                             color = SnacColors.onFilm,
-                            modifier = Modifier.silhouette(SnacColors.signal),
+                            modifier = Modifier.silhouette(SnacColors.signalShadow),
                         )
                     },
                 )
@@ -132,7 +132,7 @@ private fun Polaroid(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
                 .padding(top = 12.dp)
-                .silhouette(SnacColors.signal, offset = DpOffset(6.dp, 6.dp))
+                .silhouette(SnacColors.signalShadow, offset = DpOffset(6.dp, 6.dp))
                 .background(SnacColors.card)
                 .padding(8.dp)
                 .width(PhotoWidth),
@@ -171,7 +171,7 @@ private fun HeroPlaceholder() {
                 Box(
                     Modifier
                         .padding(top = 12.dp)
-                        .silhouette(SnacColors.signal, offset = DpOffset(6.dp, 6.dp))
+                        .silhouette(SnacColors.signalShadow, offset = DpOffset(6.dp, 6.dp))
                         .background(SnacColors.card)
                         .padding(8.dp)
                         .padding(bottom = 26.dp)
@@ -185,7 +185,7 @@ private fun HeroPlaceholder() {
             Box(
                 Modifier
                     .size(240.dp, 40.dp)
-                    .background(SnacColors.faint)
+                    .background(SnacColors.placeholder)
             )
         },
     )

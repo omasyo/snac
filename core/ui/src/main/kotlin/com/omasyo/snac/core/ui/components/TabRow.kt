@@ -55,7 +55,7 @@ fun <Tab> TabRow(
     Row(
         modifier = modifier
             .silhouette()
-            .border(2.dp, SnacColors.ink)
+            .border(2.dp, SnacColors.outline)
             .selectableGroup()
     ) {
         for (tab in tabs) {

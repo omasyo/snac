@@ -247,7 +247,7 @@ fun ChartFilterItem(
                 interactionSource = remember { MutableInteractionSource() },
                 onClick = onClick,
             )
-            .border(4.dp, SnacColors.ink)
+            .border(4.dp, SnacColors.outline)
             .background(if (selected) SnacColors.accent else SnacColors.chip)
     ) {
         ClapperboardStripes(
@@ -259,7 +259,7 @@ fun ChartFilterItem(
             Modifier
                 .fillMaxWidth()
                 .height(2.dp)
-                .background(SnacColors.ink)
+                .background(SnacColors.outline)
         )
         Text(
             text = chart.label,

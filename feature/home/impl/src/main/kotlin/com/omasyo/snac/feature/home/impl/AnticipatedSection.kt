@@ -71,7 +71,7 @@ internal fun AnticipatedSection(
                 modifier = Modifier
                     .weight(1f)
                     .alignByBaseline()
-                    .silhouette(SnacColors.accent),
+                    .silhouette(SnacColors.accentShadow),
             )
             ArrowLink(
                 text = "ALL CHARTS",
@@ -134,7 +134,7 @@ private fun AnticipatedCard(
         Box(
             modifier = Modifier
                 .indication(interactionSource, SilhouettePressIndication())
-                .border(2.dp, SnacColors.ink)
+                .border(2.dp, SnacColors.outline)
                 .size(224.dp, 128.dp)
         ) {
             Image(
@@ -181,7 +181,7 @@ private fun Placeholder(scrollable: Boolean) {
                 Box(
                     modifier = Modifier
                         .silhouette()
-                        .border(2.dp, SnacColors.ink)
+                        .border(2.dp, SnacColors.outline)
                         .background(imageGradient())
                         .size(224.dp, 128.dp)
                 )
@@ -190,7 +190,7 @@ private fun Placeholder(scrollable: Boolean) {
                         .padding(vertical = 8.dp)
                         .width(120.dp)
                         .height(16.dp)
-                        .background(SnacColors.faint)
+                        .background(SnacColors.placeholder)
                 )
             }
         }

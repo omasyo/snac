@@ -25,7 +25,7 @@ fun ClapperboardStripes(
     stripeThickness: Dp = 16.dp,
     stripeGap: Dp = 16.dp,
     stripeShift: Dp = 12.dp,
-    stripeColor: Color = SnacColors.ink,
+    stripeColor: Color = SnacColors.outline,
     backgroundColor: Color = SnacColors.chip,
 ) {
     Canvas(modifier) {

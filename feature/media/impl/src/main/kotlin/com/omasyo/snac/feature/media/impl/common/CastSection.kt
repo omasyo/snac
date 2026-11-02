@@ -127,7 +127,7 @@ private fun CastCard(
             imageUrl = cast.person.imageUrl,
             modifier = Modifier
                 .indication(interactionSource, SilhouettePressIndication())
-                .border(2.dp, SnacColors.ink)
+                .border(2.dp, SnacColors.outline)
                 .background(SnacColors.card)
                 .padding(horizontal = 6.dp)
                 .padding(top = 6.dp, bottom = 16.dp)
@@ -174,7 +174,7 @@ private fun Placeholder(scrollable: Boolean) {
                 Box(
                     modifier = Modifier
                         .silhouette()
-                        .border(2.dp, SnacColors.ink)
+                        .border(2.dp, SnacColors.outline)
                         .background(SnacColors.card)
                         .padding(horizontal = 6.dp)
                         .padding(top = 6.dp, bottom = 16.dp)
@@ -186,14 +186,14 @@ private fun Placeholder(scrollable: Boolean) {
                         .padding(top = 8.dp)
                         .width(64.dp)
                         .height(14.dp)
-                        .background(SnacColors.faint)
+                        .background(SnacColors.placeholder)
                 )
                 Box(
                     Modifier
                         .padding(vertical = 4.dp)
                         .width(48.dp)
                         .height(12.dp)
-                        .background(SnacColors.faint)
+                        .background(SnacColors.placeholder)
                 )
             }
         }

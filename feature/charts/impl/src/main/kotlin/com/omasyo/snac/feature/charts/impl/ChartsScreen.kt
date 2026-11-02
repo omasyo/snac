@@ -203,7 +203,7 @@ fun ChartsScreen(
                             style = SnacTypography.headline,
                             modifier = Modifier
                                 .rotate(-3f)
-                                .silhouette(SnacColors.signal),
+                                .silhouette(SnacColors.signalShadow),
                         )
                     }
                     Row(

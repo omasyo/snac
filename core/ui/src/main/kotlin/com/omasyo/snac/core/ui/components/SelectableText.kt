@@ -10,7 +10,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.ui.modifiers.TintIndication
@@ -25,6 +24,7 @@ fun SelectableText(
 ) {
     val mutableInteractionSource = remember { MutableInteractionSource() }
     val indicationColor = SnacColors.onFilm
+    val selectionColor = SnacColors.signal
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -46,7 +46,7 @@ fun SelectableText(
                 .padding(4.dp)
                 .drawBehind {
                     if (isSelected) {
-                        drawOval(Color.Red, style = Stroke(width = 2.dp.toPx()))
+                        drawOval(selectionColor, style = Stroke(width = 2.dp.toPx()))
                     }
                 }
         ) {

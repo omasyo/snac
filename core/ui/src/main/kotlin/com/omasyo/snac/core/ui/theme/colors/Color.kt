@@ -16,13 +16,19 @@ data class Colors(
     val accent: Color,
     val onAccent: Color,
     val signal: Color,
+    val onSignal: Color,
     val tape: Color,
+    val onTape: Color,
     val muted: Color,
     val mutedOnFilm: Color,
     val faint: Color,
     val filmLine: Color,
+    val placeholder: Color,
     val rule: Color,
+    val outline: Color,
     val shadow: Color,
+    val accentShadow: Color,
+    val signalShadow: Color,
 )
 
 @Immutable

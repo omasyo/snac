@@ -20,7 +20,7 @@ fun imageGradient(): Brush {
         listOf(
             SnacColors.film,
             SnacColors.filmLine,
-            SnacColors.faint,
+            SnacColors.placeholder,
         ), end = Offset(0f, Float.POSITIVE_INFINITY)
     )
 }

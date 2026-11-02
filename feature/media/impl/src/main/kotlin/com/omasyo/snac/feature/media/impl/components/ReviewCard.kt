@@ -104,7 +104,7 @@ fun ReviewCard(
                 indication = SilhouettePressIndication(offset = DpOffset(4.dp, 4.dp)),
                 onClick = onClick,
             )
-            .border(2.dp, SnacColors.ink)
+            .border(2.dp, SnacColors.outline)
             .background(SnacColors.card)
             .padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -117,7 +117,7 @@ fun ReviewCard(
                 imageUrl = review.user.imageUrl,
                 modifier = Modifier
                     .size(32.dp)
-                    .border(2.dp, SnacColors.ink, CircleShape)
+                    .border(2.dp, SnacColors.outline, CircleShape)
                     .clip(CircleShape)
             )
             Column(modifier = Modifier.weight(1f)) {
@@ -248,7 +248,7 @@ fun ReviewPreviewCard(
                 indication = SilhouettePressIndication(offset = DpOffset(4.dp, 4.dp)),
                 onClick = onClick,
             )
-            .border(2.dp, SnacColors.ink)
+            .border(2.dp, SnacColors.outline)
             .background(SnacColors.card)
             .padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -261,7 +261,7 @@ fun ReviewPreviewCard(
                 imageUrl = review.user.imageUrl,
                 modifier = Modifier
                     .size(32.dp)
-                    .border(2.dp, SnacColors.ink, CircleShape)
+                    .border(2.dp, SnacColors.outline, CircleShape)
                     .clip(CircleShape)
             )
             Text(
@@ -300,7 +300,7 @@ fun ReviewPreviewPlaceholder(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .silhouette(offset = DpOffset(4.dp, 4.dp))
-            .border(2.dp, SnacColors.ink)
+            .border(2.dp, SnacColors.outline)
             .background(SnacColors.card)
             .padding(12.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -312,7 +312,7 @@ fun ReviewPreviewPlaceholder(modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .size(32.dp)
-                    .border(2.dp, SnacColors.ink, CircleShape)
+                    .border(2.dp, SnacColors.outline, CircleShape)
                     .clip(CircleShape)
                     .background(imageGradient())
             )
@@ -322,7 +322,7 @@ fun ReviewPreviewPlaceholder(modifier: Modifier = Modifier) {
                     .padding(vertical = 8.dp)
                     .width(40.dp)
                     .height(10.dp)
-                    .background(SnacColors.faint)
+                    .background(SnacColors.placeholder)
             )
             Spacer(Modifier.weight(1f))
 
@@ -331,7 +331,7 @@ fun ReviewPreviewPlaceholder(modifier: Modifier = Modifier) {
                     .padding(vertical = 8.dp)
                     .width(12.dp)
                     .height(16.dp)
-                    .background(SnacColors.faint)
+                    .background(SnacColors.placeholder)
             )
         }
 
@@ -341,14 +341,14 @@ fun ReviewPreviewPlaceholder(modifier: Modifier = Modifier) {
                     .padding(vertical = 2.dp)
                     .fillMaxWidth()
                     .height(12.dp)
-                    .background(SnacColors.faint)
+                    .background(SnacColors.placeholder)
             )
         }
         Box(
             Modifier
                 .width(160.dp)
                 .height(12.dp)
-                .background(SnacColors.faint)
+                .background(SnacColors.placeholder)
         )
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -359,14 +359,14 @@ fun ReviewPreviewPlaceholder(modifier: Modifier = Modifier) {
                     .padding(vertical = 8.dp)
                     .width(40.dp)
                     .height(10.dp)
-                    .background(SnacColors.faint)
+                    .background(SnacColors.placeholder)
             )
             Box(
                 Modifier
                     .padding(vertical = 8.dp)
                     .width(40.dp)
                     .height(10.dp)
-                    .background(SnacColors.faint)
+                    .background(SnacColors.placeholder)
             )
         }
     }

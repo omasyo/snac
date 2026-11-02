@@ -76,7 +76,7 @@ internal fun TrendingSection(
     var selectedTab by rememberSaveable { mutableStateOf(TrendingTab.Movie) }
     val stateHolder = rememberSaveableStateHolder()
 
-    CompositionLocalProvider(LocalSilhouetteColor provides SnacColors.signal) {
+    CompositionLocalProvider(LocalSilhouetteColor provides SnacColors.signalShadow) {
         Column(
             modifier = modifier
                 .bleedHorizontally(8.dp)
@@ -223,13 +223,13 @@ private fun PlaceholderRow(scrollable: Boolean) {
                         .padding(vertical = 8.dp)
                         .width(96.dp)
                         .height(16.dp)
-                        .background(SnacColors.faint)
+                        .background(SnacColors.placeholder)
                 )
                 Box(
                     Modifier
                         .width(104.dp)
                         .height(12.dp)
-                        .background(SnacColors.faint)
+                        .background(SnacColors.placeholder)
                 )
             }
         }
@@ -335,7 +335,7 @@ private fun LoadingToErrorPreview() {
 private fun TrendingCardPreview() {
     SnacTheme {
         CompositionLocalProvider(
-            LocalSilhouetteColor provides SnacColors.signal
+            LocalSilhouetteColor provides SnacColors.signalShadow
         ) {
             TrendingCard(
                 title = "FRANKENSTEIN",

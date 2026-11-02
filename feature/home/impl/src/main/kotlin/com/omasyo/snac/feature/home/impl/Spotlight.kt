@@ -98,7 +98,7 @@ internal fun TrendingSpotlight(
                                 lineHeightStyle = CapHeightLineHeightStyle,
                             ),
                             color = SnacColors.onFilm,
-                            modifier = Modifier.silhouette(SnacColors.signal)
+                            modifier = Modifier.silhouette(SnacColors.signalShadow)
 
                         )
                         val infoColor = SnacColors.accent

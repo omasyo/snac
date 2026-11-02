@@ -93,7 +93,7 @@ fun ReviewSection(
             }
         }
 
-        val borderColor = SnacColors.ink
+        val borderColor = SnacColors.outline
         val tintColor = SnacColors.accent
         Text(
             text = "Sign in to comment".uppercase(),

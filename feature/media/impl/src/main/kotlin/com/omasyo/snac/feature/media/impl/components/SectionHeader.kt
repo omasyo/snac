@@ -28,7 +28,7 @@ internal fun SectionHeader(
             modifier = Modifier
                 .weight(1f)
                 .alignByBaseline()
-                .silhouette(SnacColors.accent),
+                .silhouette(SnacColors.accentShadow),
         )
         if (onSeeAllClick != null) {
             ArrowLink(
