@@ -44,31 +44,25 @@ class MainActivity(
                 val themeSettings by viewModel.themeSettings.collectAsStateWithLifecycle()
                 val darkTheme = themeSettings.mode.isDark()
 
-                // The in-app mode can differ from the system's, so bar icons follow it instead.
-//                LaunchedEffect(darkTheme) {
-//                    enableEdgeToEdge(
-//                        statusBarStyle = SystemBarStyle.auto(
-//                            lightScrim = Color.TRANSPARENT,
-//                            darkScrim = Color.TRANSPARENT,
-//                            detectDarkMode = { darkTheme },
-//                        ),
-//                        navigationBarStyle = SystemBarStyle.auto(
-//                            lightScrim = LightNavigationBarScrim,
-//                            darkScrim = DarkNavigationBarScrim,
-//                            detectDarkMode = { darkTheme },
-//                        ),
-//                    )
-//                }
+                LaunchedEffect(darkTheme) {
+                    enableEdgeToEdge(
+                        statusBarStyle = SystemBarStyle.auto(
+                            lightScrim = Color.TRANSPARENT,
+                            darkScrim = Color.TRANSPARENT,
+                            detectDarkMode = { darkTheme },
+                        ),
+                        navigationBarStyle = SystemBarStyle.auto(
+                            lightScrim = Color.TRANSPARENT,
+                            darkScrim = Color.TRANSPARENT,
+                            detectDarkMode = { darkTheme },
+                        ),
+                    )
+                }
 
                 SnacTheme(themeSettings.theme.colorScheme.colors(darkTheme)) {
                     AppNavHost()
-                    Text(viewModel.isAuthenticated.collectAsState().value.toString())
                 }
             }
         }
     }
 }
-
-// Same scrims enableEdgeToEdge uses by default; only visible on API 28 or with button navigation.
-private val LightNavigationBarScrim = Color.argb(0xe6, 0xFF, 0xFF, 0xFF)
-private val DarkNavigationBarScrim = Color.argb(0x80, 0x1b, 0x1b, 0x1b)
