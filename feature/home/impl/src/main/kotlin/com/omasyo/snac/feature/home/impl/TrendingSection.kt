@@ -163,7 +163,7 @@ private fun MediaToggle(
             val indicationColor = SnacColors.accent
             Text(
                 text = tab.label,
-                color = if (selected) SnacColors.ink else SnacColors.onFilm,
+                color = if (selected) SnacColors.onAccent else SnacColors.onFilm,
                 modifier = Modifier
                     .background(if (selected) SnacColors.accent else Color.Transparent)
                     .clickable(

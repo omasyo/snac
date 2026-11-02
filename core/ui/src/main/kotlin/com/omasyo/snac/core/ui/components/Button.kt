@@ -97,7 +97,7 @@ fun IconButton(
             contentDescription = contentDescription,
             tint = contentColor,
             modifier = Modifier
-                .size(24.dp),
+                .size(20.dp),
         )
     }
 }
