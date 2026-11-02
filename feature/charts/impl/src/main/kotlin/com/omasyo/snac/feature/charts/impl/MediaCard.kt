@@ -142,20 +142,20 @@ internal fun MediaCardPlaceholder(
                     .padding(vertical = 4.dp)
                     .width(160.dp)
                     .height(18.dp)
-                    .background(SnacColors.faint)
+                    .background(SnacColors.placeholder)
             )
             Box(
                 Modifier
                     .padding(vertical = 8.dp)
                     .width(40.dp)
                     .height(12.dp)
-                    .background(SnacColors.faint)
+                    .background(SnacColors.placeholder)
             )
             Box(
                 Modifier
                     .width(104.dp)
                     .height(14.dp)
-                    .background(SnacColors.faint)
+                    .background(SnacColors.placeholder)
             )
         }
     }

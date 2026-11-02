@@ -94,7 +94,7 @@ fun SettingsScreen(
                 style = SnacTypography.headline,
                 modifier = Modifier
                     .rotate(-2f)
-                    .silhouette(SnacColors.signal),
+                    .silhouette(SnacColors.signalShadow),
             )
         }
         when (profileState) {

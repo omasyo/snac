@@ -33,7 +33,7 @@ fun Button(
     style: TextStyle = SnacTypography.subtitle,
     backgroundColor: Color = SnacColors.accent,
     contentColor: Color = SnacColors.onAccent,
-    borderColor: Color = SnacColors.ink,
+    borderColor: Color = SnacColors.outline,
     shadowColor: Color = SnacColors.shadow,
     contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
 
@@ -59,7 +59,7 @@ fun Button(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     backgroundColor: Color = SnacColors.accent,
-    borderColor: Color = SnacColors.ink,
+    borderColor: Color = SnacColors.outline,
     shadowColor: Color = SnacColors.shadow,
     content: @Composable () -> Unit,
 ) {

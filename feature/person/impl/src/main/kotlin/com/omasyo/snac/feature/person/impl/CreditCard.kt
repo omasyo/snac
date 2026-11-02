@@ -136,7 +136,7 @@ internal fun CreditCardPlaceholder(
         Box(
             Modifier
                 .size(YearWidth, 28.dp)
-                .background(SnacColors.faint)
+                .background(SnacColors.placeholder)
         )
         Box(
             modifier = Modifier
@@ -153,13 +153,13 @@ internal fun CreditCardPlaceholder(
                 Modifier
                     .width(160.dp)
                     .height(18.dp)
-                    .background(SnacColors.faint)
+                    .background(SnacColors.placeholder)
             )
             Box(
                 Modifier
                     .width(104.dp)
                     .height(14.dp)
-                    .background(SnacColors.faint)
+                    .background(SnacColors.placeholder)
             )
         }
     }

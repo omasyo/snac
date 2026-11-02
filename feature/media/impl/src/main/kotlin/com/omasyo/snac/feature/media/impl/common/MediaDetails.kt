@@ -140,7 +140,7 @@ internal fun MediaHero(
                     Box(
                         Modifier
                             .size(240.dp, 40.dp)
-                            .background(SnacColors.faint)
+                            .background(SnacColors.placeholder)
                     )
                 }
             }
@@ -163,7 +163,7 @@ internal fun MediaHero(
                         Image(
                             imageUrl = hero.posterUrl,
                             modifier = Modifier
-                                .silhouette(SnacColors.signal)
+                                .silhouette(SnacColors.signalShadow)
                                 .border(4.dp, SnacColors.chip)
                                 .size(112.dp, 168.dp),
                         )
@@ -177,7 +177,7 @@ internal fun MediaHero(
                         color = SnacColors.onFilm,
                         modifier = Modifier
                             .weight(1f)
-                            .silhouette(SnacColors.signal)
+                            .silhouette(SnacColors.signalShadow)
                     )
                 }
             }
@@ -273,14 +273,14 @@ internal fun MediaOverview(
                         Modifier
                             .fillMaxWidth()
                             .height(14.dp)
-                            .background(SnacColors.faint)
+                            .background(SnacColors.placeholder)
                     )
                 }
                 Box(
                     Modifier
                         .width(160.dp)
                         .height(14.dp)
-                        .background(SnacColors.faint)
+                        .background(SnacColors.placeholder)
                 )
             }
         }

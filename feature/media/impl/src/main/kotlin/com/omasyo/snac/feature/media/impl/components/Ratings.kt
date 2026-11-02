@@ -57,7 +57,7 @@ val colors
     @Composable get() = listOf(
         SnacColors.accent to SnacColors.onAccent,
         SnacColors.chip to SnacColors.ink,
-        SnacColors.signal to SnacColors.onFilm,
+        SnacColors.signal to SnacColors.onSignal,
         SnacColors.chip to SnacColors.ink,
         SnacColors.film to SnacColors.onFilm,
         SnacColors.chip to SnacColors.ink,
@@ -75,7 +75,7 @@ fun RatingsSection(
         Text(
             text = "RATINGS",
             style = SnacTypography.title,
-            modifier = Modifier.silhouette(SnacColors.accent)
+            modifier = Modifier.silhouette(SnacColors.accentShadow)
         )
 
         val placeholder = remember { movableContentOf { Placeholder() } }
@@ -110,7 +110,7 @@ private fun Content(ratings: Ratings) {
                     modifier = Modifier
                         .silhouette()
                         .size(100.dp)
-                        .border(4.dp, SnacColors.ink, CircleShape)
+                        .border(4.dp, SnacColors.outline, CircleShape)
                         .background(SnacColors.signal, CircleShape)
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -120,11 +120,11 @@ private fun Content(ratings: Ratings) {
                             style = SnacTypography.headline.copy(
                                 lineHeightStyle = CapHeightLineHeightStyle,
                             ),
-                            color = SnacColors.onFilm,
+                            color = SnacColors.onSignal,
                         )
                         Text(
                             text = "Trakt",
-                            color = SnacColors.onFilm,
+                            color = SnacColors.onSignal,
                             style = SnacTypography.overline,
                         )
                     }
@@ -193,7 +193,7 @@ private fun Chart(
                 ) {
                     Box(
                         modifier = Modifier
-                            .background(if (count == max) SnacColors.signal else SnacColors.ink)
+                            .background(if (count == max) SnacColors.signal else SnacColors.outline)
                             .fillMaxHeight(count.toFloat() / max.toFloat())
                             .fillMaxWidth()
                     )
@@ -219,7 +219,7 @@ private fun RatingCard(
             modifier = modifier
 
                 .silhouette()
-                .border(3.dp, SnacColors.ink)
+                .border(3.dp, SnacColors.outline)
                 .background(backgroundColor)
                 .padding(12.dp)
         ) {
@@ -259,8 +259,8 @@ private fun Placeholder() {
                 modifier = Modifier
                     .silhouette()
                     .size(100.dp)
-                    .border(4.dp, SnacColors.ink, CircleShape)
-                    .background(SnacColors.faint, CircleShape)
+                    .border(4.dp, SnacColors.outline, CircleShape)
+                    .background(SnacColors.placeholder, CircleShape)
             )
             Row(
                 modifier = Modifier.height(124.dp),
@@ -273,7 +273,7 @@ private fun Placeholder() {
                             .weight(1f)
                             .padding(bottom = 16.dp)
                             .fillMaxHeight(fraction)
-                            .background(SnacColors.faint)
+                            .background(SnacColors.placeholder)
                     )
                 }
             }
@@ -292,24 +292,24 @@ private fun Placeholder() {
                         .weight(1f)
                         .rotate(rotation)
                         .silhouette()
-                        .border(3.dp, SnacColors.ink)
+                        .border(3.dp, SnacColors.outline)
                         .background(SnacColors.chip)
                         .padding(12.dp)
                 ) {
                     Box(
                         Modifier
                             .size(40.dp, 10.dp)
-                            .background(SnacColors.faint)
+                            .background(SnacColors.placeholder)
                     )
                     Box(
                         Modifier
                             .size(56.dp, 24.dp)
-                            .background(SnacColors.faint)
+                            .background(SnacColors.placeholder)
                     )
                     Box(
                         Modifier
                             .size(64.dp, 12.dp)
-                            .background(SnacColors.faint)
+                            .background(SnacColors.placeholder)
                     )
                 }
             }

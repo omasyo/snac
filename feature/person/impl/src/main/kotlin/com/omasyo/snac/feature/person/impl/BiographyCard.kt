@@ -39,7 +39,7 @@ internal fun BiographyCard(
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = modifier
             .silhouette(offset = DpOffset(6.dp, 6.dp))
-            .border(4.dp, SnacColors.ink)
+            .border(4.dp, SnacColors.outline)
             .background(SnacColors.card)
             .padding(16.dp),
     ) {
@@ -74,14 +74,14 @@ internal fun BiographyCard(
                         Modifier
                             .fillMaxWidth()
                             .height(14.dp)
-                            .background(SnacColors.faint)
+                            .background(SnacColors.placeholder)
                     )
                 }
                 Box(
                     Modifier
                         .width(160.dp)
                         .height(14.dp)
-                        .background(SnacColors.faint)
+                        .background(SnacColors.placeholder)
                 )
             }
         }

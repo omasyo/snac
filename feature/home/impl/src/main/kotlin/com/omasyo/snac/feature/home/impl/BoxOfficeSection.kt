@@ -93,7 +93,7 @@ internal fun BoxOfficeSectionLayout(
 ) {
     Column(
         modifier = modifier
-            .silhouette(SnacColors.accent, DpOffset(6.dp, 6.dp))
+            .silhouette(SnacColors.accentShadow, DpOffset(6.dp, 6.dp))
             .background(SnacColors.film)
             .padding(16.dp),
     ) {
