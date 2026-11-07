@@ -14,8 +14,10 @@ import com.omasyo.snac.core.data.mappers.toPlayedItem
 import com.omasyo.snac.core.data.mappers.toPopularItem
 import com.omasyo.snac.core.data.mappers.toTrendingItem
 import com.omasyo.snac.core.data.mappers.toMovieDetails
+import com.omasyo.snac.core.data.mappers.toRatings
 import com.omasyo.snac.core.data.mappers.toWatchedItem
 import com.omasyo.snac.core.data.models.MovieDetails
+import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.data.paging.ChartPagingSource
 import com.omasyo.snac.core.model.extra.TimePeriod
 import com.omasyo.snac.core.model.media.BoxOfficeItem
@@ -59,6 +61,9 @@ class MovieRepositoryImpl(
 
     override suspend fun getDetails(slug: String): SnacResult<MovieDetails> =
         movieNetworkSource.getDetails(slug).map { it.toMovieDetails() }
+
+    override suspend fun getRatings(slug: String): SnacResult<Ratings> =
+        movieNetworkSource.getRatings(slug).map { it.toRatings() }
 
     override fun getMostCollected(
         period: TimePeriod,

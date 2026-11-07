@@ -151,7 +151,7 @@ private fun Content(ratings: Ratings) {
             maxItemsInEachRow = 3,
         ) {
             ratings.externalRatings.forEachIndexed { index, rating ->
-                val (backgroundColor, contentColor) = colors[index]
+                val (backgroundColor, contentColor) = colors[index % colors.size]
 
                 val rotation =
                     remember(rating) { Random(rating.hashCode()).nextInt(-2, 2).toFloat() }
@@ -174,7 +174,7 @@ private fun Chart(
     distribution: Map<String, Int>,
     modifier: Modifier = Modifier,
 ) {
-    val max = remember(distribution) { distribution.values.max() }
+    val max = remember(distribution) { distribution.values.maxOrNull()?.coerceAtLeast(1) ?: 1 }
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(2.dp),

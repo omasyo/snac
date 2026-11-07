@@ -29,7 +29,7 @@ class MovieViewModel(
         RefreshWrapper(viewModelScope) { movieRepository.getDetails(slug) }.response
 
     val ratings: StateFlow<UiState<Ratings>> =
-        RefreshWrapper(viewModelScope) { mock(Ratings.PreviewSample) }.response
+        RefreshWrapper(viewModelScope) { movieRepository.getRatings(slug) }.response
 
     val cast: StateFlow<UiState<List<Cast>>> =
         RefreshWrapper(viewModelScope) { mock(Cast.PreviewSample) }.response

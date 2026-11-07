@@ -5,6 +5,7 @@ import com.omasyo.snac.core.network.media.models.AnticipatedMovieResponse
 import com.omasyo.snac.core.network.media.models.TrendingMovieResponse
 import com.omasyo.snac.core.network.models.MovieResponse
 import com.omasyo.snac.core.network.models.Period
+import com.omasyo.snac.core.network.models.RatingsResponse
 import com.omasyo.snac.core.network.movie.models.BoxOfficeResponse
 import com.omasyo.snac.core.network.movie.models.MovieDetailsResponse
 import com.omasyo.snac.core.network.movie.models.MostFavoritedMovieResponse
@@ -38,6 +39,12 @@ class MovieNetworkSourceImpl(
     override suspend fun getDetails(slug: String): SnacResult<MovieDetailsResponse> = safeCall {
         client.get("movies/$slug") {
             parameter("extended", "full")
+        }
+    }
+
+    override suspend fun getRatings(slug: String): SnacResult<RatingsResponse> = safeCall {
+        client.get("movies/$slug/ratings") {
+            parameter("extended", "all")
         }
     }
 
