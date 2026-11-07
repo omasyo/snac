@@ -88,19 +88,18 @@ fun AppNavHost(
     RootScreenLayout(
         modifier = Modifier.background(SnacColors.page),
         bottomBar = {
-           if (navigationState.currentRoute in TOP_LEVEL_NAV_ITEMS.keys) {
-               BottomBar(
-                   currentDestination = destination,
-                   onCurrentDestinationChange = {
+            BottomBar(
+                currentDestination = destination,
+                onCurrentDestinationChange = {
 //                    backStack.clear()
-                       navigator.navigate(it)
-                   },
-                   destinations = TOP_LEVEL_NAV_ITEMS.keys.toList(),
-                   label = { TOP_LEVEL_NAV_ITEMS.getValue(it).label },
-                   modifier = Modifier
-                       .padding(vertical = 8.dp)
-               )
-           }
+                    navigator.navigate(it)
+                },
+                expanded = navigationState.currentRoute in TOP_LEVEL_NAV_ITEMS.keys,
+                destinations = TOP_LEVEL_NAV_ITEMS.keys.toList(),
+                label = { TOP_LEVEL_NAV_ITEMS.getValue(it).label },
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+            )
         }
     ) {
         NavDisplay(
@@ -113,6 +112,12 @@ fun AppNavHost(
                 ) togetherWith fadeOut() + scaleOut(targetScale = 0.9f)
             },
             popTransitionSpec = {
+                fadeIn() + scaleIn(initialScale = 0.9f) togetherWith slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Right,
+                    spring(stiffness = Spring.StiffnessMediumLow)
+                )
+            },
+            predictivePopTransitionSpec = { //TODO
                 fadeIn() + scaleIn(initialScale = 0.9f) togetherWith slideOutOfContainer(
                     AnimatedContentTransitionScope.SlideDirection.Right,
                     spring(stiffness = Spring.StiffnessMediumLow)

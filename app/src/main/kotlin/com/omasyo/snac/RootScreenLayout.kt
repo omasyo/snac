@@ -1,6 +1,7 @@
 package com.omasyo.snac
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -59,12 +60,15 @@ private enum class TestDestination(val label: String) {
 @Composable
 private fun Preview() {
     var destination by remember { mutableStateOf(TestDestination.Home) }
+    var expanded by remember { mutableStateOf(true) }
+
     SnacTheme {
         RootScreenLayout(
             bottomBar = {
                 BottomBar(
                     currentDestination = destination,
                     onCurrentDestinationChange = { destination = it },
+                    expanded = expanded,
                     destinations = TestDestination.entries,
                     label = { it.label },
                     modifier = Modifier
@@ -76,6 +80,7 @@ private fun Preview() {
                 Modifier
                     .fillMaxSize()
                     .background(SnacColors.page)
+                    .clickable { expanded = !expanded }
             )
         }
     }
