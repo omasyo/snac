@@ -2,6 +2,7 @@ package com.omasyo.snac.core.data.movie
 
 import androidx.paging.PagingData
 import com.omasyo.snac.core.common.SnacResult
+import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.MovieDetails
 import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.data.models.Review
@@ -22,6 +23,8 @@ interface MovieRepository {
     suspend fun getDetails(slug: String): SnacResult<MovieDetails>
 
     suspend fun getRatings(slug: String): SnacResult<Ratings>
+
+    suspend fun getCast(slug: String): SnacResult<List<Cast>>
 
     fun getComments(slug: String, sort: CommentSort): Flow<PagingData<Review>>
 
