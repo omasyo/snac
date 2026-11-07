@@ -26,6 +26,8 @@ interface MovieNetworkSource : NetworkSource {
 
     suspend fun getPeople(slug: String): SnacResult<PeopleResponse>
 
+    suspend fun getRelated(slug: String, page: Int, limit: Int): SnacResult<List<MovieResponse>>
+
     suspend fun getComments(
         slug: String,
         sort: CommentSort,

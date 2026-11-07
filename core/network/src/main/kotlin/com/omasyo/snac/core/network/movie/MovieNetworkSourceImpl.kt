@@ -57,6 +57,17 @@ class MovieNetworkSourceImpl(
         }
     }
 
+    override suspend fun getRelated(
+        slug: String,
+        page: Int,
+        limit: Int,
+    ): SnacResult<List<MovieResponse>> = safeCall {
+        client.get("movies/$slug/related") {
+            parameter("page", page)
+            parameter("limit", limit)
+        }
+    }
+
     override suspend fun getComments(
         slug: String,
         sort: CommentSort,

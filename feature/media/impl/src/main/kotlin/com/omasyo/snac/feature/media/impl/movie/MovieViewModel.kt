@@ -2,6 +2,8 @@ package com.omasyo.snac.feature.media.impl.movie
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.MovieDetails
 import com.omasyo.snac.core.data.models.Ratings
@@ -9,7 +11,6 @@ import com.omasyo.snac.core.data.movie.MovieRepository
 import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.ui.models.RefreshWrapper
 import com.omasyo.snac.core.ui.models.UiState
-import com.omasyo.snac.core.ui.models.mock
 import com.omasyo.snac.core.data.models.Review
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
@@ -18,6 +19,7 @@ import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 @AssistedInject
@@ -37,8 +39,8 @@ class MovieViewModel(
     val review: StateFlow<UiState<List<Review>>> =
         RefreshWrapper(viewModelScope) { movieRepository.getTopComments(slug) }.response
 
-    val relatedMovies: StateFlow<UiState<List<Movie>>> =
-        RefreshWrapper(viewModelScope) { mock(Movie.PreviewSample) }.response
+    val relatedMovies: Flow<PagingData<Movie>> =
+        movieRepository.getRelated(slug).cachedIn(viewModelScope)
 
     @AssistedFactory
     @ManualViewModelAssistedFactoryKey

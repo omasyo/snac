@@ -4,11 +4,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.LoadStates
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.Person
@@ -38,6 +44,8 @@ import com.omasyo.snac.feature.media.impl.common.RelatedSection
 import com.omasyo.snac.feature.media.impl.common.ReviewSection
 import com.omasyo.snac.feature.media.impl.components.RatingsSection
 import com.omasyo.snac.core.data.models.Review
+import com.omasyo.snac.core.ui.models.message
+import kotlinx.coroutines.flow.flowOf
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
@@ -69,7 +77,7 @@ fun ShowScreen(
         seasons = viewModel.seasons.collectAsStateWithLifecycle().value,
         cast = viewModel.cast.collectAsStateWithLifecycle().value,
         review = viewModel.review.collectAsStateWithLifecycle().value,
-        relatedShows = viewModel.relatedShows.collectAsStateWithLifecycle().value,
+        relatedShows = viewModel.relatedShows.collectAsLazyPagingItems(),
         modifier = modifier,
     )
 }
@@ -90,7 +98,7 @@ fun ShowScreen(
     seasons: UiState<List<Season>>,
     cast: UiState<List<Cast>>,
     review: UiState<List<Review>>,
-    relatedShows: UiState<List<Show>>,
+    relatedShows: LazyPagingItems<Show>,
     modifier: Modifier = Modifier,
 ) {
     MediaDetailsLayout(onBackClick = onBackClick, modifier = modifier) {
@@ -153,7 +161,7 @@ fun ShowScreen(
         RelatedSection(
             onMediaClick = onMediaClick,
             onSeeAllClick = onSeeAllRelatedClick,
-            state = relatedShows,
+            items = relatedShows,
             modifier = Modifier.padding(bottom = 16.dp),
         )
     }
@@ -203,7 +211,7 @@ private fun Preview() {
             seasons = UiState.Success(Season.PreviewSample),
             cast = UiState.Success(Cast.PreviewSample),
             review = UiState.Success(Review.PreviewSample.take(2)),
-            relatedShows = UiState.Success(Show.PreviewSample),
+            relatedShows = remember { flowOf(PagingData.from(Show.PreviewSample)) }.collectAsLazyPagingItems(),
             modifier = Modifier.fillMaxSize(),
         )
     }
@@ -228,7 +236,7 @@ private fun LoadingPreview() {
             seasons = UiState.Loading,
             cast = UiState.Loading,
             review = UiState.Loading,
-            relatedShows = UiState.Loading,
+            relatedShows = remember { flowOf(PagingData.empty<Show>(LoadStates(LoadState.Loading, LoadState.Loading, LoadState.Loading))) }.collectAsLazyPagingItems(),
             modifier = Modifier.fillMaxSize(),
         )
     }
@@ -254,7 +262,10 @@ private fun ErrorPreview() {
             seasons = error,
             cast = error,
             review = error,
-            relatedShows = error,
+            relatedShows = remember {
+                val loadError = LoadState.Error(Exception(SnacResult.Error.Unexpected.message))
+                flowOf(PagingData.empty<Show>(LoadStates(loadError, loadError, loadError)))
+            }.collectAsLazyPagingItems(),
             modifier = Modifier.fillMaxSize(),
         )
     }

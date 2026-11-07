@@ -4,11 +4,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.LoadState
+import androidx.paging.LoadStates
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.MovieDetails
@@ -37,6 +43,8 @@ import com.omasyo.snac.feature.media.impl.common.RelatedSection
 import com.omasyo.snac.feature.media.impl.common.ReviewSection
 import com.omasyo.snac.feature.media.impl.components.RatingsSection
 import com.omasyo.snac.core.data.models.Review
+import com.omasyo.snac.core.ui.models.message
+import kotlinx.coroutines.flow.flowOf
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 @Composable
@@ -68,7 +76,7 @@ fun MovieScreen(
         ratings = viewModel.ratings.collectAsStateWithLifecycle().value,
         cast = viewModel.cast.collectAsStateWithLifecycle().value,
         review = viewModel.review.collectAsStateWithLifecycle().value,
-        relatedMovies = viewModel.relatedMovies.collectAsStateWithLifecycle().value,
+        relatedMovies = viewModel.relatedMovies.collectAsLazyPagingItems(),
         modifier = modifier,
     )
 }
@@ -87,7 +95,7 @@ fun MovieScreen(
     ratings: UiState<Ratings>,
     cast: UiState<List<Cast>>,
     review: UiState<List<Review>>,
-    relatedMovies: UiState<List<Movie>>,
+    relatedMovies: LazyPagingItems<Movie>,
     modifier: Modifier = Modifier,
 ) {
     MediaDetailsLayout(onBackClick = onBackClick, modifier = modifier) {
@@ -148,7 +156,7 @@ fun MovieScreen(
         RelatedSection(
             onMediaClick = onMediaClick,
             onSeeAllClick = onSeeAllRelatedClick,
-            state = relatedMovies,
+            items = relatedMovies,
             modifier = Modifier.padding(bottom = 16.dp),
         )
     }
@@ -193,7 +201,7 @@ private fun Preview() {
             ratings = UiState.Success(Ratings.PreviewSample),
             cast = UiState.Success(Cast.PreviewSample),
             review = UiState.Success(Review.PreviewSample.take(2)),
-            relatedMovies = UiState.Success(Movie.PreviewSample),
+            relatedMovies = remember { flowOf(PagingData.from(Movie.PreviewSample)) }.collectAsLazyPagingItems(),
             modifier = Modifier.fillMaxSize(),
         )
     }
@@ -216,7 +224,7 @@ private fun LoadingPreview() {
             ratings = UiState.Loading,
             cast = UiState.Loading,
             review = UiState.Loading,
-            relatedMovies = UiState.Loading,
+            relatedMovies = remember { flowOf(PagingData.empty<Movie>(LoadStates(LoadState.Loading, LoadState.Loading, LoadState.Loading))) }.collectAsLazyPagingItems(),
             modifier = Modifier.fillMaxSize(),
         )
     }
@@ -240,7 +248,10 @@ private fun ErrorPreview() {
             ratings = error,
             cast = error,
             review = error,
-            relatedMovies = error,
+            relatedMovies = remember {
+                val loadError = LoadState.Error(Exception(SnacResult.Error.Unexpected.message))
+                flowOf(PagingData.empty<Movie>(LoadStates(loadError, loadError, loadError)))
+            }.collectAsLazyPagingItems(),
             modifier = Modifier.fillMaxSize(),
         )
     }

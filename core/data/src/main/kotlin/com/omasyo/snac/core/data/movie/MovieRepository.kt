@@ -10,6 +10,7 @@ import com.omasyo.snac.core.model.extra.CommentSort
 import com.omasyo.snac.core.model.extra.TimePeriod
 import com.omasyo.snac.core.model.media.BoxOfficeItem
 import com.omasyo.snac.core.model.media.ChartItem
+import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.model.media.TrendingItem
 import kotlinx.coroutines.flow.Flow
 
@@ -25,6 +26,8 @@ interface MovieRepository {
     suspend fun getRatings(slug: String): SnacResult<Ratings>
 
     suspend fun getCast(slug: String): SnacResult<List<Cast>>
+
+    fun getRelated(slug: String): Flow<PagingData<Movie>>
 
     fun getComments(slug: String, sort: CommentSort): Flow<PagingData<Review>>
 

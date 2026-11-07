@@ -2,6 +2,7 @@ package com.omasyo.snac.feature.media.impl.show
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
 import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.data.models.Season
@@ -15,7 +16,9 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flowOf
 
 @Inject
 @ViewModelKey
@@ -36,6 +39,5 @@ class ShowViewModel : ViewModel() {
     val review: StateFlow<UiState<List<Review>>> =
         RefreshWrapper(viewModelScope) { mock(Review.PreviewSample.take(2)) }.response
 
-    val relatedShows: StateFlow<UiState<List<Show>>> =
-        RefreshWrapper(viewModelScope) { mock(Show.PreviewSample) }.response
+    val relatedShows: Flow<PagingData<Show>> = flowOf(PagingData.from(Show.PreviewSample))
 }

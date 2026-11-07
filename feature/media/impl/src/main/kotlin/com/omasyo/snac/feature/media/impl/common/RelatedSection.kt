@@ -16,27 +16,30 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
+import androidx.paging.LoadStates
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.Movie
+import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.imageGradient
-import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.modifiers.TintIndication
@@ -46,6 +49,8 @@ import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
 import com.omasyo.snac.feature.media.impl.components.SectionHeader
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flowOf
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 
@@ -53,7 +58,7 @@ import kotlin.time.Duration.Companion.seconds
 internal fun RelatedSection(
     onMediaClick: (Media) -> Unit,
     onSeeAllClick: () -> Unit,
-    state: UiState<List<Media>>,
+    items: LazyPagingItems<out Media>,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -69,29 +74,52 @@ internal fun RelatedSection(
         val placeholder =
             remember { movableContentOf<Boolean> { scrollable -> Placeholder(scrollable) } }
 
-        when (state) {
-            is UiState.Error -> {
+
+        when (val refresh = items.loadState.refresh) {
+            is LoadState.Error -> {
                 ErrorBox(
-                    description = state.error.message,
-                    onRetry = state.refresh,
+                    description = refresh.error.message ?: SnacResult.Error.Unexpected.message,
+                    onRetry = items::retry,
                 ) {
                     placeholder(false)
                 }
             }
 
-
-            UiState.Loading -> placeholder(true)
-
-            is UiState.Success -> {
+            is LoadState.Loading -> placeholder(true)
+            else -> {
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
-                    items(state.content, key = { it.slug }) { item ->
-                        RelatedCard(
-                            media = item,
-                            onClick = { onMediaClick(item) },
-                        )
+                    items(
+                        count = items.itemCount,
+                        key = items.itemKey { it.slug },
+                    ) { index ->
+                        val item = items[index]
+                        if (item != null) {
+                            RelatedCard(
+                                media = item,
+                                onClick = { onMediaClick(item) },
+                            )
+                        } else {
+                            RelatedCardPlaceholder(index)
+                        }
+                    }
+                    when (items.loadState.append) {
+                        is LoadState.Loading -> item("append-loading") {
+                            RelatedCardPlaceholder(items.itemCount)
+                        }
+
+                        is LoadState.Error -> item("append-error") {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.size(112.dp, 172.dp),
+                            ) {
+                                Button(text = "Retry", onClick = items::retry)
+                            }
+                        }
+
+                        is LoadState.NotLoading -> {}
                     }
                 }
             }
@@ -150,41 +178,45 @@ private fun Placeholder(scrollable: Boolean) {
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16f.dp),
     ) {
-        repeat(10) {
-            val rotation = remember(it) { Random(it + 80).nextInt(-3, 3).toFloat() }
+        repeat(10) { RelatedCardPlaceholder(it) }
+    }
+}
 
-            Column(Modifier.rotate(rotation)) {
-                Box(
-                    modifier = Modifier
-                        .silhouette()
-                        .border(2.dp, SnacColors.outline)
-                        .background(SnacColors.card)
-                        .padding(6.dp)
-                        .size(100.dp, 160.dp)
-                        .border(2.dp, SnacColors.outline)
-                        .background(imageGradient())
-                )
-                Box(
-                    Modifier
-                        .padding(vertical = 8.dp)
-                        .width(72.dp)
-                        .height(14.dp)
-                        .background(SnacColors.placeholder)
-                )
-            }
-        }
+@Composable
+private fun RelatedCardPlaceholder(seed: Int, modifier: Modifier = Modifier) {
+    val rotation = remember(seed) { Random(seed + 80).nextInt(-3, 3).toFloat() }
+
+    Column(modifier.rotate(rotation)) {
+        Box(
+            modifier = Modifier
+                .silhouette()
+                .border(2.dp, SnacColors.outline)
+                .background(SnacColors.card)
+                .padding(6.dp)
+                .size(100.dp, 160.dp)
+                .border(2.dp, SnacColors.outline)
+                .background(imageGradient())
+        )
+        Box(
+            Modifier
+                .padding(vertical = 8.dp)
+                .width(72.dp)
+                .height(14.dp)
+                .background(SnacColors.placeholder)
+        )
     }
 }
 
 @Preview
 @Composable
 private fun Preview() {
+    val items = remember { flowOf(PagingData.from(Movie.PreviewSample)) }.collectAsLazyPagingItems()
     SnacTheme {
         Box(Modifier.background(SnacColors.page)) {
             RelatedSection(
                 onMediaClick = { },
                 onSeeAllClick = { },
-                state = UiState.Success(Movie.PreviewSample),
+                items = items,
                 modifier = Modifier.padding(vertical = 16.dp)
             )
         }
@@ -194,19 +226,31 @@ private fun Preview() {
 @Preview
 @Composable
 private fun LoadingToErrorPreview() {
-    var state by remember { mutableStateOf<UiState<List<Movie>>>(UiState.Loading) }
+    val flow = remember {
+        MutableStateFlow(
+            PagingData.empty<Movie>(
+                LoadStates(
+                    LoadState.Loading,
+                    LoadState.Loading,
+                    LoadState.Loading
+                )
+            )
+        )
+    }
 
     LaunchedEffect(Unit) {
         delay(3.seconds)
-        state = UiState.Error(SnacResult.Error.Unexpected) {}
+        val error = LoadState.Error(Exception(SnacResult.Error.Unexpected.message))
+        flow.value = PagingData.empty(LoadStates(error, error, error))
     }
 
+    val items = flow.collectAsLazyPagingItems()
     SnacTheme {
         Box(Modifier.background(SnacColors.page)) {
             RelatedSection(
                 onMediaClick = { },
                 onSeeAllClick = { },
-                state = state,
+                items = items,
                 modifier = Modifier.padding(vertical = 16.dp)
             )
         }

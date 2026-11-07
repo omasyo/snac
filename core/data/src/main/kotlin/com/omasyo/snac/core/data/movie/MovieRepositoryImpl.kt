@@ -14,6 +14,7 @@ import com.omasyo.snac.core.data.mappers.toPeriod
 import com.omasyo.snac.core.data.mappers.toPlayedItem
 import com.omasyo.snac.core.data.mappers.toPopularItem
 import com.omasyo.snac.core.data.mappers.toTrendingItem
+import com.omasyo.snac.core.data.mappers.toMovie
 import com.omasyo.snac.core.data.mappers.toMovieDetails
 import com.omasyo.snac.core.data.mappers.toNetworkCommentSort
 import com.omasyo.snac.core.data.mappers.toReview
@@ -29,6 +30,7 @@ import com.omasyo.snac.core.model.extra.CommentSort
 import com.omasyo.snac.core.model.extra.TimePeriod
 import com.omasyo.snac.core.model.media.BoxOfficeItem
 import com.omasyo.snac.core.model.media.ChartItem
+import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.model.media.TrendingItem
 import com.omasyo.snac.core.network.movie.MovieNetworkSource
 import com.omasyo.snac.core.network.models.CommentSort as NetworkCommentSort
@@ -75,6 +77,15 @@ class MovieRepositoryImpl(
 
     override suspend fun getCast(slug: String): SnacResult<List<Cast>> =
         movieNetworkSource.getPeople(slug).map { it.toCast() }
+
+    override fun getRelated(slug: String): Flow<PagingData<Movie>> =
+        Pager(config = pagingConfig) {
+            CustomPagingSource(
+                pageSize = PAGE_SIZE,
+                provider = { page -> movieNetworkSource.getRelated(slug, page, PAGE_SIZE) },
+                mapper = { it.toMovie() },
+            )
+        }.flow
 
     override fun getComments(slug: String, sort: CommentSort): Flow<PagingData<Review>> =
         Pager(config = pagingConfig) {
