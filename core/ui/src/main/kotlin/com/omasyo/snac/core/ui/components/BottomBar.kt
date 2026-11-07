@@ -90,7 +90,7 @@ fun <T> BottomBar(
             ) {
                 scope.launch { state.animateTo(BarValue.Expanded) }
             }
-            .padding(start = TouchExtension)
+            .padding(horizontal = TouchExtension)
     )
 }
 
