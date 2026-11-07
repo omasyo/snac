@@ -14,7 +14,7 @@ data class MostShowStatsResponse(
     @SerialName("collected_count")
     val collectedCount: Int,
     @SerialName("collector_count")
-    val collectorCount: Int? = null,
+    val collectorCount: Int?,
     @SerialName("show")
     val show: ShowResponse,
 )

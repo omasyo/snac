@@ -8,21 +8,21 @@ data class NetworkUser(
     @SerialName("username")
     val username: String,
     @SerialName("name")
-    val name: String? = null,
+    val name: String?,
     @SerialName("vip")
-    val vip: Boolean = false,
+    val vip: Boolean,
     @SerialName("images")
-    val images: Images? = null,
+    val images: Images?,
 ) {
     @Serializable
     data class Images(
         @SerialName("avatar")
-        val avatar: Avatar? = null,
+        val avatar: Avatar?,
     )
 
     @Serializable
     data class Avatar(
         @SerialName("full")
-        val full: String? = null,
+        val full: String?,
     )
 }

@@ -15,7 +15,16 @@ enum class ReleaseStatus {
     Canceled,
 }
 
-data class SocialIds(val instagram: String?)
+data class SocialIds(
+    val twitter: String?,
+    val facebook: String?,
+    val instagram: String?,
+    val wikipedia: String?,
+) {
+    companion object {
+        val Empty = SocialIds(twitter = null, facebook = null, instagram = null, wikipedia = null)
+    }
+}
 
 // Checkout videos
 // Comments extended or not makes no difference
@@ -60,7 +69,7 @@ data class MovieDetails(
             language = "en",
             overview = "Dr. Victor Frankenstein, a brilliant but egotistical scientist, brings a creature to life in a monstrous experiment that ultimately leads to the undoing of both the creator and his tragic creation.",
             releaseDate = LocalDate.now(),
-            socialIds = SocialIds(instagram = null),
+            socialIds = SocialIds.Empty,
             certification = "PG-13",
             commentCount = 123,
             originalTitle = "Frankenstein"

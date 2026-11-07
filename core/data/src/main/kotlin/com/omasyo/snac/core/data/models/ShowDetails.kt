@@ -59,7 +59,7 @@ data class ShowDetails(
             firstAired = LocalDate.of(2017, 12, 1),
             network = "Netflix",
             airedEpisodes = 26,
-            socialIds = SocialIds(instagram = null),
+            socialIds = SocialIds.Empty,
             certification = "TV-MA",
             commentCount = 123,
             originalTitle = "Dark",

@@ -5,6 +5,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SocialIdsResponse(
+    @SerialName("twitter")
+    val twitter: String?,
+    @SerialName("facebook")
+    val facebook: String?,
     @SerialName("instagram")
     val instagram: String?,
+    @SerialName("wikipedia")
+    val wikipedia: String?,
 )

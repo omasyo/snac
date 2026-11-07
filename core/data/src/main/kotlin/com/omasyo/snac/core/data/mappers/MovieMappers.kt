@@ -78,8 +78,15 @@ fun MovieDetailsResponse.toMovieDetails() = MovieDetails(
     country = country?.takeIf { it.isNotBlank() },
     language = language?.takeIf { it.isNotBlank() },
     overview = overview?.takeIf { it.isNotBlank() },
-    releaseDate = released?.toLocalDateOrNull(),
-    socialIds = SocialIds(instagram = socialIds?.instagram),
+    releaseDate = released,
+    socialIds = socialIds?.let {
+        SocialIds(
+            twitter = it.twitter,
+            facebook = it.facebook,
+            instagram = it.instagram,
+            wikipedia = it.wikipedia,
+        )
+    } ?: SocialIds.Empty,
     certification = certification?.takeIf { it.isNotBlank() },
     commentCount = commentCount,
     originalTitle = originalTitle ?: title,
