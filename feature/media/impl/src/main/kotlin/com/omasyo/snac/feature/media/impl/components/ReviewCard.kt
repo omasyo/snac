@@ -252,6 +252,7 @@ fun ReviewPreviewCard(
         Text(
             text = review.comment,
             style = SnacTypography.caption,
+            maxLines = 3,
             modifier = if (blurred) Modifier.blur(8.dp, BlurredEdgeTreatment.Unbounded)
             else Modifier
         )
