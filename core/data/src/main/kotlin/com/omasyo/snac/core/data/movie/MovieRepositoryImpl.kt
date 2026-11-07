@@ -14,16 +14,22 @@ import com.omasyo.snac.core.data.mappers.toPlayedItem
 import com.omasyo.snac.core.data.mappers.toPopularItem
 import com.omasyo.snac.core.data.mappers.toTrendingItem
 import com.omasyo.snac.core.data.mappers.toMovieDetails
+import com.omasyo.snac.core.data.mappers.toNetworkCommentSort
+import com.omasyo.snac.core.data.mappers.toReview
 import com.omasyo.snac.core.data.mappers.toRatings
 import com.omasyo.snac.core.data.mappers.toWatchedItem
 import com.omasyo.snac.core.data.models.MovieDetails
 import com.omasyo.snac.core.data.models.Ratings
+import com.omasyo.snac.core.data.models.Review
 import com.omasyo.snac.core.data.paging.ChartPagingSource
+import com.omasyo.snac.core.data.paging.CustomPagingSource
+import com.omasyo.snac.core.model.extra.CommentSort
 import com.omasyo.snac.core.model.extra.TimePeriod
 import com.omasyo.snac.core.model.media.BoxOfficeItem
 import com.omasyo.snac.core.model.media.ChartItem
 import com.omasyo.snac.core.model.media.TrendingItem
 import com.omasyo.snac.core.network.movie.MovieNetworkSource
+import com.omasyo.snac.core.network.models.CommentSort as NetworkCommentSort
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
@@ -64,6 +70,21 @@ class MovieRepositoryImpl(
 
     override suspend fun getRatings(slug: String): SnacResult<Ratings> =
         movieNetworkSource.getRatings(slug).map { it.toRatings() }
+
+    override fun getComments(slug: String, sort: CommentSort): Flow<PagingData<Review>> =
+        Pager(config = pagingConfig) {
+            CustomPagingSource(
+                pageSize = PAGE_SIZE,
+                provider = { page ->
+                    movieNetworkSource.getComments(slug, sort.toNetworkCommentSort(), page, PAGE_SIZE)
+                },
+                mapper = { it.toReview() },
+            )
+        }.flow
+
+    override suspend fun getTopComments(slug: String): SnacResult<List<Review>> =
+        movieNetworkSource.getComments(slug, NetworkCommentSort.Likes, page = 1, limit = 2)
+            .map { list -> list.map { it.toReview() } }
 
     override fun getMostCollected(
         period: TimePeriod,

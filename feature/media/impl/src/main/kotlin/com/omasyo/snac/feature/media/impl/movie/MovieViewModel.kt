@@ -10,7 +10,7 @@ import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.ui.models.RefreshWrapper
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.mock
-import com.omasyo.snac.feature.media.impl.components.Review
+import com.omasyo.snac.core.data.models.Review
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
@@ -35,7 +35,7 @@ class MovieViewModel(
         RefreshWrapper(viewModelScope) { mock(Cast.PreviewSample) }.response
 
     val review: StateFlow<UiState<List<Review>>> =
-        RefreshWrapper(viewModelScope) { mock(Review.PreviewSample.take(2)) }.response
+        RefreshWrapper(viewModelScope) { movieRepository.getTopComments(slug) }.response
 
     val relatedMovies: StateFlow<UiState<List<Movie>>> =
         RefreshWrapper(viewModelScope) { mock(Movie.PreviewSample) }.response

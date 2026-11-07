@@ -33,7 +33,12 @@ import kotlinx.serialization.json.Json
 fun createClient(tokenStorage: TokenStorage) = HttpClient(OkHttp) {
     expectSuccess = false
     install(ContentNegotiation) {
-        json(Json { ignoreUnknownKeys = true })
+        json(
+            Json {
+                ignoreUnknownKeys = true
+                explicitNulls = false
+            }
+        )
     }
     install(Logging) {
         logger = object : Logger {

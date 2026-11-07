@@ -4,6 +4,8 @@ import androidx.paging.PagingData
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.data.models.MovieDetails
 import com.omasyo.snac.core.data.models.Ratings
+import com.omasyo.snac.core.data.models.Review
+import com.omasyo.snac.core.model.extra.CommentSort
 import com.omasyo.snac.core.model.extra.TimePeriod
 import com.omasyo.snac.core.model.media.BoxOfficeItem
 import com.omasyo.snac.core.model.media.ChartItem
@@ -20,6 +22,10 @@ interface MovieRepository {
     suspend fun getDetails(slug: String): SnacResult<MovieDetails>
 
     suspend fun getRatings(slug: String): SnacResult<Ratings>
+
+    fun getComments(slug: String, sort: CommentSort): Flow<PagingData<Review>>
+
+    suspend fun getTopComments(slug: String): SnacResult<List<Review>>
 
     fun getMostCollected(period: TimePeriod, startPosition: Int): Flow<PagingData<ChartItem>>
 

@@ -32,7 +32,7 @@ import com.omasyo.snac.feature.media.impl.common.MediaOverview
 import com.omasyo.snac.feature.media.impl.common.MediaTagline
 import com.omasyo.snac.feature.media.impl.common.ReviewSection
 import com.omasyo.snac.feature.media.impl.components.RatingsSection
-import com.omasyo.snac.feature.media.impl.components.Review
+import com.omasyo.snac.core.data.models.Review
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable

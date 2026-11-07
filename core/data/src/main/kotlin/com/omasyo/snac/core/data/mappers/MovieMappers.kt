@@ -79,7 +79,7 @@ fun MovieDetailsResponse.toMovieDetails() = MovieDetails(
     language = language?.takeIf { it.isNotBlank() },
     overview = overview?.takeIf { it.isNotBlank() },
     releaseDate = released,
-    socialIds = socialIds?.let {
+    socialIds = socialIds?.let { // TODO might be in common mappers
         SocialIds(
             twitter = it.twitter,
             facebook = it.facebook,

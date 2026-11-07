@@ -10,7 +10,7 @@ import com.omasyo.snac.core.model.media.Show
 import com.omasyo.snac.core.ui.models.RefreshWrapper
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.mock
-import com.omasyo.snac.feature.media.impl.components.Review
+import com.omasyo.snac.core.data.models.Review
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
