@@ -20,8 +20,9 @@ fun EntryProviderScope<NavKey>.mediaEntry(
     onEpisodeClick: (EpisodeNavKey) -> Unit,
     onPersonClick: (Person) -> Unit,
 ) {
-    entry<MovieNavKey> {
+    entry<MovieNavKey> { key ->
         MovieScreen(
+            slug = key.slug,
             onBackClick = onBackClick,
             onPersonClick = onPersonClick,
             onSeeAllCastClick = {},

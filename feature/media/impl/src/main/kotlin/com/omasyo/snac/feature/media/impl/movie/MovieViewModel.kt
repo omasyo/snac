@@ -12,19 +12,21 @@ import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.mock
 import com.omasyo.snac.feature.media.impl.components.Review
 import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metro.Inject
-import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.coroutines.flow.StateFlow
 
-@Inject
-@ViewModelKey
-@ContributesIntoMap(AppScope::class)
+@AssistedInject
 class MovieViewModel(
+    @Assisted private val slug: String,
     private val movieRepository: MovieRepository,
 ) : ViewModel() {
     val movie: StateFlow<UiState<MovieDetails>> =
-        RefreshWrapper(viewModelScope) { mock(MovieDetails.PreviewSample) }.response
+        RefreshWrapper(viewModelScope) { movieRepository.getDetails(slug) }.response
 
     val ratings: StateFlow<UiState<Ratings>> =
         RefreshWrapper(viewModelScope) { mock(Ratings.PreviewSample) }.response
@@ -37,4 +39,11 @@ class MovieViewModel(
 
     val relatedMovies: StateFlow<UiState<List<Movie>>> =
         RefreshWrapper(viewModelScope) { mock(Movie.PreviewSample) }.response
+
+    @AssistedFactory
+    @ManualViewModelAssistedFactoryKey
+    @ContributesIntoMap(AppScope::class)
+    interface Factory : ManualViewModelAssistedFactory {
+        fun create(@Assisted slug: String): MovieViewModel
+    }
 }

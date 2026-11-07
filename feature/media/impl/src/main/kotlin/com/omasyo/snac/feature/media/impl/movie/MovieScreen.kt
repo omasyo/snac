@@ -37,10 +37,11 @@ import com.omasyo.snac.feature.media.impl.common.RelatedSection
 import com.omasyo.snac.feature.media.impl.common.ReviewSection
 import com.omasyo.snac.feature.media.impl.components.RatingsSection
 import com.omasyo.snac.feature.media.impl.components.Review
-import dev.zacsweers.metrox.viewmodel.metroViewModel
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 @Composable
 fun MovieScreen(
+    slug: String,
     onBackClick: () -> Unit,
     onPersonClick: (Person) -> Unit,
     onSeeAllCastClick: () -> Unit,
@@ -50,7 +51,9 @@ fun MovieScreen(
     onCommentClick: () -> Unit,
     onSeeAllRelatedClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: MovieViewModel = metroViewModel(),
+    viewModel: MovieViewModel = assistedMetroViewModel<MovieViewModel, MovieViewModel.Factory> {
+        create(slug)
+    },
 ) {
     MovieScreen(
         onBackClick = onBackClick,
@@ -113,12 +116,14 @@ fun MovieScreen(
             state = movie.map { it.genres },
             modifier = Modifier.padding(horizontal = 16.dp),
         )
-        MediaOverview(
-            state = movie.map { it.overview },
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth(),
-        )
+        movie.map { it.overview }.transpose()?.let {
+            MediaOverview(
+                state = it,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+            )
+        }
         SignInPrompt(
             title = "Track this film",
             message = "Sign in to check in, rate it, mark it seen, and add it to your watchlist, favorites or lists.",
@@ -150,20 +155,25 @@ fun MovieScreen(
 }
 
 @Composable
-private fun MovieDetails.info(): List<Pair<String, String>> = listOf(
-    stringResource(R.string.info_year) to year.toString(),
-    stringResource(R.string.info_runtime) to runtime.formatRuntime(),
-    stringResource(R.string.info_cert) to certification,
-    stringResource(R.string.info_status) to status.label(),
-    stringResource(R.string.info_released) to releaseDate.formatDayMonth(),
-    stringResource(R.string.info_country) to country.uppercase(),
-    stringResource(R.string.info_language) to language.uppercase(),
+private fun MovieDetails.info(): List<Pair<String, String>> = listOfNotNull(
+    year?.let { stringResource(R.string.info_year) to it.toString() },
+    runtime?.let { stringResource(R.string.info_runtime) to it.formatRuntime() },
+    certification?.let { stringResource(R.string.info_cert) to it },
+    status?.let { stringResource(R.string.info_status) to it.label() },
+    releaseDate?.let { stringResource(R.string.info_released) to it.formatDayMonth() },
+    country?.let { stringResource(R.string.info_country) to it.uppercase() },
+    language?.let { stringResource(R.string.info_language) to it.uppercase() },
 //    "Trakt" to rating.formatRating(),
 )
 
 @Composable
 private fun ReleaseStatus.label(): String = when (this) {
     ReleaseStatus.Released -> stringResource(R.string.release_status_released)
+    ReleaseStatus.InProduction -> stringResource(R.string.release_status_in_production)
+    ReleaseStatus.PostProduction -> stringResource(R.string.release_status_post_production)
+    ReleaseStatus.Planned -> stringResource(R.string.release_status_planned)
+    ReleaseStatus.Rumored -> stringResource(R.string.release_status_rumored)
+    ReleaseStatus.Canceled -> stringResource(R.string.release_status_canceled)
 }
 
 @Preview(device = "spec:width=1080px,height=7000px,dpi=440")

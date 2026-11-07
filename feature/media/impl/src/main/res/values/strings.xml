@@ -42,6 +42,11 @@
     <string name="info_type">Type</string>
 
     <string name="release_status_released">Released</string>
+    <string name="release_status_in_production">In Production</string>
+    <string name="release_status_post_production">Post Production</string>
+    <string name="release_status_planned">Planned</string>
+    <string name="release_status_rumored">Rumored</string>
+    <string name="release_status_canceled">Canceled</string>
 
     <string name="show_status_returning">Returning</string>
     <string name="show_status_continuing">Continuing</string>

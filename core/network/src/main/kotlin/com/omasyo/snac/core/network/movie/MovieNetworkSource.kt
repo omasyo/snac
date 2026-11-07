@@ -7,6 +7,7 @@ import com.omasyo.snac.core.network.media.models.TrendingMovieResponse
 import com.omasyo.snac.core.network.models.MovieResponse
 import com.omasyo.snac.core.network.models.Period
 import com.omasyo.snac.core.network.movie.models.BoxOfficeResponse
+import com.omasyo.snac.core.network.movie.models.MovieDetailsResponse
 import com.omasyo.snac.core.network.movie.models.MostFavoritedMovieResponse
 import com.omasyo.snac.core.network.movie.models.MostMovieStatsResponse
 
@@ -14,6 +15,8 @@ interface MovieNetworkSource : NetworkSource {
     suspend fun getAnticipated(page: Int, limit: Int): SnacResult<List<AnticipatedMovieResponse>>
 
     suspend fun getBoxOffice(): SnacResult<List<BoxOfficeResponse>>
+
+    suspend fun getDetails(slug: String): SnacResult<MovieDetailsResponse>
 
     suspend fun getMostCollected(
         period: Period,

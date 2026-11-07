@@ -6,7 +6,14 @@ import kotlin.time.Duration.Companion.minutes
 
 data class Genre(val name: String)
 
-enum class ReleaseStatus { Released } //TODO other release statuses
+enum class ReleaseStatus {
+    Released,
+    InProduction,
+    PostProduction,
+    Planned,
+    Rumored,
+    Canceled,
+}
 
 data class SocialIds(val instagram: String?)
 
@@ -16,22 +23,22 @@ data class SocialIds(val instagram: String?)
 data class MovieDetails(
     val slug: String,
     val title: String,
-    val year: Int,
+    val year: Int?,
     val posterUrl: String?,
     val secondaryPosterUrl: String?,
     val genres: List<Genre>,
     val rating: Double,
-    val status: ReleaseStatus,
-    val runtime: Duration,
+    val status: ReleaseStatus?,
+    val runtime: Duration?,
     val tagline: String?,
     val homepage: String?,
     val trailer: String?,
-    val country: String,
-    val language: String,
-    val overview: String,
-    val releaseDate: LocalDate,
+    val country: String?,
+    val language: String?,
+    val overview: String?,
+    val releaseDate: LocalDate?,
     val socialIds: SocialIds,
-    val certification: String,
+    val certification: String?,
     val commentCount: Int,
     val originalTitle: String,
 ) {
