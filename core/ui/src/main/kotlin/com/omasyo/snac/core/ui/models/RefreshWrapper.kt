@@ -35,7 +35,7 @@ class RefreshWrapper<T>(
 }
 
 suspend fun <T> mock(value: T): SnacResult<T> {
-    delay(Random.nextLong(1000, 5000).milliseconds)
+    delay(Random.nextLong(500, 3000).milliseconds)
     return if (Random.nextBoolean()) {
         SnacResult.Success(value)
     } else {

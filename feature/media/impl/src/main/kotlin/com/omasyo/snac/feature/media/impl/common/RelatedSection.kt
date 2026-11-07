@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -145,6 +146,7 @@ private fun RelatedCard(
                 indication = null,
                 onClick = onClick,
             )
+            .width(100.dp)
     ) {
         Image(
             imageUrl = media.imageUrl,
@@ -153,12 +155,15 @@ private fun RelatedCard(
                 .border(2.dp, SnacColors.outline)
                 .background(SnacColors.card)
                 .padding(6.dp)
-                .size(100.dp, 160.dp),
+                .fillMaxWidth()
+                .height(160.dp),
         )
         val tintColor = SnacColors.page
         Text(
             text = media.title,
             style = SnacTypography.tag,
+            maxLines = 2,
+            minLines = 2,
             modifier = Modifier
                 .indication(
                     interactionSource, TintIndication(
@@ -199,7 +204,14 @@ private fun RelatedCardPlaceholder(seed: Int, modifier: Modifier = Modifier) {
         )
         Box(
             Modifier
-                .padding(vertical = 8.dp)
+                .padding(top = 8.dp, bottom = 2.dp)
+                .width(96.dp)
+                .height(14.dp)
+                .background(SnacColors.placeholder)
+        )
+        Box(
+            Modifier
+                .padding(bottom = 8.dp)
                 .width(72.dp)
                 .height(14.dp)
                 .background(SnacColors.placeholder)
