@@ -1,7 +1,6 @@
 package com.omasyo.snac.core.ui.components
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -43,7 +42,10 @@ fun SelectableText(
 
     val randomOffsets =
         rememberSaveable {
-            List(10) { Random.nextDouble(-10.0, 7.0).toFloat() }
+            List(8) { Random.nextDouble(-6.0, 6.0).toFloat() } + listOf(
+                Random.nextDouble(16.0, 30.0).toFloat(),
+                Random.nextDouble(-10.0, 10.0).toFloat(),
+            )
         }
 
     LaunchedEffect(isSelected) {
@@ -99,7 +101,7 @@ fun SelectableText(
                     val rightX = size.width - pad + randomOffsets[6]
                     val rightY = cy + randomOffsets[7]
 
-                    val endX = topX + randomOffsets[8]
+                    val endX = topX - randomOffsets[8]
                     val endY = topY + randomOffsets[9]
 
                     val path = Path().apply {
