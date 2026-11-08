@@ -12,6 +12,7 @@ import com.omasyo.snac.core.network.models.RatingsResponse
 import com.omasyo.snac.core.network.models.ShowResponse
 import com.omasyo.snac.core.network.show.models.MostFavoritedShowResponse
 import com.omasyo.snac.core.network.show.models.ShowDetailsResponse
+import com.omasyo.snac.core.network.show.models.EpisodeDetailsResponse
 import com.omasyo.snac.core.network.show.models.MostShowStatsResponse
 import com.omasyo.snac.core.network.show.models.SeasonResponse
 
@@ -23,6 +24,10 @@ interface ShowNetworkSource : NetworkSource {
     suspend fun getSeasons(slug: String): SnacResult<List<SeasonResponse>>
 
     suspend fun getSeason(slug: String, season: Int): SnacResult<SeasonResponse>
+
+    suspend fun getEpisodes(slug: String, season: Int): SnacResult<List<EpisodeDetailsResponse>>
+
+    suspend fun getEpisode(slug: String, season: Int, episode: Int): SnacResult<EpisodeDetailsResponse>
 
     suspend fun getRatings(slug: String): SnacResult<RatingsResponse>
 

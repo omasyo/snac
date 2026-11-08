@@ -27,7 +27,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.data.models.EpisodeDetails
-import com.omasyo.snac.core.ui.R as UiR
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Icon
 import com.omasyo.snac.core.ui.components.Image
@@ -46,6 +45,7 @@ import com.omasyo.snac.core.ui.theme.colors.SnacColors
 import com.omasyo.snac.feature.media.impl.R
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
+import com.omasyo.snac.core.ui.R as UiR
 
 @Composable
 internal fun EpisodesSection(

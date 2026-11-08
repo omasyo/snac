@@ -37,7 +37,7 @@ class SeasonViewModel(
         RefreshWrapper(viewModelScope) { mock(Ratings.PreviewSample) }.response
 
     val episodes: StateFlow<UiState<List<EpisodeDetails>>> =
-        RefreshWrapper(viewModelScope) { mock(EpisodeDetails.PreviewSample) }.response
+        RefreshWrapper(viewModelScope) { showRepository.getEpisodes(showSlug, seasonNumber) }.response
 
     val cast: StateFlow<UiState<List<Cast>>> =
         RefreshWrapper(viewModelScope) { mock(Cast.PreviewSample) }.response

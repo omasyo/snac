@@ -21,7 +21,7 @@ data class EpisodeDetails(
     val overview: String?,
     val screenshotUrl: String?,
     val rating: Double,
-    val runtime: Duration,
+    val runtime: Duration?,
     val type: EpisodeType,
     val firstAired: LocalDate?,
     val commentCount: Int,

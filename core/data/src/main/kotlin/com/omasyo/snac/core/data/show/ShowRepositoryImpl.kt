@@ -7,6 +7,7 @@ import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.common.map
 import com.omasyo.snac.core.data.mappers.toAnticipatedItem
 import com.omasyo.snac.core.data.mappers.toCast
+import com.omasyo.snac.core.data.mappers.toEpisodeDetails
 import com.omasyo.snac.core.data.mappers.toNetworkCommentSort
 import com.omasyo.snac.core.data.mappers.toRatings
 import com.omasyo.snac.core.data.mappers.toReview
@@ -21,6 +22,7 @@ import com.omasyo.snac.core.data.mappers.toShowDetails
 import com.omasyo.snac.core.data.mappers.toTrendingItem
 import com.omasyo.snac.core.data.mappers.toWatchedItem
 import com.omasyo.snac.core.data.models.Cast
+import com.omasyo.snac.core.data.models.EpisodeDetails
 import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.data.models.Review
 import com.omasyo.snac.core.data.models.Season
@@ -62,6 +64,16 @@ class ShowRepositoryImpl(
 
     override suspend fun getSeason(slug: String, season: Int): SnacResult<Season> =
         showNetworkSource.getSeason(slug, season).map { it.toSeason() }
+
+    override suspend fun getEpisodes(slug: String, season: Int): SnacResult<List<EpisodeDetails>> =
+        showNetworkSource.getEpisodes(slug, season).map { list -> list.map { it.toEpisodeDetails() } }
+
+    override suspend fun getEpisode(
+        slug: String,
+        season: Int,
+        episode: Int,
+    ): SnacResult<EpisodeDetails> =
+        showNetworkSource.getEpisode(slug, season, episode).map { it.toEpisodeDetails() }
 
     override suspend fun getRatings(slug: String): SnacResult<Ratings> =
         showNetworkSource.getRatings(slug).map { it.toRatings() }

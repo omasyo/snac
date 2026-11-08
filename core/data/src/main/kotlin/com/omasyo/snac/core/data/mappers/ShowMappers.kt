@@ -1,5 +1,7 @@
 package com.omasyo.snac.core.data.mappers
 
+import com.omasyo.snac.core.data.models.EpisodeDetails
+import com.omasyo.snac.core.data.models.EpisodeType
 import com.omasyo.snac.core.data.models.Season
 import com.omasyo.snac.core.data.models.ShowDetails
 import com.omasyo.snac.core.data.models.ShowEnding
@@ -15,6 +17,7 @@ import com.omasyo.snac.core.network.media.models.AnticipatedShowResponse
 import com.omasyo.snac.core.network.models.ShowResponse
 import com.omasyo.snac.core.network.show.models.MostFavoritedShowResponse
 import com.omasyo.snac.core.network.show.models.MostShowStatsResponse
+import com.omasyo.snac.core.network.show.models.EpisodeDetailsResponse
 import com.omasyo.snac.core.network.show.models.SeasonResponse
 import com.omasyo.snac.core.network.show.models.ShowDetailsResponse
 import java.time.LocalDate
@@ -119,4 +122,27 @@ fun SeasonResponse.toSeason(): Season {
         network = network?.takeIf { it.isNotBlank() },
         originalTitle = originalTitle?.takeIf { it.isNotBlank() },
     )
+}
+
+fun EpisodeDetailsResponse.toEpisodeDetails() = EpisodeDetails(
+    season = season,
+    number = number,
+    title = title?.takeIf { it.isNotBlank() },
+    overview = overview?.takeIf { it.isNotBlank() },
+    screenshotUrl = images?.screenshot?.firstOrNull()?.toImageUrl(),
+    rating = rating,
+    runtime = runtime?.takeIf { it > 0 }?.minutes,
+    type = episodeType.toEpisodeType(),
+    firstAired = firstAired?.let { LocalDate.ofInstant(it, ZoneId.systemDefault()) },
+    commentCount = commentCount,
+)
+
+private fun String?.toEpisodeType(): EpisodeType = when (this) {
+    "series_premiere" -> EpisodeType.SeriesPremiere
+    "season_premiere" -> EpisodeType.SeasonPremiere
+    "mid_season_finale" -> EpisodeType.MidSeasonFinale
+    "mid_season_premiere" -> EpisodeType.MidSeasonPremiere
+    "season_finale" -> EpisodeType.SeasonFinale
+    "series_finale" -> EpisodeType.SeriesFinale
+    else -> EpisodeType.Standard
 }

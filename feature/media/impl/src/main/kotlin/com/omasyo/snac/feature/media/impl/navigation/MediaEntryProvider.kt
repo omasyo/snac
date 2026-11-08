@@ -60,8 +60,11 @@ fun EntryProviderScope<NavKey>.mediaEntry(
             onCommentClick = {},
         )
     }
-    entry<EpisodeNavKey> {
+    entry<EpisodeNavKey> { key ->
         EpisodeScreen(
+            showSlug = key.showSlug,
+            season = key.season,
+            episode = key.episode,
             onBackClick = onBackClick,
             onPersonClick = onPersonClick,
             onSeeAllCastClick = {},

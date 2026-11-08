@@ -30,7 +30,7 @@ import com.omasyo.snac.core.data.models.EpisodeDetails
 import com.omasyo.snac.core.data.models.EpisodeType
 import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.data.models.Ratings
-import com.omasyo.snac.core.ui.R as UiR
+import com.omasyo.snac.core.data.models.Review
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.IconButton
 import com.omasyo.snac.core.ui.components.Image
@@ -59,11 +59,14 @@ import com.omasyo.snac.feature.media.impl.common.MediaOverview
 import com.omasyo.snac.feature.media.impl.common.MediaTagline
 import com.omasyo.snac.feature.media.impl.common.ReviewSection
 import com.omasyo.snac.feature.media.impl.components.RatingsSection
-import com.omasyo.snac.core.data.models.Review
-import dev.zacsweers.metrox.viewmodel.metroViewModel
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import com.omasyo.snac.core.ui.R as UiR
 
 @Composable
 fun EpisodeScreen(
+    showSlug: String,
+    season: Int,
+    episode: Int,
     onBackClick: () -> Unit,
     onPersonClick: (Person) -> Unit,
     onSeeAllCastClick: () -> Unit,
@@ -71,7 +74,9 @@ fun EpisodeScreen(
     onSeeAllReviewClick: () -> Unit,
     onCommentClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: EpisodeViewModel = metroViewModel(),
+    viewModel: EpisodeViewModel = assistedMetroViewModel<EpisodeViewModel, EpisodeViewModel.Factory> {
+        create(showSlug, season, episode)
+    },
 ) {
     EpisodeScreen(
         onBackClick = onBackClick,
@@ -265,7 +270,7 @@ private fun MediaHero(
 private fun EpisodeDetails.info(): List<Pair<String, String>> = listOfNotNull(
     stringResource(R.string.info_season) to season.toString(),
     stringResource(R.string.info_episode) to number.toString(),
-    stringResource(R.string.info_runtime) to runtime.formatRuntime(),
+    runtime?.let { stringResource(R.string.info_runtime) to it.formatRuntime() },
     firstAired?.let { stringResource(R.string.info_year) to it.year.toString() },
     firstAired?.let { stringResource(R.string.info_aired) to it.formatDayMonth() },
     type.label()?.let { stringResource(R.string.info_type) to it },
