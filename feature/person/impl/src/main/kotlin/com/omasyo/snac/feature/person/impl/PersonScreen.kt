@@ -18,14 +18,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -81,9 +79,6 @@ fun PersonScreen(
     )
 }
 
-
-private val CreditStripeWidth = 6.dp
-
 @Composable
 fun PersonScreen(
     onBackClick: () -> Unit,
@@ -96,24 +91,24 @@ fun PersonScreen(
     credits: UiState<List<PersonCredit>>,
     modifier: Modifier = Modifier,
 ) {
-
-    val stripeColor = SnacColors.accent
     val cardModifier = Modifier
         .padding(horizontal = 16.dp)
-        .drawBehind {
-            val stripeWidth = CreditStripeWidth.toPx()
-            drawRect(
-                color = stripeColor,
-                topLeft = Offset(size.width - stripeWidth, 0f),
-                size = Size(stripeWidth, size.height),
-            )
-        }
-        .padding(end = CreditStripeWidth)
         .film(
             side = Side.Start,
             crossEdgeInset = 12.dp,
         )
         .background(SnacColors.film)
+
+    val placeholder =
+        remember {
+            movableContentOf {
+                Column {
+                    repeat(6) {
+                        CreditCardPlaceholder(cardModifier)
+                    }
+                }
+            }
+        }
 
     Box(modifier) {
         LazyColumn(
@@ -186,12 +181,12 @@ fun PersonScreen(
                             onRetry = credits.refresh,
                             alignment = Alignment.TopCenter,
                             errorPadding = PaddingValues(top = 120.dp),
-                        ) { CreditsPlaceholder(cardModifier) }
+                        ) { placeholder() }
                     }
                 }
 
                 UiState.Loading -> {
-                    item("credits-loading") { CreditsPlaceholder(cardModifier) }
+                    item("credits-loading") { placeholder() }
                 }
 
                 is UiState.Success -> {
@@ -207,7 +202,7 @@ fun PersonScreen(
                     }
                     items(
                         items = credits.content,
-                        key = { "${it.media::class.simpleName}-${it.media.slug}-${it.role}-${it.description}" },
+                        key = { "${it.media.slug}-${it.role}" },
                     ) { credit ->
                         CreditCard(
                             credit = credit,
@@ -242,15 +237,6 @@ fun PersonScreen(
                 .padding(start = 16.dp, top = 16.dp)
                 .size(48.dp),
         )
-    }
-}
-
-@Composable
-private fun CreditsPlaceholder(cardModifier: Modifier) {
-    Column {
-        repeat(6) {
-            CreditCardPlaceholder(cardModifier)
-        }
     }
 }
 

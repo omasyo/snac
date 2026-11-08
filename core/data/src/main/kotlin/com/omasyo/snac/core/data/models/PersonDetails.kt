@@ -38,7 +38,6 @@ enum class CreditRole { Acting, Crew }
 data class PersonCredit(
     val media: Media,
     val role: CreditRole,
-    /** The character played, or the job held for [CreditRole.Crew]. */
     val description: String,
     val episodeCount: Int? = null,
     val isRegular: Boolean = false,
