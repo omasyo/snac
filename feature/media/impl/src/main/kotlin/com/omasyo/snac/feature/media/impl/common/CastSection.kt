@@ -11,9 +11,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -112,17 +112,16 @@ private fun CastCard(
 
     val tintColor = SnacColors.page
     Column(
-        modifier =
+        modifier = modifier
+            .rotate(rotation)
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null,
+                onClick = onClick,
+            )
+            .width(84.dp),
 
-            modifier
-                .rotate(rotation)
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = null,
-                    onClick = onClick,
-                )
-
-    ) {
+        ) {
         Image(
             imageUrl = cast.person.imageUrl,
             modifier = Modifier
@@ -131,11 +130,13 @@ private fun CastCard(
                 .background(SnacColors.card)
                 .padding(horizontal = 6.dp)
                 .padding(top = 6.dp, bottom = 16.dp)
-                .size(72.dp, 104.dp),
+                .fillMaxWidth()
+                .height(104.dp),
         )
         Text(
             text = cast.person.name,
             style = SnacTypography.tag,
+            maxLines = 1,
             modifier = Modifier
                 .indication(
                     interactionSource, TintIndication(
@@ -148,6 +149,8 @@ private fun CastCard(
             text = cast.character,
             style = SnacTypography.hand,
             color = SnacColors.signal,
+            maxLines = 2,
+            minLines = 2,
             modifier = Modifier
                 .indication(
                     interactionSource, TintIndication(
@@ -161,7 +164,6 @@ private fun CastCard(
 
 @Composable
 private fun Placeholder(scrollable: Boolean) {
-
     Row(
         modifier = Modifier
             .horizontalScroll(rememberScrollState(), scrollable)
@@ -170,7 +172,11 @@ private fun Placeholder(scrollable: Boolean) {
     ) {
         repeat(10) {
             val rotation = remember(it) { Random(it + 80).nextInt(-3, 3).toFloat() }
-            Column(Modifier.rotate(rotation)) {
+            Column(
+                Modifier
+                    .rotate(rotation)
+                    .width(84.dp)
+            ) {
                 Box(
                     modifier = Modifier
                         .silhouette()
@@ -178,7 +184,8 @@ private fun Placeholder(scrollable: Boolean) {
                         .background(SnacColors.card)
                         .padding(horizontal = 6.dp)
                         .padding(top = 6.dp, bottom = 16.dp)
-                        .size(72.dp, 104.dp)
+                        .fillMaxWidth()
+                        .height(104.dp)
                         .background(imageGradient())
                 )
                 Box(

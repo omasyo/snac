@@ -146,14 +146,13 @@ private fun RelatedCard(
                 indication = null,
                 onClick = onClick,
             )
-            .width(100.dp)
+            .width(112.dp),
     ) {
         Image(
             imageUrl = media.imageUrl,
             modifier = Modifier
                 .indication(interactionSource, SilhouettePressIndication())
                 .border(2.dp, SnacColors.outline)
-                .background(SnacColors.card)
                 .padding(6.dp)
                 .fillMaxWidth()
                 .height(160.dp),
@@ -191,14 +190,19 @@ private fun Placeholder(scrollable: Boolean) {
 private fun RelatedCardPlaceholder(seed: Int, modifier: Modifier = Modifier) {
     val rotation = remember(seed) { Random(seed + 80).nextInt(-3, 3).toFloat() }
 
-    Column(modifier.rotate(rotation)) {
+    Column(
+        modifier
+            .rotate(rotation)
+            .width(112.dp)
+    ) {
         Box(
             modifier = Modifier
                 .silhouette()
                 .border(2.dp, SnacColors.outline)
                 .background(SnacColors.card)
                 .padding(6.dp)
-                .size(100.dp, 160.dp)
+                .fillMaxWidth()
+                .height(160.dp)
                 .border(2.dp, SnacColors.outline)
                 .background(imageGradient())
         )
