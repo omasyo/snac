@@ -12,7 +12,6 @@ import com.omasyo.snac.core.data.show.ShowRepository
 import com.omasyo.snac.core.model.media.Show
 import com.omasyo.snac.core.ui.models.RefreshWrapper
 import com.omasyo.snac.core.ui.models.UiState
-import com.omasyo.snac.core.ui.models.mock
 import com.omasyo.snac.core.data.models.Review
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
@@ -36,7 +35,7 @@ class ShowViewModel(
         RefreshWrapper(viewModelScope) { showRepository.getRatings(slug) }.response
 
     val seasons: StateFlow<UiState<List<Season>>> =
-        RefreshWrapper(viewModelScope) { mock(Season.PreviewSample) }.response
+        RefreshWrapper(viewModelScope) { showRepository.getSeasons(slug) }.response
 
     val cast: StateFlow<UiState<List<Cast>>> =
         RefreshWrapper(viewModelScope) { showRepository.getCast(slug) }.response

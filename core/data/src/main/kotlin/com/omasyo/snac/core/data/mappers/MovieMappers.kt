@@ -81,7 +81,7 @@ fun MovieDetailsResponse.toMovieDetails() = MovieDetails(
     socialIds = socialIds.toSocialIds(),
     certification = certification?.takeIf { it.isNotBlank() },
     commentCount = commentCount,
-    originalTitle = originalTitle ?: title,
+    originalTitle = originalTitle,
 )
 
 private fun String.toReleaseStatus(): ReleaseStatus? = when (this) {

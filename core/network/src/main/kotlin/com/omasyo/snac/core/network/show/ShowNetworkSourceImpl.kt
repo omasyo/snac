@@ -12,6 +12,7 @@ import com.omasyo.snac.core.network.models.ShowResponse
 import com.omasyo.snac.core.network.safeCall
 import com.omasyo.snac.core.network.show.models.MostFavoritedShowResponse
 import com.omasyo.snac.core.network.show.models.MostShowStatsResponse
+import com.omasyo.snac.core.network.show.models.SeasonResponse
 import com.omasyo.snac.core.network.show.models.ShowDetailsResponse
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
@@ -40,6 +41,19 @@ class ShowNetworkSourceImpl(
             parameter("extended", "full")
         }
     }
+
+    override suspend fun getSeasons(slug: String): SnacResult<List<SeasonResponse>> = safeCall {
+        client.get("shows/$slug/seasons") {
+            parameter("extended", "full")
+        }
+    }
+
+    override suspend fun getSeason(slug: String, season: Int): SnacResult<SeasonResponse> =
+        safeCall {
+            client.get("shows/$slug/seasons/$season/info") {
+                parameter("extended", "full")
+            }
+        }
 
     override suspend fun getRatings(slug: String): SnacResult<RatingsResponse> = safeCall {
         client.get("shows/$slug/ratings") {

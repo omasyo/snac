@@ -33,10 +33,12 @@ import com.omasyo.snac.feature.media.impl.common.MediaTagline
 import com.omasyo.snac.feature.media.impl.common.ReviewSection
 import com.omasyo.snac.feature.media.impl.components.RatingsSection
 import com.omasyo.snac.core.data.models.Review
-import dev.zacsweers.metrox.viewmodel.metroViewModel
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 @Composable
 fun SeasonScreen(
+    showSlug: String,
+    season: Int,
     onBackClick: () -> Unit,
     onEpisodeClick: (EpisodeDetails) -> Unit,
     onPersonClick: (Person) -> Unit,
@@ -45,7 +47,9 @@ fun SeasonScreen(
     onSeeAllReviewClick: () -> Unit,
     onCommentClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: SeasonViewModel = metroViewModel(),
+    viewModel: SeasonViewModel = assistedMetroViewModel<SeasonViewModel, SeasonViewModel.Factory> {
+        create(showSlug, season)
+    },
 ) {
     SeasonScreen(
         onBackClick = onBackClick,
@@ -145,7 +149,7 @@ private fun Season.info(): List<Pair<String, String>> = listOfNotNull(
     stringResource(R.string.info_episodes) to
         if (airedEpisodes < episodeCount) stringResource(R.string.aired_of_total, airedEpisodes, episodeCount)
         else episodeCount.toString(),
-    stringResource(R.string.info_runtime) to totalRuntime.formatRuntime(),
+    totalRuntime?.let { stringResource(R.string.info_runtime) to it.formatRuntime() },
     firstAired?.let { stringResource(R.string.info_year) to it.year.toString() },
     firstAired?.let { stringResource(R.string.info_premiered) to it.formatDayMonth() },
     network?.let { stringResource(R.string.info_network) to it },

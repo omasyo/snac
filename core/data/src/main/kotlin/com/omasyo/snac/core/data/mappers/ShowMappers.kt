@@ -1,5 +1,6 @@
 package com.omasyo.snac.core.data.mappers
 
+import com.omasyo.snac.core.data.models.Season
 import com.omasyo.snac.core.data.models.ShowDetails
 import com.omasyo.snac.core.data.models.ShowEnding
 import com.omasyo.snac.core.data.models.ShowStatus
@@ -14,6 +15,7 @@ import com.omasyo.snac.core.network.media.models.AnticipatedShowResponse
 import com.omasyo.snac.core.network.models.ShowResponse
 import com.omasyo.snac.core.network.show.models.MostFavoritedShowResponse
 import com.omasyo.snac.core.network.show.models.MostShowStatsResponse
+import com.omasyo.snac.core.network.show.models.SeasonResponse
 import com.omasyo.snac.core.network.show.models.ShowDetailsResponse
 import java.time.LocalDate
 import java.time.ZoneId
@@ -100,4 +102,21 @@ private fun String.toShowEnding(): ShowEnding? = when (this) {
     "concluded" -> ShowEnding.Concluded
     "open" -> ShowEnding.Open
     else -> null
+}
+
+fun SeasonResponse.toSeason(): Season {
+    val title = title?.takeIf { it.isNotBlank() } ?: "Season $number"
+    return Season(
+        number = number,
+        title = title,
+        overview = overview?.takeIf { it.isNotBlank() },
+        posterUrl = images?.poster?.firstOrNull()?.toImageUrl(),
+        rating = rating,
+        episodeCount = episodeCount,
+        airedEpisodes = airedEpisodes,
+        totalRuntime = totalRuntime?.takeIf { it > 0 }?.minutes,
+        firstAired = firstAired?.let { LocalDate.ofInstant(it, ZoneId.systemDefault()) },
+        network = network?.takeIf { it.isNotBlank() },
+        originalTitle = originalTitle?.takeIf { it.isNotBlank() },
+    )
 }

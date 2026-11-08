@@ -13,11 +13,16 @@ import com.omasyo.snac.core.network.models.ShowResponse
 import com.omasyo.snac.core.network.show.models.MostFavoritedShowResponse
 import com.omasyo.snac.core.network.show.models.ShowDetailsResponse
 import com.omasyo.snac.core.network.show.models.MostShowStatsResponse
+import com.omasyo.snac.core.network.show.models.SeasonResponse
 
 interface ShowNetworkSource : NetworkSource {
     suspend fun getAnticipated(page: Int, limit: Int): SnacResult<List<AnticipatedShowResponse>>
 
     suspend fun getDetails(slug: String): SnacResult<ShowDetailsResponse>
+
+    suspend fun getSeasons(slug: String): SnacResult<List<SeasonResponse>>
+
+    suspend fun getSeason(slug: String, season: Int): SnacResult<SeasonResponse>
 
     suspend fun getRatings(slug: String): SnacResult<RatingsResponse>
 

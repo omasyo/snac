@@ -85,9 +85,10 @@ data class Season(
     val rating: Double,
     val episodeCount: Int,
     val airedEpisodes: Int,
-    val totalRuntime: Duration,
+    val totalRuntime: Duration?,
     val firstAired: LocalDate?,
     val network: String?,
+    val originalTitle: String?,
 ) {
     companion object {
         val PreviewSample = List(3) {
@@ -102,6 +103,7 @@ data class Season(
                 totalRuntime = 520.minutes,
                 firstAired = LocalDate.of(2017 + it, 12, 1),
                 network = "Netflix",
+                originalTitle = "Season ${it + 1}",
             )
         }
     }

@@ -5,31 +5,33 @@ import androidx.lifecycle.viewModelScope
 import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.EpisodeDetails
 import com.omasyo.snac.core.data.models.Ratings
+import com.omasyo.snac.core.common.map
 import com.omasyo.snac.core.data.models.Season
+import com.omasyo.snac.core.data.show.ShowRepository
 import com.omasyo.snac.core.ui.models.RefreshWrapper
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.mock
 import com.omasyo.snac.core.data.models.Review
 import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metro.Inject
-import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.coroutines.flow.StateFlow
 
-@Inject
-@ViewModelKey
-@ContributesIntoMap(AppScope::class)
-class SeasonViewModel : ViewModel() {
+@AssistedInject
+class SeasonViewModel(
+    @Assisted private val showSlug: String,
+    @Assisted private val seasonNumber: Int,
+    private val showRepository: ShowRepository,
+) : ViewModel() {
     val showTitle: StateFlow<UiState<String>> =
-        RefreshWrapper(viewModelScope) { mock("Dark") }.response
+        RefreshWrapper(viewModelScope) { showRepository.getDetails(showSlug).map { it.title } }.response
 
     val season: StateFlow<UiState<Season>> =
-        RefreshWrapper(viewModelScope) {
-            mock(
-                Season.PreviewSample.first()
-                    .copy(overview = "A missing child brings four families together, and the search leads somewhere none of them expected.")
-            )
-        }.response
+        RefreshWrapper(viewModelScope) { showRepository.getSeason(showSlug, seasonNumber) }.response
 
     val ratings: StateFlow<UiState<Ratings>> =
         RefreshWrapper(viewModelScope) { mock(Ratings.PreviewSample) }.response
@@ -42,4 +44,11 @@ class SeasonViewModel : ViewModel() {
 
     val review: StateFlow<UiState<List<Review>>> =
         RefreshWrapper(viewModelScope) { mock(Review.PreviewSample.take(2)) }.response
+
+    @AssistedFactory
+    @ManualViewModelAssistedFactoryKey
+    @ContributesIntoMap(AppScope::class)
+    interface Factory : ManualViewModelAssistedFactory {
+        fun create(@Assisted showSlug: String, @Assisted seasonNumber: Int): SeasonViewModel
+    }
 }

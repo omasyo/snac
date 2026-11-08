@@ -49,7 +49,7 @@ data class MovieDetails(
     val socialIds: SocialIds,
     val certification: String?,
     val commentCount: Int,
-    val originalTitle: String,
+    val originalTitle: String?,
 ) {
     companion object {
         val PreviewSample = MovieDetails(
