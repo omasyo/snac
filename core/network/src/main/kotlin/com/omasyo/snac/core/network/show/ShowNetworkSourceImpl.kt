@@ -75,6 +75,73 @@ class ShowNetworkSourceImpl(
         }
     }
 
+    override suspend fun getSeasonRatings(
+        slug: String,
+        season: Int,
+    ): SnacResult<RatingsResponse> = safeCall {
+        client.get("shows/$slug/seasons/$season/ratings") {
+            parameter("extended", "all")
+        }
+    }
+
+    override suspend fun getSeasonPeople(
+        slug: String,
+        season: Int,
+    ): SnacResult<PeopleResponse> = safeCall {
+        client.get("shows/$slug/seasons/$season/people") {
+            parameter("extended", "full")
+        }
+    }
+
+    override suspend fun getSeasonComments(
+        slug: String,
+        season: Int,
+        sort: CommentSort,
+        page: Int,
+        limit: Int,
+    ): SnacResult<List<CommentResponse>> = safeCall {
+        client.get("shows/$slug/seasons/$season/comments/${sort.slug}") {
+            parameter("extended", "full")
+            parameter("page", page)
+            parameter("limit", limit)
+        }
+    }
+
+    override suspend fun getEpisodeRatings(
+        slug: String,
+        season: Int,
+        episode: Int,
+    ): SnacResult<RatingsResponse> = safeCall {
+        client.get("shows/$slug/seasons/$season/episodes/$episode/ratings") {
+            parameter("extended", "all")
+        }
+    }
+
+    override suspend fun getEpisodePeople(
+        slug: String,
+        season: Int,
+        episode: Int,
+    ): SnacResult<PeopleResponse> = safeCall {
+        client.get("shows/$slug/seasons/$season/episodes/$episode/people") {
+            parameter("extended", "full")
+        }
+    }
+
+    override suspend fun getEpisodeComments(
+        slug: String,
+        season: Int,
+        episode: Int,
+        sort: CommentSort,
+        page: Int,
+        limit: Int,
+    ): SnacResult<List<CommentResponse>> = safeCall {
+        client.get("shows/$slug/seasons/$season/episodes/$episode/comments/${sort.slug}") {
+            parameter("extended", "full")
+            parameter("page", page)
+            parameter("limit", limit)
+        }
+    }
+
     override suspend fun getRatings(slug: String): SnacResult<RatingsResponse> = safeCall {
         client.get("shows/$slug/ratings") {
             parameter("extended", "all")

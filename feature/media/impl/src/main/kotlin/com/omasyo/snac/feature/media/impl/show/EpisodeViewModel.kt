@@ -10,7 +10,6 @@ import com.omasyo.snac.core.data.models.Review
 import com.omasyo.snac.core.data.show.ShowRepository
 import com.omasyo.snac.core.ui.models.RefreshWrapper
 import com.omasyo.snac.core.ui.models.UiState
-import com.omasyo.snac.core.ui.models.mock
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
@@ -38,13 +37,19 @@ class EpisodeViewModel(
         }.response
 
     val ratings: StateFlow<UiState<Ratings>> =
-        RefreshWrapper(viewModelScope) { mock(Ratings.PreviewSample) }.response
+        RefreshWrapper(viewModelScope) {
+            showRepository.getEpisodeRatings(showSlug, seasonNumber, episodeNumber)
+        }.response
 
     val cast: StateFlow<UiState<List<Cast>>> =
-        RefreshWrapper(viewModelScope) { mock(Cast.PreviewSample) }.response
+        RefreshWrapper(viewModelScope) {
+            showRepository.getEpisodeCast(showSlug, seasonNumber, episodeNumber)
+        }.response
 
     val review: StateFlow<UiState<List<Review>>> =
-        RefreshWrapper(viewModelScope) { mock(Review.PreviewSample.take(2)) }.response
+        RefreshWrapper(viewModelScope) {
+            showRepository.getEpisodeTopComments(showSlug, seasonNumber, episodeNumber)
+        }.response
 
     @AssistedFactory
     @ManualViewModelAssistedFactoryKey

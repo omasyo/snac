@@ -28,6 +28,22 @@ interface ShowRepository {
 
     suspend fun getEpisode(slug: String, season: Int, episode: Int): SnacResult<EpisodeDetails>
 
+    suspend fun getSeasonRatings(slug: String, season: Int): SnacResult<Ratings>
+
+    suspend fun getSeasonCast(slug: String, season: Int): SnacResult<List<Cast>>
+
+    suspend fun getSeasonTopComments(slug: String, season: Int): SnacResult<List<Review>>
+
+    suspend fun getEpisodeRatings(slug: String, season: Int, episode: Int): SnacResult<Ratings>
+
+    suspend fun getEpisodeCast(slug: String, season: Int, episode: Int): SnacResult<List<Cast>>
+
+    suspend fun getEpisodeTopComments(
+        slug: String,
+        season: Int,
+        episode: Int,
+    ): SnacResult<List<Review>>
+
     suspend fun getRatings(slug: String): SnacResult<Ratings>
 
     suspend fun getCast(slug: String): SnacResult<List<Cast>>

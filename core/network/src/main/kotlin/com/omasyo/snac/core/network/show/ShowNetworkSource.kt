@@ -29,6 +29,39 @@ interface ShowNetworkSource : NetworkSource {
 
     suspend fun getEpisode(slug: String, season: Int, episode: Int): SnacResult<EpisodeDetailsResponse>
 
+    suspend fun getSeasonRatings(slug: String, season: Int): SnacResult<RatingsResponse>
+
+    suspend fun getSeasonPeople(slug: String, season: Int): SnacResult<PeopleResponse>
+
+    suspend fun getSeasonComments(
+        slug: String,
+        season: Int,
+        sort: CommentSort,
+        page: Int,
+        limit: Int,
+    ): SnacResult<List<CommentResponse>>
+
+    suspend fun getEpisodeRatings(
+        slug: String,
+        season: Int,
+        episode: Int,
+    ): SnacResult<RatingsResponse>
+
+    suspend fun getEpisodePeople(
+        slug: String,
+        season: Int,
+        episode: Int,
+    ): SnacResult<PeopleResponse>
+
+    suspend fun getEpisodeComments(
+        slug: String,
+        season: Int,
+        episode: Int,
+        sort: CommentSort,
+        page: Int,
+        limit: Int,
+    ): SnacResult<List<CommentResponse>>
+
     suspend fun getRatings(slug: String): SnacResult<RatingsResponse>
 
     suspend fun getPeople(slug: String): SnacResult<PeopleResponse>

@@ -75,6 +75,39 @@ class ShowRepositoryImpl(
     ): SnacResult<EpisodeDetails> =
         showNetworkSource.getEpisode(slug, season, episode).map { it.toEpisodeDetails() }
 
+    override suspend fun getSeasonRatings(slug: String, season: Int): SnacResult<Ratings> =
+        showNetworkSource.getSeasonRatings(slug, season).map { it.toRatings() }
+
+    override suspend fun getSeasonCast(slug: String, season: Int): SnacResult<List<Cast>> =
+        showNetworkSource.getSeasonPeople(slug, season).map { it.toCast() }
+
+    override suspend fun getSeasonTopComments(slug: String, season: Int): SnacResult<List<Review>> =
+        showNetworkSource.getSeasonComments(slug, season, NetworkCommentSort.Likes, page = 1, limit = 2)
+            .map { list -> list.map { it.toReview() } }
+
+    override suspend fun getEpisodeRatings(
+        slug: String,
+        season: Int,
+        episode: Int,
+    ): SnacResult<Ratings> =
+        showNetworkSource.getEpisodeRatings(slug, season, episode).map { it.toRatings() }
+
+    override suspend fun getEpisodeCast(
+        slug: String,
+        season: Int,
+        episode: Int,
+    ): SnacResult<List<Cast>> =
+        showNetworkSource.getEpisodePeople(slug, season, episode).map { it.toCast() }
+
+    override suspend fun getEpisodeTopComments(
+        slug: String,
+        season: Int,
+        episode: Int,
+    ): SnacResult<List<Review>> =
+        showNetworkSource.getEpisodeComments(
+            slug, season, episode, NetworkCommentSort.Likes, page = 1, limit = 2,
+        ).map { list -> list.map { it.toReview() } }
+
     override suspend fun getRatings(slug: String): SnacResult<Ratings> =
         showNetworkSource.getRatings(slug).map { it.toRatings() }
 
