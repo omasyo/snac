@@ -20,8 +20,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -86,7 +89,7 @@ internal fun RelatedSection(
                 }
             }
 
-            is LoadState.Loading -> placeholder(true)
+            is LoadState.Loading if items.itemCount == 0 -> placeholder(true)
             else -> {
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 16.dp),
@@ -153,6 +156,7 @@ private fun RelatedCard(
             modifier = Modifier
                 .indication(interactionSource, SilhouettePressIndication())
                 .border(2.dp, SnacColors.outline)
+                .background(SnacColors.card)
                 .padding(6.dp)
                 .fillMaxWidth()
                 .height(160.dp),

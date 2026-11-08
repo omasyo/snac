@@ -6,6 +6,11 @@ import androidx.paging.PagingData
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.common.map
 import com.omasyo.snac.core.data.mappers.toAnticipatedItem
+import com.omasyo.snac.core.data.mappers.toCast
+import com.omasyo.snac.core.data.mappers.toNetworkCommentSort
+import com.omasyo.snac.core.data.mappers.toRatings
+import com.omasyo.snac.core.data.mappers.toReview
+import com.omasyo.snac.core.data.mappers.toShow
 import com.omasyo.snac.core.data.mappers.toCollectedItem
 import com.omasyo.snac.core.data.mappers.toFavoritedItem
 import com.omasyo.snac.core.data.mappers.toPeriod
@@ -14,12 +19,19 @@ import com.omasyo.snac.core.data.mappers.toPopularItem
 import com.omasyo.snac.core.data.mappers.toShowDetails
 import com.omasyo.snac.core.data.mappers.toTrendingItem
 import com.omasyo.snac.core.data.mappers.toWatchedItem
+import com.omasyo.snac.core.data.models.Cast
+import com.omasyo.snac.core.data.models.Ratings
+import com.omasyo.snac.core.data.models.Review
 import com.omasyo.snac.core.data.models.ShowDetails
 import com.omasyo.snac.core.data.paging.ChartPagingSource
+import com.omasyo.snac.core.data.paging.CustomPagingSource
+import com.omasyo.snac.core.model.extra.CommentSort
 import com.omasyo.snac.core.model.extra.TimePeriod
 import com.omasyo.snac.core.model.media.ChartItem
+import com.omasyo.snac.core.model.media.Show
 import com.omasyo.snac.core.model.media.TrendingItem
 import com.omasyo.snac.core.network.show.ShowNetworkSource
+import com.omasyo.snac.core.network.models.CommentSort as NetworkCommentSort
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
@@ -42,6 +54,36 @@ class ShowRepositoryImpl(
 
     override suspend fun getDetails(slug: String): SnacResult<ShowDetails> =
         showNetworkSource.getDetails(slug).map { it.toShowDetails() }
+
+    override suspend fun getRatings(slug: String): SnacResult<Ratings> =
+        showNetworkSource.getRatings(slug).map { it.toRatings() }
+
+    override suspend fun getCast(slug: String): SnacResult<List<Cast>> =
+        showNetworkSource.getPeople(slug).map { it.toCast() }
+
+    override fun getRelated(slug: String): Flow<PagingData<Show>> =
+        Pager(config = pagingConfig) {
+            CustomPagingSource(
+                pageSize = PAGE_SIZE,
+                provider = { page -> showNetworkSource.getRelated(slug, page, PAGE_SIZE) },
+                mapper = { it.toShow() },
+            )
+        }.flow
+
+    override fun getComments(slug: String, sort: CommentSort): Flow<PagingData<Review>> =
+        Pager(config = pagingConfig) {
+            CustomPagingSource(
+                pageSize = PAGE_SIZE,
+                provider = { page ->
+                    showNetworkSource.getComments(slug, sort.toNetworkCommentSort(), page, PAGE_SIZE)
+                },
+                mapper = { it.toReview() },
+            )
+        }.flow
+
+    override suspend fun getTopComments(slug: String): SnacResult<List<Review>> =
+        showNetworkSource.getComments(slug, NetworkCommentSort.Likes, page = 1, limit = 2)
+            .map { list -> list.map { it.toReview() } }
 
     override fun getMostCollected(period: TimePeriod, startPosition: Int): Flow<PagingData<ChartItem>> =
         Pager(initialKey = startPosition, config = pagingConfig) {

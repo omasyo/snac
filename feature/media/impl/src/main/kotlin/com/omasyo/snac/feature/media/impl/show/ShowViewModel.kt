@@ -3,6 +3,7 @@ package com.omasyo.snac.feature.media.impl.show
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.data.models.Season
@@ -22,7 +23,6 @@ import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flowOf
 
 @AssistedInject
 class ShowViewModel(
@@ -33,18 +33,19 @@ class ShowViewModel(
         RefreshWrapper(viewModelScope) { showRepository.getDetails(slug) }.response
 
     val ratings: StateFlow<UiState<Ratings>> =
-        RefreshWrapper(viewModelScope) { mock(Ratings.PreviewSample) }.response
+        RefreshWrapper(viewModelScope) { showRepository.getRatings(slug) }.response
 
     val seasons: StateFlow<UiState<List<Season>>> =
         RefreshWrapper(viewModelScope) { mock(Season.PreviewSample) }.response
 
     val cast: StateFlow<UiState<List<Cast>>> =
-        RefreshWrapper(viewModelScope) { mock(Cast.PreviewSample) }.response
+        RefreshWrapper(viewModelScope) { showRepository.getCast(slug) }.response
 
     val review: StateFlow<UiState<List<Review>>> =
-        RefreshWrapper(viewModelScope) { mock(Review.PreviewSample.take(2)) }.response
+        RefreshWrapper(viewModelScope) { showRepository.getTopComments(slug) }.response
 
-    val relatedShows: Flow<PagingData<Show>> = flowOf(PagingData.from(Show.PreviewSample))
+    val relatedShows: Flow<PagingData<Show>> =
+        showRepository.getRelated(slug).cachedIn(viewModelScope)
 
     @AssistedFactory
     @ManualViewModelAssistedFactoryKey

@@ -178,11 +178,11 @@ private fun ShowDetails.info(): List<Pair<String, String>> = listOfNotNull(
     runtime?.let { stringResource(R.string.info_runtime) to it.formatRuntime() },
     certification?.let { stringResource(R.string.info_cert) to it },
     status?.let { stringResource(R.string.info_status) to it.label() },
-    network?.let { stringResource(R.string.info_network) to it },
     stringResource(R.string.info_episodes) to airedEpisodes.toString(),
     firstAired?.let { stringResource(R.string.info_premiered) to it.formatDayMonth() },
     country?.let { stringResource(R.string.info_country) to it.uppercase() },
     language?.let { stringResource(R.string.info_language) to it.uppercase() },
+    network?.let { stringResource(R.string.info_network) to it },
 )
 
 @Composable

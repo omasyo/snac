@@ -3,7 +3,11 @@ package com.omasyo.snac.core.network.show
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.network.media.models.AnticipatedShowResponse
 import com.omasyo.snac.core.network.media.models.TrendingShowResponse
+import com.omasyo.snac.core.network.models.CommentResponse
+import com.omasyo.snac.core.network.models.CommentSort
+import com.omasyo.snac.core.network.models.PeopleResponse
 import com.omasyo.snac.core.network.models.Period
+import com.omasyo.snac.core.network.models.RatingsResponse
 import com.omasyo.snac.core.network.models.ShowResponse
 import com.omasyo.snac.core.network.safeCall
 import com.omasyo.snac.core.network.show.models.MostFavoritedShowResponse
@@ -34,6 +38,42 @@ class ShowNetworkSourceImpl(
     override suspend fun getDetails(slug: String): SnacResult<ShowDetailsResponse> = safeCall {
         client.get("shows/$slug") {
             parameter("extended", "full")
+        }
+    }
+
+    override suspend fun getRatings(slug: String): SnacResult<RatingsResponse> = safeCall {
+        client.get("shows/$slug/ratings") {
+            parameter("extended", "all")
+        }
+    }
+
+    override suspend fun getPeople(slug: String): SnacResult<PeopleResponse> = safeCall {
+        client.get("shows/$slug/people") {
+            parameter("extended", "full")
+        }
+    }
+
+    override suspend fun getRelated(
+        slug: String,
+        page: Int,
+        limit: Int,
+    ): SnacResult<List<ShowResponse>> = safeCall {
+        client.get("shows/$slug/related") {
+            parameter("page", page)
+            parameter("limit", limit)
+        }
+    }
+
+    override suspend fun getComments(
+        slug: String,
+        sort: CommentSort,
+        page: Int,
+        limit: Int,
+    ): SnacResult<List<CommentResponse>> = safeCall {
+        client.get("shows/$slug/comments/${sort.slug}") {
+            parameter("extended", "full")
+            parameter("page", page)
+            parameter("limit", limit)
         }
     }
 
