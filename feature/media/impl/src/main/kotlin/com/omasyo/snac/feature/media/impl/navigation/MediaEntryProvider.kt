@@ -35,6 +35,7 @@ fun EntryProviderScope<NavKey>.mediaEntry(
     }
     entry<ShowNavKey> { key ->
         ShowScreen(
+            slug = key.slug,
             onBackClick = onBackClick,
             onSeasonClick = { onSeasonClick(SeasonNavKey(key.slug, it.number)) },
             onPersonClick = onPersonClick,

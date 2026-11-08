@@ -15,6 +15,12 @@ enum class ShowStatus {
     Ended,
 }
 
+enum class ShowEnding { //TODO check what this entails
+    Concluded,
+
+    Open,
+}
+
 data class ShowDetails(
     val slug: String,
     val title: String,
@@ -23,15 +29,17 @@ data class ShowDetails(
     val secondaryPosterUrl: String?,
     val genres: List<Genre>,
     val rating: Double,
-    val status: ShowStatus,
-    val runtime: Duration,
+    val status: ShowStatus?,
+    val runtime: Duration?,
     val tagline: String?,
     val homepage: String?,
     val trailer: String?,
-    val country: String,
-    val language: String,
-    val overview: String,
+    val country: String?,
+    val language: String?,
+    val overview: String?,
     val firstAired: LocalDate?,
+    val lastAired: LocalDate?,
+    val ending: ShowEnding?, //TODO check what this entails
     val network: String?,
     val airedEpisodes: Int,
     val socialIds: SocialIds,
@@ -57,6 +65,8 @@ data class ShowDetails(
             language = "de",
             overview = "A missing child sets four families on a search for answers, uncovering a mystery that spans several generations of a small German town.",
             firstAired = LocalDate.of(2017, 12, 1),
+            lastAired = LocalDate.of(2020, 6, 27),
+            ending = ShowEnding.Concluded,
             network = "Netflix",
             airedEpisodes = 26,
             socialIds = SocialIds.Empty,

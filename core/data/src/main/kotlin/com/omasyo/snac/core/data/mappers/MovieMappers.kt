@@ -2,7 +2,6 @@ package com.omasyo.snac.core.data.mappers
 
 import com.omasyo.snac.core.data.models.MovieDetails
 import com.omasyo.snac.core.data.models.ReleaseStatus
-import com.omasyo.snac.core.data.models.SocialIds
 import com.omasyo.snac.core.model.media.AnticipatedItem
 import com.omasyo.snac.core.model.media.BoxOfficeItem
 import com.omasyo.snac.core.model.media.CollectedItem
@@ -79,14 +78,7 @@ fun MovieDetailsResponse.toMovieDetails() = MovieDetails(
     language = language?.takeIf { it.isNotBlank() },
     overview = overview?.takeIf { it.isNotBlank() },
     releaseDate = released,
-    socialIds = socialIds?.let { // TODO might be in common mappers
-        SocialIds(
-            twitter = it.twitter,
-            facebook = it.facebook,
-            instagram = it.instagram,
-            wikipedia = it.wikipedia,
-        )
-    } ?: SocialIds.Empty,
+    socialIds = socialIds.toSocialIds(),
     certification = certification?.takeIf { it.isNotBlank() },
     commentCount = commentCount,
     originalTitle = originalTitle ?: title,

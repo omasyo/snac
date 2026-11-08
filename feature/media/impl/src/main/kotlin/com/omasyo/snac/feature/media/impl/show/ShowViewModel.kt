@@ -7,25 +7,30 @@ import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.data.models.Season
 import com.omasyo.snac.core.data.models.ShowDetails
+import com.omasyo.snac.core.data.show.ShowRepository
 import com.omasyo.snac.core.model.media.Show
 import com.omasyo.snac.core.ui.models.RefreshWrapper
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.mock
 import com.omasyo.snac.core.data.models.Review
 import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metro.Inject
-import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
 
-@Inject
-@ViewModelKey
-@ContributesIntoMap(AppScope::class)
-class ShowViewModel : ViewModel() {
+@AssistedInject
+class ShowViewModel(
+    @Assisted private val slug: String,
+    private val showRepository: ShowRepository,
+) : ViewModel() {
     val show: StateFlow<UiState<ShowDetails>> =
-        RefreshWrapper(viewModelScope) { mock(ShowDetails.PreviewSample) }.response
+        RefreshWrapper(viewModelScope) { showRepository.getDetails(slug) }.response
 
     val ratings: StateFlow<UiState<Ratings>> =
         RefreshWrapper(viewModelScope) { mock(Ratings.PreviewSample) }.response
@@ -40,4 +45,11 @@ class ShowViewModel : ViewModel() {
         RefreshWrapper(viewModelScope) { mock(Review.PreviewSample.take(2)) }.response
 
     val relatedShows: Flow<PagingData<Show>> = flowOf(PagingData.from(Show.PreviewSample))
+
+    @AssistedFactory
+    @ManualViewModelAssistedFactoryKey
+    @ContributesIntoMap(AppScope::class)
+    interface Factory : ManualViewModelAssistedFactory {
+        fun create(@Assisted slug: String): ShowViewModel
+    }
 }

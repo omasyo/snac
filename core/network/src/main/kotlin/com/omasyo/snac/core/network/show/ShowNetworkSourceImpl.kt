@@ -8,6 +8,7 @@ import com.omasyo.snac.core.network.models.ShowResponse
 import com.omasyo.snac.core.network.safeCall
 import com.omasyo.snac.core.network.show.models.MostFavoritedShowResponse
 import com.omasyo.snac.core.network.show.models.MostShowStatsResponse
+import com.omasyo.snac.core.network.show.models.ShowDetailsResponse
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
@@ -27,6 +28,12 @@ class ShowNetworkSourceImpl(
         client.get("shows/anticipated") {
             parameter("page", page)
             parameter("limit", limit)
+        }
+    }
+
+    override suspend fun getDetails(slug: String): SnacResult<ShowDetailsResponse> = safeCall {
+        client.get("shows/$slug") {
+            parameter("extended", "full")
         }
     }
 

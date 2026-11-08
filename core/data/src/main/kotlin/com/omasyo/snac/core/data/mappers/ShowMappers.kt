@@ -1,5 +1,8 @@
 package com.omasyo.snac.core.data.mappers
 
+import com.omasyo.snac.core.data.models.ShowDetails
+import com.omasyo.snac.core.data.models.ShowEnding
+import com.omasyo.snac.core.data.models.ShowStatus
 import com.omasyo.snac.core.model.media.AnticipatedItem
 import com.omasyo.snac.core.model.media.CollectedItem
 import com.omasyo.snac.core.model.media.FavoritedItem
@@ -11,6 +14,10 @@ import com.omasyo.snac.core.network.media.models.AnticipatedShowResponse
 import com.omasyo.snac.core.network.models.ShowResponse
 import com.omasyo.snac.core.network.show.models.MostFavoritedShowResponse
 import com.omasyo.snac.core.network.show.models.MostShowStatsResponse
+import com.omasyo.snac.core.network.show.models.ShowDetailsResponse
+import java.time.LocalDate
+import java.time.ZoneId
+import kotlin.time.Duration.Companion.minutes
 
 fun ShowResponse.toShow() = Show(
     slug = ids.slug,
@@ -48,3 +55,49 @@ fun MostShowStatsResponse.toWatchedItem() = WatchedItem(
     media = show.toShow(),
     watcherCount = watcherCount,
 )
+
+fun ShowDetailsResponse.toShowDetails() = ShowDetails(
+    slug = ids.slug,
+    title = title,
+    year = year,
+    posterUrl = images?.poster?.firstOrNull()?.toImageUrl(),
+    secondaryPosterUrl = images?.fanart?.firstOrNull()?.toImageUrl()
+        ?: images?.poster?.getOrNull(1)?.toImageUrl(),
+    genres = genres.map { it.toGenre() },
+    rating = rating,
+    status = status?.toShowStatus(),
+    runtime = runtime?.takeIf { it > 0 }?.minutes,
+    tagline = tagline?.takeIf { it.isNotBlank() },
+    homepage = homepage?.takeIf { it.isNotBlank() },
+    trailer = trailer?.takeIf { it.isNotBlank() },
+    country = country?.takeIf { it.isNotBlank() },
+    language = language?.takeIf { it.isNotBlank() },
+    overview = overview?.takeIf { it.isNotBlank() },
+    firstAired = firstAired?.let { LocalDate.ofInstant(it, ZoneId.systemDefault()) },
+    lastAired = lastAired?.let { LocalDate.ofInstant(it, ZoneId.systemDefault()) },
+    ending = ending?.toShowEnding(),
+    network = network?.takeIf { it.isNotBlank() },
+    airedEpisodes = airedEpisodes,
+    socialIds = socialIds.toSocialIds(),
+    certification = certification?.takeIf { it.isNotBlank() },
+    commentCount = commentCount,
+    originalTitle = originalTitle ?: title,
+)
+
+private fun String.toShowStatus(): ShowStatus? = when (this) {
+    "returning series" -> ShowStatus.ReturningSeries
+    "continuing" -> ShowStatus.Continuing
+    "in production" -> ShowStatus.InProduction
+    "planned" -> ShowStatus.Planned
+    "upcoming" -> ShowStatus.Upcoming
+    "pilot" -> ShowStatus.Pilot
+    "canceled" -> ShowStatus.Canceled
+    "ended" -> ShowStatus.Ended
+    else -> null
+}
+
+private fun String.toShowEnding(): ShowEnding? = when (this) {
+    "concluded" -> ShowEnding.Concluded
+    "open" -> ShowEnding.Open
+    else -> null
+}

@@ -11,8 +11,10 @@ import com.omasyo.snac.core.data.mappers.toFavoritedItem
 import com.omasyo.snac.core.data.mappers.toPeriod
 import com.omasyo.snac.core.data.mappers.toPlayedItem
 import com.omasyo.snac.core.data.mappers.toPopularItem
+import com.omasyo.snac.core.data.mappers.toShowDetails
 import com.omasyo.snac.core.data.mappers.toTrendingItem
 import com.omasyo.snac.core.data.mappers.toWatchedItem
+import com.omasyo.snac.core.data.models.ShowDetails
 import com.omasyo.snac.core.data.paging.ChartPagingSource
 import com.omasyo.snac.core.model.extra.TimePeriod
 import com.omasyo.snac.core.model.media.ChartItem
@@ -37,6 +39,9 @@ class ShowRepositoryImpl(
                 mapper = { it.toAnticipatedItem() },
             )
         }.flow
+
+    override suspend fun getDetails(slug: String): SnacResult<ShowDetails> =
+        showNetworkSource.getDetails(slug).map { it.toShowDetails() }
 
     override fun getMostCollected(period: TimePeriod, startPosition: Int): Flow<PagingData<ChartItem>> =
         Pager(initialKey = startPosition, config = pagingConfig) {

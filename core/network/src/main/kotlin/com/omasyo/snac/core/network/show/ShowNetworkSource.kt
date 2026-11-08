@@ -7,10 +7,13 @@ import com.omasyo.snac.core.network.media.models.TrendingShowResponse
 import com.omasyo.snac.core.network.models.Period
 import com.omasyo.snac.core.network.models.ShowResponse
 import com.omasyo.snac.core.network.show.models.MostFavoritedShowResponse
+import com.omasyo.snac.core.network.show.models.ShowDetailsResponse
 import com.omasyo.snac.core.network.show.models.MostShowStatsResponse
 
 interface ShowNetworkSource : NetworkSource {
     suspend fun getAnticipated(page: Int, limit: Int): SnacResult<List<AnticipatedShowResponse>>
+
+    suspend fun getDetails(slug: String): SnacResult<ShowDetailsResponse>
 
     suspend fun getMostCollected(
         period: Period,

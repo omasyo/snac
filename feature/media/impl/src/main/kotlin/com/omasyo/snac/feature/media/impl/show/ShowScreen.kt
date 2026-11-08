@@ -46,10 +46,11 @@ import com.omasyo.snac.feature.media.impl.components.RatingsSection
 import com.omasyo.snac.core.data.models.Review
 import com.omasyo.snac.core.ui.models.message
 import kotlinx.coroutines.flow.flowOf
-import dev.zacsweers.metrox.viewmodel.metroViewModel
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 @Composable
 fun ShowScreen(
+    slug: String,
     onBackClick: () -> Unit,
     onSeasonClick: (Season) -> Unit,
     onPersonClick: (Person) -> Unit,
@@ -60,7 +61,9 @@ fun ShowScreen(
     onCommentClick: () -> Unit,
     onSeeAllRelatedClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: ShowViewModel = metroViewModel(),
+    viewModel: ShowViewModel = assistedMetroViewModel<ShowViewModel, ShowViewModel.Factory> {
+        create(slug)
+    },
 ) {
     ShowScreen(
         onBackClick = onBackClick,
@@ -127,12 +130,14 @@ fun ShowScreen(
             state = show.map { it.genres },
             modifier = Modifier.padding(horizontal = 16.dp),
         )
-        MediaOverview(
-            state = show.map { it.overview },
-            modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth(),
-        )
+        show.map { it.overview }.transpose()?.let {
+            MediaOverview(
+                state = it,
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+            )
+        }
         SignInPrompt(
             title = "Track this show",
             message = "Sign in to check in, rate it, mark it seen, and add it to your watchlist, favorites or lists.",
@@ -170,14 +175,14 @@ fun ShowScreen(
 @Composable
 private fun ShowDetails.info(): List<Pair<String, String>> = listOfNotNull(
     year?.let { stringResource(R.string.info_year) to it.toString() },
-    stringResource(R.string.info_runtime) to runtime.formatRuntime(),
+    runtime?.let { stringResource(R.string.info_runtime) to it.formatRuntime() },
     certification?.let { stringResource(R.string.info_cert) to it },
-    stringResource(R.string.info_status) to status.label(),
+    status?.let { stringResource(R.string.info_status) to it.label() },
     network?.let { stringResource(R.string.info_network) to it },
     stringResource(R.string.info_episodes) to airedEpisodes.toString(),
     firstAired?.let { stringResource(R.string.info_premiered) to it.formatDayMonth() },
-    stringResource(R.string.info_country) to country.uppercase(),
-    stringResource(R.string.info_language) to language.uppercase(),
+    country?.let { stringResource(R.string.info_country) to it.uppercase() },
+    language?.let { stringResource(R.string.info_language) to it.uppercase() },
 )
 
 @Composable
