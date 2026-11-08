@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -44,7 +43,6 @@ import com.omasyo.snac.core.ui.components.InfoClapperPlaceholder
 import com.omasyo.snac.core.ui.components.TabRow
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
-import com.omasyo.snac.core.ui.format.formatCount
 import com.omasyo.snac.core.ui.format.formatFullDate
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.map
@@ -55,17 +53,20 @@ import com.omasyo.snac.core.ui.modifiers.film
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
-import dev.zacsweers.metrox.viewmodel.metroViewModel
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import java.time.LocalDate
 import java.time.Period
 import com.omasyo.snac.core.ui.R as UiR
 
 @Composable
 fun PersonScreen(
+    slug: String,
     onBackClick: () -> Unit,
     onMediaClick: (Media) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: PersonViewModel = metroViewModel(),
+    viewModel: PersonViewModel = assistedMetroViewModel<PersonViewModel, PersonViewModel.Factory> {
+        create(slug)
+    },
 ) {
     PersonScreen(
         onBackClick = onBackClick,
@@ -80,7 +81,9 @@ fun PersonScreen(
     )
 }
 
-@OptIn(ExperimentalLayoutApi::class)
+
+private val CreditStripeWidth = 6.dp
+
 @Composable
 fun PersonScreen(
     onBackClick: () -> Unit,
@@ -93,7 +96,24 @@ fun PersonScreen(
     credits: UiState<List<PersonCredit>>,
     modifier: Modifier = Modifier,
 ) {
-    val cardModifier = creditCardModifier()
+
+    val stripeColor = SnacColors.accent
+    val cardModifier = Modifier
+        .padding(horizontal = 16.dp)
+        .drawBehind {
+            val stripeWidth = CreditStripeWidth.toPx()
+            drawRect(
+                color = stripeColor,
+                topLeft = Offset(size.width - stripeWidth, 0f),
+                size = Size(stripeWidth, size.height),
+            )
+        }
+        .padding(end = CreditStripeWidth)
+        .film(
+            side = Side.Start,
+            crossEdgeInset = 12.dp,
+        )
+        .background(SnacColors.film)
 
     Box(modifier) {
         LazyColumn(
@@ -226,32 +246,9 @@ fun PersonScreen(
 }
 
 @Composable
-private fun creditCardModifier(): Modifier {
-    val stripeColor = SnacColors.accent
-    return Modifier
-        .padding(horizontal = 16.dp)
-        .drawBehind {
-            val stripeWidth = CreditStripeWidth.toPx()
-            drawRect(
-                color = stripeColor,
-                topLeft = Offset(size.width - stripeWidth, 0f),
-                size = Size(stripeWidth, size.height),
-            )
-        }
-        .padding(end = CreditStripeWidth)
-        .film(
-            side = Side.Start,
-            crossEdgeInset = 12.dp,
-        )
-        .background(SnacColors.film)
-}
-
-private val CreditStripeWidth = 6.dp
-
-@Composable
 private fun CreditsPlaceholder(cardModifier: Modifier) {
     Column {
-        repeat(10) {
+        repeat(6) {
             CreditCardPlaceholder(cardModifier)
         }
     }
@@ -305,22 +302,14 @@ private fun PersonDetails.info(): List<ClapperInfo> = buildList {
             )
         )
     }
-    birthCity?.let {
+    birthplace?.let {
         add(
             ClapperInfo(
                 label = stringResource(R.string.info_from),
                 value = it,
-                detail = birthCountry,
             )
         )
     }
-    add(
-        ClapperInfo(
-            label = stringResource(R.string.info_in_lists),
-            value = listCount.formatCount(),
-            detail = stringResource(R.string.info_on_trakt),
-        )
-    )
 }
 
 @Preview(device = "spec:width=1080px,height=5000px,dpi=440")

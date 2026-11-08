@@ -8,7 +8,7 @@ data class ShowResponse(
     @SerialName("ids")
     val ids: Ids,
     @SerialName("year")
-    val year: Int,
+    val year: Int?,
     @SerialName("title")
     val title: String,
     @SerialName("aired_episodes")

@@ -63,7 +63,7 @@ internal fun CreditCard(
             .padding(vertical = 8.dp),
     ) {
         Text(
-            text = credit.media.year.toString(),
+            text = credit.media.year?.toString().orEmpty(),
             style = SnacTypography.title.copy(textAlign = TextAlign.End),
             color = SnacColors.faint,
             modifier = Modifier.widthIn(YearWidth)

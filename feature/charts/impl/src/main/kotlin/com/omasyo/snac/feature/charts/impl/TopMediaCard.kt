@@ -70,7 +70,7 @@ internal fun TopMediaCard(
                 color = SnacColors.onFilm,
             )
             Text(
-                text = item.media.year.toString(),
+                text = item.media.year?.toString().orEmpty(),
                 style = SnacTypography.label,
                 color = SnacColors.mutedOnFilm,
             )

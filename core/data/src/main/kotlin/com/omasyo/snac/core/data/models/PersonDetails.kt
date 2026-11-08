@@ -15,9 +15,7 @@ data class PersonDetails(
     val knownFor: String?,
     val birthday: LocalDate?,
     val death: LocalDate?,
-    val birthCity: String?,
-    val birthCountry: String?,
-    val listCount: Int,
+    val birthplace: String?,
 ) {
     companion object {
         val PreviewSample = PersonDetails(
@@ -30,9 +28,7 @@ data class PersonDetails(
             knownFor = "Acting",
             birthday = LocalDate.of(1956, 10, 4),
             death = null,
-            birthCity = "Vienna",
-            birthCountry = "Austria",
-            listCount = 42,
+            birthplace = "Vienna, Austria",
         )
     }
 }

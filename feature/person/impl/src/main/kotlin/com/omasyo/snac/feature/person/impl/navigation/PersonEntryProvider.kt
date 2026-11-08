@@ -10,8 +10,9 @@ fun EntryProviderScope<NavKey>.personEntry(
     onBackClick: () -> Unit,
     onMediaClick: (Media) -> Unit,
 ) {
-    entry<PersonNavKey> {
+    entry<PersonNavKey> { key ->
         PersonScreen(
+            slug = key.slug,
             onBackClick = onBackClick,
             onMediaClick = onMediaClick,
         )
