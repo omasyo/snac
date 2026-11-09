@@ -23,12 +23,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.data.models.Genre
-import com.omasyo.snac.core.ui.R as UiR
 import com.omasyo.snac.core.ui.components.ClapperInfo
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.IconButton
@@ -37,6 +40,7 @@ import com.omasyo.snac.core.ui.components.InfoClapper
 import com.omasyo.snac.core.ui.components.InfoClapperPlaceholder
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
+import com.omasyo.snac.core.ui.components.imageGradient
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.film
@@ -48,6 +52,7 @@ import com.omasyo.snac.feature.media.impl.R
 import com.omasyo.snac.feature.media.impl.components.GenreChip
 import com.omasyo.snac.feature.media.impl.components.GenreChipPlaceholder
 import kotlin.random.Random
+import com.omasyo.snac.core.ui.R as UiR
 
 internal data class MediaHeroContent(
     val title: String,
@@ -113,43 +118,50 @@ internal fun MediaHero(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     verticalAlignment = Alignment.Bottom,
                     modifier = Modifier
-//                        .rotate(-4f)
+                        .rotate(-4f)
                         .padding(horizontal = 32.dp, vertical = 32.dp)
                         .align(Alignment.BottomStart),
                 ) {
-//                    Box(
-//                        modifier = Modifier
-//                            .silhouette(SnacColors.signal)
-//                            .border(4.dp, SnacColors.chip)
-//                            .size(112.dp, 168.dp)
-//                            .background(imageGradient())
-//                    )
-//                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-//                        Box(
-//                            Modifier
-//                                .size(280.dp, 40.dp)
-//                                .background(SnacColors.faint)
-//                        )
-//                        Box(
-//                            Modifier
-//                                .size(200.dp, 40.dp)
-//                                .background(SnacColors.faint)
-//                        )
-//                    }
-
                     Box(
-                        Modifier
-                            .size(240.dp, 40.dp)
-                            .background(SnacColors.placeholder)
+                        modifier = Modifier
+                            .silhouette(SnacColors.signal)
+                            .border(4.dp, SnacColors.chip)
+                            .size(112.dp, 168.dp)
+                            .background(imageGradient())
                     )
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Box(
+                            Modifier
+                                .size(280.dp, 40.dp)
+                                .background(SnacColors.faint)
+                        )
+                        Box(
+                            Modifier
+                                .size(200.dp, 40.dp)
+                                .background(SnacColors.faint)
+                        )
+                    }
                 }
             }
 
             is UiState.Success -> {
                 val hero = state.content
+
+                val brush = Brush.linearGradient(
+                    listOf(
+                        Color.Transparent,
+                        Color.Transparent,
+                        SnacColors.film.copy(0.5f),
+                    ), end = Offset(0f, Float.POSITIVE_INFINITY)
+                )
                 Image(
                     imageUrl = hero.secondaryPosterUrl ?: hero.posterUrl,
-                    modifier = Modifier.matchParentSize(),
+                    modifier = Modifier
+                        .matchParentSize()
+                        .drawWithContent {
+                            drawContent()
+                            drawRect(brush)
+                        },
                 )
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),

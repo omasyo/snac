@@ -2,6 +2,8 @@ package com.omasyo.snac.feature.media.impl.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,6 +44,7 @@ import com.omasyo.snac.core.ui.format.formatCount
 import com.omasyo.snac.core.ui.format.formatRating
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
+import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.CapHeightLineHeightStyle
 import com.omasyo.snac.core.ui.theme.LocalContentColor
@@ -108,7 +111,11 @@ private fun Content(ratings: Ratings) {
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
-                        .silhouette()
+                        .clickable(
+                            indication = SilhouettePressIndication(),
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = { }
+                        )
                         .size(100.dp)
                         .border(4.dp, SnacColors.outline, CircleShape)
                         .background(SnacColors.signal, CircleShape)
@@ -217,8 +224,11 @@ private fun RatingCard(
     CompositionLocalProvider(LocalContentColor provides contentColor) {
         Column(
             modifier = modifier
-
-                .silhouette()
+                .clickable(
+                    indication = SilhouettePressIndication(),
+                    interactionSource = remember { MutableInteractionSource() },
+                    onClick = { }
+                )
                 .border(3.dp, SnacColors.outline)
                 .background(backgroundColor)
                 .padding(12.dp)
