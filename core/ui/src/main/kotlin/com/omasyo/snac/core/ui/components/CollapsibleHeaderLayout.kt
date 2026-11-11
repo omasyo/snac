@@ -16,8 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
@@ -39,7 +40,9 @@ fun CollapsibleHeaderLayout(
     topBar: @Composable () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    val state = remember { CollapsibleHeaderState() } // TODO make saveable
+    val state = rememberSaveable(saver = CollapsibleHeaderState.Saver) {
+        CollapsibleHeaderState()
+    }
 
     Layout(
         contents = listOf(hero, topBar, content),
@@ -55,7 +58,7 @@ fun CollapsibleHeaderLayout(
         val heroHeight = heroPlaceables.maxOfOrNull { it.height } ?: 0
         val topBarHeight = topBarPlaceables.maxOfOrNull { it.height } ?: 0
         val width = bodyPlaceables.maxOfOrNull { it.width } ?: constraints.minWidth
-        val height = bodyPlaceables.maxOfOrNull { it.height } ?: constraints.minHeight
+        val height = constraints.maxHeight
 
         state.onHeroMeasured(heroHeight.toFloat())
 
@@ -75,12 +78,12 @@ fun CollapsibleHeaderLayout(
 }
 
 @Stable
-private class CollapsibleHeaderState {
+private class CollapsibleHeaderState(initialCollapseOffset: Float = 0f) {
 
     var heroHeight = 0f
         private set
 
-    var collapseOffset by mutableFloatStateOf(0f)
+    var collapseOffset by mutableFloatStateOf(initialCollapseOffset)
         private set
 
     private val isHeroPartlyHidden: Boolean
@@ -89,7 +92,7 @@ private class CollapsibleHeaderState {
     fun onHeroMeasured(height: Float) {
         if (height != heroHeight) {
             heroHeight = height
-            collapseOffset = 0f
+            collapseOffset = collapseOffset.coerceIn(0f, heroHeight)
         }
     }
 
@@ -98,6 +101,13 @@ private class CollapsibleHeaderState {
         val consumed = collapseOffset - newOffset
         collapseOffset = newOffset
         return consumed
+    }
+
+    companion object {
+        val Saver: Saver<CollapsibleHeaderState, Float> = Saver(
+            save = { it.collapseOffset },
+            restore = { CollapsibleHeaderState(it) }
+        )
     }
 
     val nestedScrollConnection = object : NestedScrollConnection {

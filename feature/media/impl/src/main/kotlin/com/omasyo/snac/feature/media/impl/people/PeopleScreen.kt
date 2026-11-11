@@ -85,7 +85,7 @@ internal fun PeopleScreen(
 
     MediaDetailsLayout(
         onBackClick = onBackClick,
-        title = "Cast ", //TODO
+        title = hero.title,
         hero = { Hero(hero) }
     ) {
         Column {
@@ -103,7 +103,7 @@ internal fun PeopleScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = PaddingValues(16.dp),
                 modifier = Modifier
-                    .fillMaxSize(),
+                    .fillMaxWidth(),
             ) {
                 items(20) {
                     Box(
