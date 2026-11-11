@@ -16,9 +16,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
@@ -34,16 +34,18 @@ import com.omasyo.snac.core.ui.theme.SnacTheme
 import kotlin.math.roundToInt
 
 @Composable
+fun rememberCollapsibleHeaderState(): CollapsibleHeaderState =
+    rememberSaveable(saver = CollapsibleHeaderState.Saver) { CollapsibleHeaderState() }
+
+
+@Composable
 fun CollapsibleHeaderLayout(
     modifier: Modifier = Modifier,
+    state: CollapsibleHeaderState = rememberCollapsibleHeaderState(),
     hero: @Composable () -> Unit,
     topBar: @Composable () -> Unit,
     content: @Composable () -> Unit,
 ) {
-    val state = rememberSaveable(saver = CollapsibleHeaderState.Saver) {
-        CollapsibleHeaderState()
-    }
-
     Layout(
         contents = listOf(hero, topBar, content),
         modifier = modifier
@@ -61,6 +63,7 @@ fun CollapsibleHeaderLayout(
         val height = constraints.maxHeight
 
         state.onHeroMeasured(heroHeight.toFloat())
+        state.onTopBarMeasured(topBarHeight.toFloat())
 
         layout(width, height) {
             val collapseOffset = state.collapseOffset
@@ -78,22 +81,37 @@ fun CollapsibleHeaderLayout(
 }
 
 @Stable
-private class CollapsibleHeaderState(initialCollapseOffset: Float = 0f) {
+class CollapsibleHeaderState(initialCollapseOffset: Float = 0f) {
 
-    var heroHeight = 0f
+    internal var heroHeight = 0f
         private set
 
-    var collapseOffset by mutableFloatStateOf(initialCollapseOffset)
+    var topBarHeight = 0f
+        private set
+
+    internal var collapseOffset by mutableFloatStateOf(initialCollapseOffset)
         private set
 
     private val isHeroPartlyHidden: Boolean
         get() = collapseOffset > 0f
 
-    fun onHeroMeasured(height: Float) {
+
+    val topBarProgress: Float
+        get() {
+            if (topBarHeight <= 0f) return 0f
+            val shownPx = collapseOffset - (heroHeight - topBarHeight)
+            return (shownPx / topBarHeight).coerceIn(0f, 1f)
+        }
+
+    internal fun onHeroMeasured(height: Float) {
         if (height != heroHeight) {
             heroHeight = height
             collapseOffset = collapseOffset.coerceIn(0f, heroHeight)
         }
+    }
+
+    internal fun onTopBarMeasured(height: Float) {
+        topBarHeight = height
     }
 
     private fun scrollHero(delta: Float): Float {
@@ -146,45 +164,61 @@ private fun Preview() {
         CollapsibleHeaderLayout(
             hero = {
                 Column(Modifier.height(300.dp)) {
-                    Box(Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .background(Color.Blue))
-                    Box(Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .background(Color.Green))
-                    Box(Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                        .background(Color.Yellow))
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .background(Color.Blue)
+                    )
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .background(Color.Green)
+                    )
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .background(Color.Yellow)
+                    )
                 }
             },
             topBar = {
-                Row(Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)) {
-                    Box(Modifier
-                        .fillMaxHeight()
-                        .weight(1f)
-                        .background(Color.DarkGray))
-                    Box(Modifier
-                        .fillMaxHeight()
-                        .weight(1f)
-                        .background(Color.Magenta))
-                    Box(Modifier
-                        .fillMaxHeight()
-                        .weight(1f)
-                        .background(Color.Yellow))
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .height(80.dp)
+                ) {
+                    Box(
+                        Modifier
+                            .fillMaxHeight()
+                            .weight(1f)
+                            .background(Color.DarkGray)
+                    )
+                    Box(
+                        Modifier
+                            .fillMaxHeight()
+                            .weight(1f)
+                            .background(Color.Magenta)
+                    )
+                    Box(
+                        Modifier
+                            .fillMaxHeight()
+                            .weight(1f)
+                            .background(Color.Yellow)
+                    )
                 }
             },
         ) {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
                 items(20) {
-                    Box(Modifier
-                        .fillMaxWidth()
-                        .height(160.dp)
-                        .background(Color.Red))
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .height(160.dp)
+                            .background(Color.Red)
+                    )
                 }
             }
         }
