@@ -269,9 +269,8 @@ private const val HeroKey = "hero"
 
 private fun LazyListState.heroTopBarProgress(topBarHeight: Int): Float {
     if (topBarHeight <= 0) return 0f
-    val visibleItems = layoutInfo.visibleItemsInfo
-    if (visibleItems.isEmpty()) return 0f
-    val hero = visibleItems.firstOrNull { it.key == HeroKey } ?: return 1f
+    if (firstVisibleItemIndex > 0) return 1f
+    val hero = layoutInfo.visibleItemsInfo.firstOrNull { it.key == HeroKey } ?: return 0f
     val heroBottom = hero.offset + hero.size
     return ((2 * topBarHeight - heroBottom).toFloat() / topBarHeight).coerceIn(0f, 1f)
 }
