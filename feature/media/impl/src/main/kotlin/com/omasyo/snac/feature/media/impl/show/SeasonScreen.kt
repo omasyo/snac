@@ -1,8 +1,13 @@
 package com.omasyo.snac.feature.media.impl.show
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -14,12 +19,15 @@ import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.EpisodeDetails
 import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.data.models.Ratings
+import com.omasyo.snac.core.data.models.Review
 import com.omasyo.snac.core.data.models.Season
 import com.omasyo.snac.core.ui.components.SignInPrompt
+import com.omasyo.snac.core.ui.components.bottomBarPadding
 import com.omasyo.snac.core.ui.format.formatDayMonth
 import com.omasyo.snac.core.ui.format.formatRuntime
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.map
+import com.omasyo.snac.core.ui.models.mapOrNull
 import com.omasyo.snac.core.ui.models.transpose
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.feature.media.impl.R
@@ -32,7 +40,6 @@ import com.omasyo.snac.feature.media.impl.common.MediaOverview
 import com.omasyo.snac.feature.media.impl.common.MediaTagline
 import com.omasyo.snac.feature.media.impl.common.ReviewSection
 import com.omasyo.snac.feature.media.impl.components.RatingsSection
-import com.omasyo.snac.core.data.models.Review
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 @Composable
@@ -86,69 +93,87 @@ fun SeasonScreen(
     review: UiState<List<Review>>,
     modifier: Modifier = Modifier,
 ) {
-    MediaDetailsLayout(onBackClick = onBackClick, modifier = modifier) {
-        MediaHero(
-            state = season.map {
-                MediaHeroContent(
-                    title = it.title,
-                    posterUrl = it.posterUrl,
-                    secondaryPosterUrl = null,
-                )
-            },
-        )
-        MediaTagline(
-            state = showTitle,
-            modifier = Modifier.padding(horizontal = 16.dp),
-        )
-        MediaInfo(
-            state = season.map { it.info() },
+    MediaDetailsLayout(
+        onBackClick = onBackClick,
+        modifier = modifier,
+        title = season.mapOrNull { it.title } ?: "",
+        hero = {
+            MediaHero(
+                state = season.map {
+                    MediaHeroContent(
+                        title = it.title,
+                        posterUrl = it.posterUrl,
+                        secondaryPosterUrl = null,
+                    )
+                },
+            )
+        }
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(24.dp),
             modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth(),
-        )
-        season.map { it.overview }.transpose()?.let {
-            MediaOverview(
-                state = it,
+                .verticalScroll(rememberScrollState())
+                .bottomBarPadding()
+                .navigationBarsPadding(),
+        ) {
+            MediaTagline(
+                state = showTitle,
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            MediaInfo(
+                state = season.map { it.info() },
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth(),
             )
+            season.map { it.overview }.transpose()?.let {
+                MediaOverview(
+                    state = it,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth(),
+                )
+            }
+            SignInPrompt(
+                title = "Track this season",
+                message = "Sign in to check in, rate it, mark it seen, and add it to your watchlist, favorites or lists.",
+                onSignInClick = {},
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            RatingsSection(
+                state = ratings,
+                modifier = Modifier.padding(horizontal = 16.dp),
+            )
+            EpisodesSection(
+                onEpisodeClick = onEpisodeClick,
+                state = episodes,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+            CastSection(
+                onPersonClick = onPersonClick,
+                onSeeAllClick = onSeeAllCastClick,
+                state = cast,
+            )
+            ReviewSection(
+                onReviewClick = onReviewClick,
+                onSeeAllClick = onSeeAllReviewClick,
+                onCommentClick = onCommentClick,
+                state = review,
+                modifier = Modifier.padding(bottom = 16.dp),
+            )
         }
-        SignInPrompt(
-            title = "Track this season",
-            message = "Sign in to check in, rate it, mark it seen, and add it to your watchlist, favorites or lists.",
-            onSignInClick = {},
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-        RatingsSection(
-            state = ratings,
-            modifier = Modifier.padding(horizontal = 16.dp),
-        )
-        EpisodesSection(
-            onEpisodeClick = onEpisodeClick,
-            state = episodes,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-        CastSection(
-            onPersonClick = onPersonClick,
-            onSeeAllClick = onSeeAllCastClick,
-            state = cast,
-        )
-        ReviewSection(
-            onReviewClick = onReviewClick,
-            onSeeAllClick = onSeeAllReviewClick,
-            onCommentClick = onCommentClick,
-            state = review,
-            modifier = Modifier.padding(bottom = 16.dp),
-        )
     }
 }
 
 @Composable
 private fun Season.info(): List<Pair<String, String>> = listOfNotNull(
     stringResource(R.string.info_episodes) to
-        if (airedEpisodes < episodeCount) stringResource(R.string.aired_of_total, airedEpisodes, episodeCount)
-        else episodeCount.toString(),
+            if (airedEpisodes < episodeCount) stringResource(
+                R.string.aired_of_total,
+                airedEpisodes,
+                episodeCount
+            )
+            else episodeCount.toString(),
     totalRuntime?.let { stringResource(R.string.info_runtime) to it.formatRuntime() },
     firstAired?.let { stringResource(R.string.info_year) to it.year.toString() },
     firstAired?.let { stringResource(R.string.info_premiered) to it.formatDayMonth() },

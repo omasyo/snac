@@ -5,20 +5,17 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -30,25 +27,27 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.data.models.Genre
+import com.omasyo.snac.core.ui.R
 import com.omasyo.snac.core.ui.components.ClapperInfo
+import com.omasyo.snac.core.ui.components.CollapsibleHeaderLayout
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.IconButton
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.InfoClapper
 import com.omasyo.snac.core.ui.components.InfoClapperPlaceholder
 import com.omasyo.snac.core.ui.components.Text
-import com.omasyo.snac.core.ui.components.bottomBarPadding
 import com.omasyo.snac.core.ui.components.imageGradient
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.film
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.CapHeightLineHeightStyle
+import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
-import com.omasyo.snac.core.ui.R
 import com.omasyo.snac.feature.media.impl.components.GenreChip
 import com.omasyo.snac.feature.media.impl.components.GenreChipPlaceholder
 import kotlin.random.Random
@@ -62,20 +61,26 @@ internal data class MediaHeroContent(
 @Composable
 internal fun MediaDetailsLayout(
     onBackClick: () -> Unit,
+    title: String,
+    hero: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit,
+    content: @Composable () -> Unit,
 ) {
     Box(modifier) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(24.dp),
+        CollapsibleHeaderLayout(
+            hero = hero,
+            topBar = {
+                TopBar(
+                    title = title,
+                    onBackClick = onBackClick,
+                )
+            },
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .background(SnacColors.page)
-                .bottomBarPadding()
-                .navigationBarsPadding(),
-            content = content,
-        )
+                .background(SnacColors.page),
+        ) {
+            content()
+        }
         IconButton(
             icon = R.drawable.caret_left_bold,
             contentDescription = stringResource(R.string.back),
@@ -86,6 +91,41 @@ internal fun MediaDetailsLayout(
                 .statusBarsPadding()
                 .padding(start = 32.dp, top = 16.dp)
                 .size(48.dp),
+        )
+    }
+
+
+}
+
+@Composable
+private fun TopBar(
+    title: String,
+    onBackClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = modifier
+            .fillMaxWidth()
+            .background(SnacColors.page)
+            .statusBarsPadding()
+            .padding(16.dp),
+    ) {
+
+        IconButton(
+            icon = R.drawable.caret_left_bold,
+            contentDescription = stringResource(R.string.back),
+            onClick = onBackClick,
+            backgroundColor = SnacColors.chip,
+            contentColor = SnacColors.ink,
+            modifier = Modifier
+                .size(48.dp),
+        )
+        Text(
+            text = title,
+            style = SnacTypography.title,
+            maxLines = 1,
         )
     }
 }
@@ -293,6 +333,63 @@ internal fun MediaOverview(
                         .height(14.dp)
                         .background(SnacColors.placeholder)
                 )
+            }
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun TopBarPreview() {
+    SnacTheme {
+        TopBar(
+            title = "Maria Says Hello!",
+            onBackClick = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun Preview() {
+    SnacTheme {
+        MediaDetailsLayout(
+            onBackClick = {},
+            title = "Maria Says Hello!",
+            hero = {
+                Column(Modifier.height(500.dp)) {
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .background(Color.Blue)
+                    )
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .background(Color.Green)
+                    )
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                            .background(Color.Yellow)
+                    )
+                }
+            },
+        ) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                items(20) {
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .height(160.dp)
+                            .background(Color.Red)
+                    )
+                }
             }
         }
     }

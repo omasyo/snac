@@ -17,6 +17,11 @@ inline fun <T, R> UiState<T>.map(transform: (T) -> R): UiState<R> = when (this) 
     is UiState.Success -> UiState.Success(transform(content), isRefreshing)
 }
 
+inline fun <T, R> UiState<T>.mapOrNull(transform: (T) -> R): R? = when (this) {
+    is UiState.Success -> transform(content)
+    else -> null
+}
+
 fun <T> UiState<T?>.transpose(): UiState<T>? = when (this) {
     is UiState.Error -> UiState.Error(error, refresh)
     UiState.Loading -> UiState.Loading
