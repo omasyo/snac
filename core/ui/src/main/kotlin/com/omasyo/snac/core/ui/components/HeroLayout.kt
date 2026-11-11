@@ -34,14 +34,14 @@ import com.omasyo.snac.core.ui.theme.SnacTheme
 import kotlin.math.roundToInt
 
 @Composable
-fun rememberCollapsibleHeaderState(): CollapsibleHeaderState =
+fun rememberHeroLayoutState(): CollapsibleHeaderState =
     rememberSaveable(saver = CollapsibleHeaderState.Saver) { CollapsibleHeaderState() }
 
 
 @Composable
-fun CollapsibleHeaderLayout(
+fun HeroLayout(
     modifier: Modifier = Modifier,
-    state: CollapsibleHeaderState = rememberCollapsibleHeaderState(),
+    state: CollapsibleHeaderState = rememberHeroLayoutState(),
     hero: @Composable () -> Unit,
     topBar: @Composable () -> Unit,
     content: @Composable () -> Unit,
@@ -161,7 +161,7 @@ class CollapsibleHeaderState(initialCollapseOffset: Float = 0f) {
 @Composable
 private fun Preview() {
     SnacTheme {
-        CollapsibleHeaderLayout(
+        HeroLayout(
             hero = {
                 Column(Modifier.height(300.dp)) {
                     Box(

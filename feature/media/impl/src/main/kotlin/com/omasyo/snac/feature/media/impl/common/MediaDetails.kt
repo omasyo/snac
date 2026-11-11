@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.lerp
 import com.omasyo.snac.core.data.models.Genre
 import com.omasyo.snac.core.ui.components.BackButton
 import com.omasyo.snac.core.ui.components.ClapperInfo
-import com.omasyo.snac.core.ui.components.CollapsibleHeaderLayout
+import com.omasyo.snac.core.ui.components.HeroLayout
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.InfoClapper
@@ -42,7 +42,7 @@ import com.omasyo.snac.core.ui.components.InfoClapperPlaceholder
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.TopBar
 import com.omasyo.snac.core.ui.components.imageGradient
-import com.omasyo.snac.core.ui.components.rememberCollapsibleHeaderState
+import com.omasyo.snac.core.ui.components.rememberHeroLayoutState
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.film
@@ -69,10 +69,10 @@ internal fun MediaDetailsLayout(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    val headerState = rememberCollapsibleHeaderState()
+    val headerState = rememberHeroLayoutState()
 
     Box(modifier) {
-        CollapsibleHeaderLayout(
+        HeroLayout(
             state = headerState,
             hero = hero,
             topBar = {

@@ -17,15 +17,9 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,14 +35,14 @@ import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.data.models.Review
 import com.omasyo.snac.core.ui.components.BackButton
-import com.omasyo.snac.core.ui.components.CollapsibleHeaderLayout
+import com.omasyo.snac.core.ui.components.HeroLayout
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.SignInPrompt
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.TopBar
 import com.omasyo.snac.core.ui.components.bottomBarPadding
-import com.omasyo.snac.core.ui.components.rememberCollapsibleHeaderState
+import com.omasyo.snac.core.ui.components.rememberHeroLayoutState
 import com.omasyo.snac.core.ui.format.formatDayMonth
 import com.omasyo.snac.core.ui.format.formatRuntime
 import com.omasyo.snac.core.ui.models.UiState
@@ -122,10 +116,10 @@ fun EpisodeScreen(
     modifier: Modifier = Modifier,
 ) {
 
-    val headerState = rememberCollapsibleHeaderState()
+    val headerState = rememberHeroLayoutState()
 
     Box(modifier = modifier) {
-        CollapsibleHeaderLayout(
+        HeroLayout(
             state = headerState,
             hero = {
                 MediaHero(

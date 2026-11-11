@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -86,7 +87,11 @@ internal fun PeopleScreen(
     MediaDetailsLayout(
         onBackClick = onBackClick,
         title = hero.title,
-        hero = { Hero(hero) }
+        hero = {
+            Column {
+                Hero(hero)
+            }
+        }
     ) {
         Column {
             CastCrewTab(
@@ -97,28 +102,45 @@ internal fun PeopleScreen(
                     .padding(horizontal = 16.dp)
                     .padding(top = 16.dp)
             )
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 160.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(16.dp),
-                modifier = Modifier
-                    .fillMaxWidth(),
-            ) {
-                items(20) {
-                    Box(
-                        Modifier
-                            .aspectRatio(1f)
-                            .background(Color.Red)
-                    )
+            when (selectedTab) {
+                Tab.Cast -> {
+                    LazyVerticalGrid(
+                        columns = GridCells.Adaptive(minSize = 160.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        contentPadding = PaddingValues(16.dp),
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                    ) {
+                        items(20) {
+                            Box(
+                                Modifier
+                                    .aspectRatio(1f)
+                                    .background(Color.Red)
+                            )
+                        }
+
+                        item("bottom-padding", { GridItemSpan(maxLineSpan) }) {
+                            Spacer(
+                                Modifier
+                                    .bottomBarPadding()
+                                    .navigationBarsPadding()
+                            )
+                        }
+                    }
                 }
 
-                item("bottom-padding", { GridItemSpan(maxLineSpan) }) {
-                    Spacer(
-                        Modifier
-                            .bottomBarPadding()
-                            .navigationBarsPadding()
-                    )
+                Tab.Crew -> {
+                    LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                        items(20) {
+                            Box(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .height(80.dp)
+                                    .background(Color.Red)
+                            )
+                        }
+                    }
                 }
             }
         }
