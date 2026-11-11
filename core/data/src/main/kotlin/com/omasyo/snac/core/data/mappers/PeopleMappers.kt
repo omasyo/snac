@@ -4,14 +4,10 @@ import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.network.models.PeopleResponse
 
-/** De-duplicated by slug: the UI keys the cast row by it. */
-fun PeopleResponse.toCast(): List<Cast> = //TODO
-    cast.orEmpty()
-        .distinctBy { it.person.ids.slug }
-        .map { it.toCast() }
+fun PeopleResponse.toCast(): List<Cast> = cast.map { it.toCast() }
 
 private fun PeopleResponse.CastResponse.toCast() = Cast(
-    character = character.orEmpty(),
+    characters = characters,
     person = Person(
         name = person.name,
         slug = person.ids.slug,

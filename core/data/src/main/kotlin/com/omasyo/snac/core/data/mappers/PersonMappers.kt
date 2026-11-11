@@ -14,9 +14,7 @@ fun PersonDetailsResponse.toPersonDetails() = PersonDetails(
     backdropUrl = images?.fanart?.firstOrNull()?.toImageUrl(),
     summary = summary?.takeIf { it.isNotBlank() },
     biography = biography?.takeIf { it.isNotBlank() },
-    knownFor = knownForDepartment?.takeIf { it.isNotBlank() }
-        ?.split(' ') // TODO ?????
-        ?.joinToString(" ") { word -> word.replaceFirstChar { it.uppercase() } },
+    knownFor = knownForDepartment?.takeIf { it.isNotBlank() },
     birthday = birthday,
     death = death,
     birthplace = birthplace?.takeIf { it.isNotBlank() },

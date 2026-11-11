@@ -6,12 +6,27 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PeopleResponse(
     @SerialName("cast")
-    val cast: List<CastResponse>?,
+    val cast: List<CastResponse>,
+    @SerialName("crew")
+    val crew: Map<String, List<CrewResponse>>,
 ) {
     @Serializable
     data class CastResponse(
-        @SerialName("character")
-        val character: String?,
+        @SerialName("characters")
+        val characters: List<String>,
+        @SerialName("person")
+        val person: Person,
+        @SerialName("images")
+        val images: Images?,
+    )
+
+    @Serializable
+    data class CrewResponse(
+        @SerialName("jobs")
+        val jobs: List<String>,
+        /** Episodes worked on. Shows, seasons and episodes only; absent for movies. */
+        @SerialName("episode_count")
+        val episodeCount: Int?,
         @SerialName("person")
         val person: Person,
         @SerialName("images")

@@ -7,13 +7,15 @@ data class Person(
 )
 
 data class Cast(
-    val character: String,
+    val characters: List<String>,
     val person: Person,
 ) {
+    val character: String = characters.joinToString("/")
+
     companion object {
         val PreviewSample = List(10) {
             Cast(
-                character = "Victor",
+                characters = listOf("Victor"),
                 person = Person(
                     name = "Oscar Isaac",
                     slug = "person-$it",
