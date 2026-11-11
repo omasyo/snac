@@ -6,6 +6,11 @@ data class Person(
     val imageUrl: String?,
 )
 
+data class PeopleList(
+    val cast: List<Cast>,
+    val crew: Map<String, List<Crew>>,
+)
+
 data class Cast(
     val characters: List<String>,
     val person: Person,
@@ -25,3 +30,8 @@ data class Cast(
         }
     }
 }
+
+data class Crew(
+    val jobs: List<String>,
+    val person: Person,
+)

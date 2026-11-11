@@ -171,7 +171,7 @@ fun EpisodeScreen(
     }
     IconButton(
         icon = UiR.drawable.caret_left_bold,
-        contentDescription = stringResource(R.string.back),
+        contentDescription = stringResource(UiR.string.back),
         onClick = onBackClick,
         backgroundColor = SnacColors.chip,
         contentColor = SnacColors.ink,

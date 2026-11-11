@@ -48,11 +48,10 @@ import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.CapHeightLineHeightStyle
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
-import com.omasyo.snac.feature.media.impl.R
+import com.omasyo.snac.core.ui.R
 import com.omasyo.snac.feature.media.impl.components.GenreChip
 import com.omasyo.snac.feature.media.impl.components.GenreChipPlaceholder
 import kotlin.random.Random
-import com.omasyo.snac.core.ui.R as UiR
 
 internal data class MediaHeroContent(
     val title: String,
@@ -78,7 +77,7 @@ internal fun MediaDetailsLayout(
             content = content,
         )
         IconButton(
-            icon = UiR.drawable.caret_left_bold,
+            icon = R.drawable.caret_left_bold,
             contentDescription = stringResource(R.string.back),
             onClick = onBackClick,
             backgroundColor = SnacColors.chip,
