@@ -11,36 +11,44 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.data.models.CreditRole
 import com.omasyo.snac.core.data.models.PersonCredit
 import com.omasyo.snac.core.data.models.PersonDetails
 import com.omasyo.snac.core.model.media.Media
+import com.omasyo.snac.core.ui.components.BackButton
 import com.omasyo.snac.core.ui.components.ClapperInfo
 import com.omasyo.snac.core.ui.components.ErrorBox
-import com.omasyo.snac.core.ui.components.BackButton
-import com.omasyo.snac.core.ui.components.IconButton
 import com.omasyo.snac.core.ui.components.InfoClapper
 import com.omasyo.snac.core.ui.components.InfoClapperPlaceholder
 import com.omasyo.snac.core.ui.components.TabRow
 import com.omasyo.snac.core.ui.components.Text
+import com.omasyo.snac.core.ui.components.TopBar
 import com.omasyo.snac.core.ui.components.bottomBarPadding
 import com.omasyo.snac.core.ui.format.formatFullDate
 import com.omasyo.snac.core.ui.models.UiState
@@ -55,7 +63,7 @@ import com.omasyo.snac.core.ui.theme.colors.SnacColors
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import java.time.LocalDate
 import java.time.Period
-import com.omasyo.snac.core.ui.R as UiR
+import kotlin.math.roundToInt
 
 @Composable
 fun PersonScreen(
@@ -111,18 +119,27 @@ fun PersonScreen(
             }
         }
 
+    val listState = rememberLazyListState()
+    var topBarHeight by remember { mutableIntStateOf(0) }
+    val topBarProgress by remember(listState) {
+        derivedStateOf { listState.heroTopBarProgress(topBarHeight) }
+    }
+
     Box(modifier) {
         LazyColumn(
+            state = listState,
             modifier = Modifier
                 .fillMaxSize()
                 .background(SnacColors.page),
         ) {
+            item(HeroKey) {
+                PersonHero(state = person)
+            }
             item("details") {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(24.dp),
-                    modifier = Modifier.padding(bottom = 24.dp),
+                    modifier = Modifier.padding(vertical = 24.dp),
                 ) {
-                    PersonHero(state = person)
                     person.map { it.summary }.transpose()?.let {
                         PersonSummary(
                             state = it,
@@ -227,13 +244,36 @@ fun PersonScreen(
                 )
             }
         }
+        TopBar(
+            title = (person as? UiState.Success)?.content?.name.orEmpty(),
+            modifier = Modifier
+                .onSizeChanged { topBarHeight = it.height }
+                .offset {
+                    IntOffset(0, -((1f - topBarProgress) * topBarHeight).roundToInt())
+                },
+        )
+
         BackButton(
             onClick = onBackClick,
             modifier = Modifier
                 .statusBarsPadding()
-                .padding(start = 16.dp, top = 16.dp),
+                .offset {
+                    val start = lerp(32.dp, 16.dp, topBarProgress)
+                    IntOffset(start.roundToPx(), 16.dp.roundToPx())
+                },
         )
     }
+}
+
+private const val HeroKey = "hero"
+
+private fun LazyListState.heroTopBarProgress(topBarHeight: Int): Float {
+    if (topBarHeight <= 0) return 0f
+    val visibleItems = layoutInfo.visibleItemsInfo
+    if (visibleItems.isEmpty()) return 0f
+    val hero = visibleItems.firstOrNull { it.key == HeroKey } ?: return 1f
+    val heroBottom = hero.offset + hero.size
+    return ((2 * topBarHeight - heroBottom).toFloat() / topBarHeight).coerceIn(0f, 1f)
 }
 
 @Composable
