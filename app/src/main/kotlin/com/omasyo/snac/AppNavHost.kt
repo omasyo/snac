@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
-import androidx.savedstate.serialization.SavedStateConfiguration
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.model.media.Show
@@ -29,43 +28,19 @@ import com.omasyo.snac.core.ui.navigation.Navigator
 import com.omasyo.snac.core.ui.navigation.rememberNavigationState
 import com.omasyo.snac.core.ui.navigation.toDecoratedEntries
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
-import com.omasyo.snac.feature.calendar.api.navigation.CalendarNavKey
 import com.omasyo.snac.feature.calendar.impl.navigation.calendarEntry
-import com.omasyo.snac.feature.charts.api.navigation.ChartsNavKey
 import com.omasyo.snac.feature.charts.impl.navigation.chartsEntry
 import com.omasyo.snac.feature.home.api.navigation.HomeNavKey
 import com.omasyo.snac.feature.home.impl.navigation.homeEntry
-import com.omasyo.snac.feature.media.api.navigation.EpisodeNavKey
 import com.omasyo.snac.feature.media.api.navigation.MovieNavKey
-import com.omasyo.snac.feature.media.api.navigation.SeasonNavKey
 import com.omasyo.snac.feature.media.api.navigation.ShowNavKey
 import com.omasyo.snac.feature.media.impl.navigation.mediaEntry
 import com.omasyo.snac.feature.person.api.navigation.PersonNavKey
 import com.omasyo.snac.feature.person.impl.navigation.personEntry
-import com.omasyo.snac.feature.search.api.navigation.SearchNavKey
 import com.omasyo.snac.feature.search.impl.navigation.searchEntry
 import com.omasyo.snac.feature.settings.api.navigation.SettingsNavKey
 import com.omasyo.snac.feature.settings.impl.navigation.settingsEntry
 import com.omasyo.snac.navigation.TOP_LEVEL_NAV_ITEMS
-import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.polymorphic
-
-val config = SavedStateConfiguration {
-    serializersModule = SerializersModule {
-        polymorphic(NavKey::class) {
-            subclass(CalendarNavKey::class, CalendarNavKey.serializer())
-            subclass(ChartsNavKey::class, ChartsNavKey.serializer())
-            subclass(EpisodeNavKey::class, EpisodeNavKey.serializer())
-            subclass(HomeNavKey::class, HomeNavKey.serializer())
-            subclass(MovieNavKey::class, MovieNavKey.serializer())
-            subclass(PersonNavKey::class, PersonNavKey.serializer())
-            subclass(SearchNavKey::class, SearchNavKey.serializer())
-            subclass(SeasonNavKey::class, SeasonNavKey.serializer())
-            subclass(SettingsNavKey::class, SettingsNavKey.serializer())
-            subclass(ShowNavKey::class, ShowNavKey.serializer())
-        }
-    }
-}
 
 private fun Media.navKey(): NavKey = when (this) {
     is Movie -> MovieNavKey(slug)
