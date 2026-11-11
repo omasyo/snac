@@ -10,19 +10,28 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.lerp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.data.models.Cast
@@ -31,17 +40,20 @@ import com.omasyo.snac.core.data.models.EpisodeType
 import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.data.models.Review
-import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.BackButton
-import com.omasyo.snac.core.ui.components.IconButton
+import com.omasyo.snac.core.ui.components.CollapsibleHeaderLayout
+import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.SignInPrompt
 import com.omasyo.snac.core.ui.components.Text
+import com.omasyo.snac.core.ui.components.TopBar
 import com.omasyo.snac.core.ui.components.bottomBarPadding
+import com.omasyo.snac.core.ui.components.rememberCollapsibleHeaderState
 import com.omasyo.snac.core.ui.format.formatDayMonth
 import com.omasyo.snac.core.ui.format.formatRuntime
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.map
+import com.omasyo.snac.core.ui.models.mapOrNull
 import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.models.transpose
 import com.omasyo.snac.core.ui.modifiers.Orientation
@@ -61,7 +73,6 @@ import com.omasyo.snac.feature.media.impl.common.MediaTagline
 import com.omasyo.snac.feature.media.impl.common.ReviewSection
 import com.omasyo.snac.feature.media.impl.components.RatingsSection
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
-import com.omasyo.snac.core.ui.R as UiR
 
 @Composable
 fun EpisodeScreen(
@@ -110,74 +121,90 @@ fun EpisodeScreen(
     review: UiState<List<Review>>,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(24.dp),
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .background(SnacColors.page)
-            .bottomBarPadding()
-            .navigationBarsPadding(),
-    ) {
 
-        MediaHero(
-            state = episode.map {
-                MediaHeroContent(
-                    title = it.displayTitle(),
-                    posterUrl = it.screenshotUrl,
-                    secondaryPosterUrl = null,
+    val headerState = rememberCollapsibleHeaderState()
+
+    Box(modifier = modifier) {
+        CollapsibleHeaderLayout(
+            state = headerState,
+            hero = {
+                MediaHero(
+                    state = episode.map {
+                        MediaHeroContent(
+                            title = it.displayTitle(),
+                            posterUrl = it.screenshotUrl,
+                            secondaryPosterUrl = null,
+                        )
+                    },
                 )
             },
-        )
-        MediaTagline(
-            state = showTitle,
-            modifier = Modifier.padding(horizontal = 16.dp),
-        )
-        MediaInfo(
-            state = episode.map { it.info() },
+            topBar = {
+                TopBar(episode.mapOrNull { it.title } ?: "")
+            },
             modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth(),
-        )
-        episode.map { it.overview }.transpose()?.let {
-            MediaOverview(
-                state = it,
+                .fillMaxSize()
+                .background(SnacColors.page),
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(24.dp),
                 modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
-            )
+                    .verticalScroll(rememberScrollState())
+                    .padding(top = 16.dp)
+                    .bottomBarPadding()
+                    .navigationBarsPadding(),
+            ) {
+                MediaTagline(
+                    state = showTitle,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                )
+                MediaInfo(
+                    state = episode.map { it.info() },
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxWidth(),
+                )
+                episode.map { it.overview }.transpose()?.let {
+                    MediaOverview(
+                        state = it,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .fillMaxWidth(),
+                    )
+                }
+                SignInPrompt(
+                    title = "Track this episode",
+                    message = "Sign in to check in, rate it, mark it seen, and add it to your watchlist, favorites or lists.",
+                    onSignInClick = {},
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+                RatingsSection(
+                    state = ratings,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                )
+                CastSection(
+                    onPersonClick = onPersonClick,
+                    onSeeAllClick = onSeeAllCastClick,
+                    state = cast,
+                )
+                ReviewSection(
+                    onReviewClick = onReviewClick,
+                    onSeeAllClick = onSeeAllReviewClick,
+                    onCommentClick = onCommentClick,
+                    state = review,
+                    modifier = Modifier.padding(bottom = 16.dp),
+                )
+            }
         }
-        SignInPrompt(
-            title = "Track this episode",
-            message = "Sign in to check in, rate it, mark it seen, and add it to your watchlist, favorites or lists.",
-            onSignInClick = {},
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-        RatingsSection(
-            state = ratings,
-            modifier = Modifier.padding(horizontal = 16.dp),
-        )
-        CastSection(
-            onPersonClick = onPersonClick,
-            onSeeAllClick = onSeeAllCastClick,
-            state = cast,
-        )
-        ReviewSection(
-            onReviewClick = onReviewClick,
-            onSeeAllClick = onSeeAllReviewClick,
-            onCommentClick = onCommentClick,
-            state = review,
-            modifier = Modifier.padding(bottom = 16.dp),
+        BackButton(
+            onClick = onBackClick,
+            modifier = Modifier
+                .statusBarsPadding()
+                .offset {
+                    val start = lerp(32.dp, 16.dp, headerState.topBarProgress)
+                    IntOffset(16.dp.roundToPx(), start.roundToPx())
+                },
         )
     }
-    BackButton(
-        onClick = onBackClick,
-        modifier = Modifier
-            .statusBarsPadding()
-            .padding(start = 16.dp, top = 16.dp),
-    )
-
-
 }
 
 

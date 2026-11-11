@@ -125,6 +125,7 @@ fun MovieScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp),
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
+                .padding(top = 16.dp)
                 .bottomBarPadding()
                 .navigationBarsPadding(),
         ) {
@@ -205,7 +206,7 @@ private fun ReleaseStatus.label(): String = when (this) {
     ReleaseStatus.Canceled -> stringResource(R.string.release_status_canceled)
 }
 
-@Preview(device = "spec:width=1080px,height=7000px,dpi=440")
+@Preview
 @Composable
 private fun Preview() {
     SnacTheme {

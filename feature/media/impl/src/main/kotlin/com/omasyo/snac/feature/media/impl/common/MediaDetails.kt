@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,10 +18,7 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -30,11 +26,8 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
@@ -47,6 +40,7 @@ import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.InfoClapper
 import com.omasyo.snac.core.ui.components.InfoClapperPlaceholder
 import com.omasyo.snac.core.ui.components.Text
+import com.omasyo.snac.core.ui.components.TopBar
 import com.omasyo.snac.core.ui.components.imageGradient
 import com.omasyo.snac.core.ui.components.rememberCollapsibleHeaderState
 import com.omasyo.snac.core.ui.models.UiState
@@ -75,12 +69,9 @@ internal fun MediaDetailsLayout(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    var containerTop by remember { mutableFloatStateOf(0f) }
-
     val headerState = rememberCollapsibleHeaderState()
 
-
-    Box(modifier.onGloballyPositioned { containerTop = it.positionInRoot().y }) {
+    Box(modifier) {
         CollapsibleHeaderLayout(
             state = headerState,
             hero = hero,
@@ -102,31 +93,6 @@ internal fun MediaDetailsLayout(
                     val start = lerp(32.dp, 16.dp, headerState.topBarProgress)
                     IntOffset(start.roundToPx(), 16.dp.roundToPx())
                 },
-        )
-    }
-}
-
-@Composable
-private fun TopBar(
-    title: String,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        modifier = modifier
-            .silhouette(offset = DpOffset(x = 0.dp, y = 4.dp))
-            .fillMaxWidth()
-            .background(SnacColors.page)
-            .statusBarsPadding()
-            .padding(16.dp),
-    ) {
-        // Slot the floating back button settles into.
-        Spacer(Modifier.size(48.dp))
-        Text(
-            text = title,
-            style = SnacTypography.title,
-            maxLines = 1,
         )
     }
 }

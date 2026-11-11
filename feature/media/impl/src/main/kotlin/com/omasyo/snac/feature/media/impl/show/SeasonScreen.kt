@@ -113,6 +113,7 @@ fun SeasonScreen(
             verticalArrangement = Arrangement.spacedBy(24.dp),
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
+                .padding(top = 16.dp)
                 .bottomBarPadding()
                 .navigationBarsPadding(),
         ) {
