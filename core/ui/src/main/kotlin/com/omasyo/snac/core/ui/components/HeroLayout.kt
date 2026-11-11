@@ -4,6 +4,10 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.ScrollableState
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -91,6 +96,14 @@ fun HeroLayout(
             topBarPlaceables.forEach { it.placeRelative(0, topBarY) }
         }
     }
+}
+
+@Composable
+fun Modifier.heroScrollable(contentScrollState: ScrollableState): Modifier {
+    val heroScrollState = rememberScrollableState { delta ->
+        -contentScrollState.dispatchRawDelta(-delta)
+    }
+    return scrollable(heroScrollState, Orientation.Vertical)
 }
 
 @Stable
@@ -170,10 +183,15 @@ class CollapsibleHeaderState(initialCollapseOffset: Float = 0f) {
 @Preview
 @Composable
 private fun Preview() {
+    val listState = rememberLazyListState()
     SnacTheme {
         HeroLayout(
             hero = {
-                Column(Modifier.height(300.dp)) {
+                Column(
+                    Modifier
+                        .heroScrollable(listState)
+                        .height(300.dp)
+                ) {
                     Box(
                         Modifier
                             .fillMaxWidth()
@@ -222,6 +240,7 @@ private fun Preview() {
             },
         ) { contentPadding ->
             LazyColumn(
+                state = listState,
                 contentPadding = contentPadding,
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {

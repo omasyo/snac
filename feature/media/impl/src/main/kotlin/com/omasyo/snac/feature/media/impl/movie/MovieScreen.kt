@@ -29,6 +29,7 @@ import com.omasyo.snac.core.data.models.Review
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.ui.components.SignInPrompt
+import com.omasyo.snac.core.ui.components.heroScrollable
 import com.omasyo.snac.core.ui.format.formatDayMonth
 import com.omasyo.snac.core.ui.format.formatRuntime
 import com.omasyo.snac.core.ui.models.UiState
@@ -103,6 +104,7 @@ fun MovieScreen(
     relatedMovies: LazyPagingItems<Movie>,
     modifier: Modifier = Modifier,
 ) {
+    val scrollState = rememberScrollState()
     MediaDetailsLayout(
         onBackClick = onBackClick,
         modifier = modifier,
@@ -116,13 +118,14 @@ fun MovieScreen(
                         secondaryPosterUrl = it.secondaryPosterUrl,
                     )
                 },
+                modifier = Modifier.heroScrollable(scrollState),
             )
         }
     ) { contentPadding ->
         Column(
             verticalArrangement = Arrangement.spacedBy(24.dp),
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(contentPadding)
                 .padding(top = 16.dp),
         ) {

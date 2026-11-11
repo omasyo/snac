@@ -40,6 +40,7 @@ import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.SignInPrompt
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.TopBar
+import com.omasyo.snac.core.ui.components.heroScrollable
 import com.omasyo.snac.core.ui.components.rememberHeroLayoutState
 import com.omasyo.snac.core.ui.format.formatDayMonth
 import com.omasyo.snac.core.ui.format.formatRuntime
@@ -114,6 +115,8 @@ fun EpisodeScreen(
     modifier: Modifier = Modifier,
 ) {
 
+    val scrollState = rememberScrollState()
+
     val headerState = rememberHeroLayoutState()
 
     Box(modifier = modifier) {
@@ -128,6 +131,7 @@ fun EpisodeScreen(
                             secondaryPosterUrl = null,
                         )
                     },
+                    modifier = Modifier.heroScrollable(scrollState),
                 )
             },
             topBar = {
@@ -140,7 +144,7 @@ fun EpisodeScreen(
             Column(
                 verticalArrangement = Arrangement.spacedBy(24.dp),
                 modifier = Modifier
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(scrollState)
                     .padding(contentPadding)
                     .padding(top = 16.dp),
             ) {

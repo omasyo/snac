@@ -30,6 +30,7 @@ import com.omasyo.snac.core.data.models.ShowStatus
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.Show
 import com.omasyo.snac.core.ui.components.SignInPrompt
+import com.omasyo.snac.core.ui.components.heroScrollable
 import com.omasyo.snac.core.ui.format.formatDayMonth
 import com.omasyo.snac.core.ui.format.formatRuntime
 import com.omasyo.snac.core.ui.models.UiState
@@ -109,6 +110,7 @@ fun ShowScreen(
     relatedShows: LazyPagingItems<Show>,
     modifier: Modifier = Modifier,
 ) {
+    val scrollState = rememberScrollState()
     MediaDetailsLayout(
         onBackClick = onBackClick,
         modifier = modifier,
@@ -122,13 +124,14 @@ fun ShowScreen(
                         secondaryPosterUrl = it.secondaryPosterUrl,
                     )
                 },
+                modifier = Modifier.heroScrollable(scrollState),
             )
         },
     ) { contentPadding ->
         Column(
             verticalArrangement = Arrangement.spacedBy(24.dp),
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(contentPadding)
                 .padding(top = 16.dp),
         ) {

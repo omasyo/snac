@@ -21,6 +21,7 @@ import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.data.models.Review
 import com.omasyo.snac.core.data.models.Season
 import com.omasyo.snac.core.ui.components.SignInPrompt
+import com.omasyo.snac.core.ui.components.heroScrollable
 import com.omasyo.snac.core.ui.format.formatDayMonth
 import com.omasyo.snac.core.ui.format.formatRuntime
 import com.omasyo.snac.core.ui.models.UiState
@@ -91,6 +92,7 @@ fun SeasonScreen(
     review: UiState<List<Review>>,
     modifier: Modifier = Modifier,
 ) {
+    val scrollState = rememberScrollState()
     MediaDetailsLayout(
         onBackClick = onBackClick,
         modifier = modifier,
@@ -104,13 +106,14 @@ fun SeasonScreen(
                         secondaryPosterUrl = null,
                     )
                 },
+                modifier = Modifier.heroScrollable(scrollState),
             )
         }
     ) { contentPadding ->
         Column(
             verticalArrangement = Arrangement.spacedBy(24.dp),
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(scrollState)
                 .padding(contentPadding)
                 .padding(top = 16.dp),
         ) {
