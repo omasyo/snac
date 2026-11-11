@@ -35,6 +35,7 @@ import com.omasyo.snac.core.data.models.PersonDetails
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.ui.components.ClapperInfo
 import com.omasyo.snac.core.ui.components.ErrorBox
+import com.omasyo.snac.core.ui.components.BackButton
 import com.omasyo.snac.core.ui.components.IconButton
 import com.omasyo.snac.core.ui.components.InfoClapper
 import com.omasyo.snac.core.ui.components.InfoClapperPlaceholder
@@ -226,16 +227,11 @@ fun PersonScreen(
                 )
             }
         }
-        IconButton(
-            icon = UiR.drawable.caret_left_bold,
-            contentDescription = stringResource(R.string.back),
+        BackButton(
             onClick = onBackClick,
-            backgroundColor = SnacColors.chip,
-            contentColor = SnacColors.ink,
             modifier = Modifier
                 .statusBarsPadding()
-                .padding(start = 16.dp, top = 16.dp)
-                .size(48.dp),
+                .padding(start = 16.dp, top = 16.dp),
         )
     }
 }

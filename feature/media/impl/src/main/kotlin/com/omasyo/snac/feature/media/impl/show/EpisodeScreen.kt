@@ -32,6 +32,7 @@ import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.data.models.Review
 import com.omasyo.snac.core.ui.components.ErrorBox
+import com.omasyo.snac.core.ui.components.BackButton
 import com.omasyo.snac.core.ui.components.IconButton
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.SignInPrompt
@@ -169,16 +170,11 @@ fun EpisodeScreen(
             modifier = Modifier.padding(bottom = 16.dp),
         )
     }
-    IconButton(
-        icon = UiR.drawable.caret_left_bold,
-        contentDescription = stringResource(UiR.string.back),
+    BackButton(
         onClick = onBackClick,
-        backgroundColor = SnacColors.chip,
-        contentColor = SnacColors.ink,
         modifier = Modifier
             .statusBarsPadding()
-            .padding(start = 16.dp, top = 16.dp)
-            .size(48.dp),
+            .padding(start = 16.dp, top = 16.dp),
     )
 
 

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,16 +26,14 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.data.models.Genre
-import com.omasyo.snac.core.ui.R
+import com.omasyo.snac.core.ui.components.BackButton
 import com.omasyo.snac.core.ui.components.ClapperInfo
 import com.omasyo.snac.core.ui.components.CollapsibleHeaderLayout
 import com.omasyo.snac.core.ui.components.ErrorBox
-import com.omasyo.snac.core.ui.components.IconButton
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.InfoClapper
 import com.omasyo.snac.core.ui.components.InfoClapperPlaceholder
@@ -70,10 +69,10 @@ internal fun MediaDetailsLayout(
         CollapsibleHeaderLayout(
             hero = hero,
             topBar = {
-                TopBar(
-                    title = title,
-                    onBackClick = onBackClick,
-                )
+//                TopBar(
+//                    title = title,
+//                    onBackClick = onBackClick,
+//                )
             },
             modifier = Modifier
                 .fillMaxSize()
@@ -81,16 +80,11 @@ internal fun MediaDetailsLayout(
         ) {
             content()
         }
-        IconButton(
-            icon = R.drawable.caret_left_bold,
-            contentDescription = stringResource(R.string.back),
+        BackButton(
             onClick = onBackClick,
-            backgroundColor = SnacColors.chip,
-            contentColor = SnacColors.ink,
             modifier = Modifier
                 .statusBarsPadding()
-                .padding(start = 32.dp, top = 16.dp)
-                .size(48.dp),
+                .padding(start = 32.dp, top = 16.dp),
         )
     }
 
@@ -113,15 +107,10 @@ private fun TopBar(
             .padding(16.dp),
     ) {
 
-        IconButton(
-            icon = R.drawable.caret_left_bold,
-            contentDescription = stringResource(R.string.back),
+        BackButton(
             onClick = onBackClick,
-            backgroundColor = SnacColors.chip,
-            contentColor = SnacColors.ink,
-            modifier = Modifier
-                .size(48.dp),
         )
+        Spacer(Modifier.size(48.dp))
         Text(
             text = title,
             style = SnacTypography.title,

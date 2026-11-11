@@ -1,6 +1,7 @@
 package com.omasyo.snac
 
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
@@ -11,6 +12,7 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -22,6 +24,7 @@ import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.model.media.Show
 import com.omasyo.snac.core.ui.components.BottomBar
+import com.omasyo.snac.core.ui.navigation.LocalNavSharedTransitionScope
 import com.omasyo.snac.core.ui.navigation.Navigator
 import com.omasyo.snac.core.ui.navigation.rememberNavigationState
 import com.omasyo.snac.core.ui.navigation.toDecoratedEntries
@@ -102,50 +105,56 @@ fun AppNavHost(
             )
         }
     ) {
-        NavDisplay(
-            modifier = modifier,
-            onBack = { navigator.goBack() },
-            transitionSpec = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Left,
-                    spring(stiffness = Spring.StiffnessMediumLow)
-                ) togetherWith fadeOut() + scaleOut(targetScale = 0.9f)
-            },
-            popTransitionSpec = {
-                fadeIn() + scaleIn(initialScale = 0.9f) togetherWith slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Right,
-                    spring(stiffness = Spring.StiffnessMediumLow)
+        SharedTransitionLayout {
+            CompositionLocalProvider(LocalNavSharedTransitionScope provides this) {
+                NavDisplay(
+                    sharedTransitionScope = this,
+                    modifier = modifier,
+                    onBack = { navigator.goBack() },
+                    transitionSpec = {
+                        slideIntoContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Left,
+                            spring(stiffness = Spring.StiffnessMediumLow)
+                        ) togetherWith fadeOut() + scaleOut(targetScale = 0.9f)
+                    },
+                    popTransitionSpec = {
+                        fadeIn() + scaleIn(initialScale = 0.9f) togetherWith slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            spring(stiffness = Spring.StiffnessMediumLow)
+                        )
+                    },
+                    predictivePopTransitionSpec = { //TODO
+                        fadeIn() + scaleIn(initialScale = 0.9f) togetherWith slideOutOfContainer(
+                            AnimatedContentTransitionScope.SlideDirection.Right,
+                            spring(stiffness = Spring.StiffnessMediumLow)
+                        )
+                    },
+                    entries = navigationState.toDecoratedEntries(
+                        entryProvider {
+                            calendarEntry()
+                            chartsEntry(onMediaClick = onMediaClick)
+                            homeEntry(
+                                onMediaClick = onMediaClick,
+                                onSettingsClick = { navigator.navigate(SettingsNavKey) },
+                            )
+                            mediaEntry(
+                                onBackClick = { navigator.goBack() },
+                                onMediaClick = onMediaClick,
+                                onSeasonClick = { navigator.navigate(it) },
+                                onEpisodeClick = { navigator.navigate(it) },
+                                onPersonClick = { navigator.navigate(PersonNavKey(it.slug)) },
+                            )
+                            personEntry(
+                                onBackClick = { navigator.goBack() },
+                                onMediaClick = onMediaClick,
+                            )
+                            searchEntry()
+                            settingsEntry(onBackClick = { navigator.goBack() })
+                        },
+                    ),
                 )
-            },
-            predictivePopTransitionSpec = { //TODO
-                fadeIn() + scaleIn(initialScale = 0.9f) togetherWith slideOutOfContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Right,
-                    spring(stiffness = Spring.StiffnessMediumLow)
-                )
-            },
-            entries = navigationState.toDecoratedEntries(
-                entryProvider {
-                    calendarEntry()
-                    chartsEntry(onMediaClick = onMediaClick)
-                    homeEntry(
-                        onMediaClick = onMediaClick,
-                        onSettingsClick = { navigator.navigate(SettingsNavKey) },
-                    )
-                    mediaEntry(
-                        onBackClick = { navigator.goBack() },
-                        onMediaClick = onMediaClick,
-                        onSeasonClick = { navigator.navigate(it) },
-                        onEpisodeClick = { navigator.navigate(it) },
-                        onPersonClick = { navigator.navigate(PersonNavKey(it.slug)) },
-                    )
-                    personEntry(
-                        onBackClick = { navigator.goBack() },
-                        onMediaClick = onMediaClick,
-                    )
-                    searchEntry()
-                    settingsEntry(onBackClick = { navigator.goBack() })
-                }),
-        )
+            }
+        }
 
     }
 

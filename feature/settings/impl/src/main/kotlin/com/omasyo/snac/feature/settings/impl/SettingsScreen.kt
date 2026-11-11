@@ -24,6 +24,7 @@ import com.omasyo.snac.core.model.settings.AppTheme
 import com.omasyo.snac.core.model.settings.ThemeMode
 import com.omasyo.snac.core.model.settings.ThemeSettings
 import com.omasyo.snac.core.ui.components.Button
+import com.omasyo.snac.core.ui.components.BackButton
 import com.omasyo.snac.core.ui.components.IconButton
 import com.omasyo.snac.core.ui.components.SignInPrompt
 import com.omasyo.snac.core.ui.components.Text
@@ -81,12 +82,8 @@ fun SettingsScreen(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            IconButton(
-                icon = UiR.drawable.caret_left_bold,
-                contentDescription = stringResource(R.string.back),
+            BackButton(
                 onClick = onBackClick,
-                backgroundColor = SnacColors.chip,
-                contentColor = SnacColors.ink,
                 modifier = Modifier.size(48.dp),
             )
             Text(
