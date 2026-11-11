@@ -34,4 +34,6 @@ data class Cast(
 data class Crew(
     val jobs: List<String>,
     val person: Person,
-)
+) {
+    val job: String = jobs.joinToString("/")
+}

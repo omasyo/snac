@@ -7,15 +7,11 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
@@ -41,10 +37,12 @@ import androidx.compose.ui.zIndex
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.PeopleList
+import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.heroScrollable
 import com.omasyo.snac.core.ui.models.UiState
+import com.omasyo.snac.core.ui.models.map
 import com.omasyo.snac.core.ui.modifiers.TintIndication
 import com.omasyo.snac.core.ui.modifiers.film
 import com.omasyo.snac.core.ui.modifiers.silhouette
@@ -77,7 +75,7 @@ internal data class HeroContent(
 internal fun PeopleScreen(
     hero: HeroContent,
     onBackClick: () -> Unit,
-    onPersonClick: () -> Unit,
+    onPersonClick: (Person) -> Unit,
     peopleList: UiState<PeopleList>,
     modifier: Modifier,
 ) {
@@ -96,10 +94,15 @@ internal fun PeopleScreen(
             Column(Modifier.heroScrollable(contentScrollState)) {
                 Hero(hero)
             }
-        }
+        },
+        modifier = modifier,
     ) { contentPadding ->
         val bottomPadding = contentPadding.calculateBottomPadding()
-        Column(Modifier.fillMaxSize().padding(top = contentPadding.calculateTopPadding())) {
+        Column(
+            Modifier
+                .fillMaxSize()
+                .padding(top = contentPadding.calculateTopPadding())
+        ) {
             CastCrewTab(
                 selectedTab = selectedTab,
                 onSelectedTabChange = { selectedTab = it },
@@ -116,44 +119,27 @@ internal fun PeopleScreen(
             )
             when (selectedTab) {
                 Tab.Cast -> {
-                    LazyVerticalGrid(
-                        state = castGridState,
-                        columns = GridCells.Adaptive(minSize = 160.dp),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    CastTab(
+                        onPersonClick = onPersonClick,
+                        cast = peopleList.map { it.cast },
+                        gridState = castGridState,
                         contentPadding = contentPadding,
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth(),
-                    ) {
-                        items(20) {
-                            Box(
-                                Modifier
-                                    .aspectRatio(1f)
-                                    .background(Color.Red)
-                            )
-                        }
-                    }
+                    )
                 }
 
                 Tab.Crew -> {
-                    LazyColumn(
-                        state = crewListState,
+                    CrewTab(
+                        onPersonClick = onPersonClick,
+                        crewGroup = peopleList.map { it.crew },
+                        listState = crewListState,
                         contentPadding = contentPadding,
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxWidth(),
-                    ) {
-                        items(20) {
-                            Box(
-                                Modifier
-                                    .fillMaxWidth()
-                                    .height(80.dp)
-                                    .background(Color.Red)
-                            )
-                        }
-                    }
+                    )
                 }
             }
         }
@@ -225,8 +211,7 @@ private fun Hero(
                         hyphens = Hyphens.Auto,
                     ),
                     color = SnacColors.onFilm,
-                    modifier = Modifier
-                        .silhouette(SnacColors.signalShadow)
+                    modifier = Modifier.silhouette(SnacColors.signalShadow)
                 )
                 Text(
                     text = hero.extra,
@@ -265,8 +250,7 @@ private fun CastCrewTab(
                         interactionSource = null,
                         indication = TintIndication { indicationColor },
                         role = Role.Tab,
-                        onClick = { onSelectedTabChange(tab) }
-                    )
+                        onClick = { onSelectedTabChange(tab) })
                     .padding(horizontal = 12.dp, vertical = 8.dp)
             )
         }
@@ -292,7 +276,7 @@ private fun Preview() {
             peopleList = UiState.Success(
                 PeopleList(
                     cast = Cast.PreviewSample,
-                    crew = emptyMap(),
+                    crew = PreviewCrewGroup,
                 )
             ),
             modifier = Modifier.fillMaxSize(),
