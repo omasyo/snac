@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -34,8 +35,8 @@ import androidx.compose.ui.unit.lerp
 import com.omasyo.snac.core.data.models.Genre
 import com.omasyo.snac.core.ui.components.BackButton
 import com.omasyo.snac.core.ui.components.ClapperInfo
-import com.omasyo.snac.core.ui.components.HeroLayout
 import com.omasyo.snac.core.ui.components.ErrorBox
+import com.omasyo.snac.core.ui.components.HeroLayout
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.InfoClapper
 import com.omasyo.snac.core.ui.components.InfoClapperPlaceholder
@@ -67,7 +68,7 @@ internal fun MediaDetailsLayout(
     title: String,
     hero: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
+    content: @Composable (PaddingValues) -> Unit,
 ) {
     val headerState = rememberHeroLayoutState()
 
@@ -81,9 +82,8 @@ internal fun MediaDetailsLayout(
             modifier = Modifier
                 .fillMaxSize()
                 .background(SnacColors.page),
-        ) {
-            content()
-        }
+            content = content,
+        )
 
         BackButton(
             onClick = onBackClick,
@@ -342,8 +342,9 @@ private fun Preview() {
                     )
                 }
             },
-        ) {
+        ) { contentPadding ->
             LazyColumn(
+                contentPadding = contentPadding,
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 items(20) {

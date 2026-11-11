@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -35,13 +34,12 @@ import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.data.models.Review
 import com.omasyo.snac.core.ui.components.BackButton
-import com.omasyo.snac.core.ui.components.HeroLayout
 import com.omasyo.snac.core.ui.components.ErrorBox
+import com.omasyo.snac.core.ui.components.HeroLayout
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.SignInPrompt
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.TopBar
-import com.omasyo.snac.core.ui.components.bottomBarPadding
 import com.omasyo.snac.core.ui.components.rememberHeroLayoutState
 import com.omasyo.snac.core.ui.format.formatDayMonth
 import com.omasyo.snac.core.ui.format.formatRuntime
@@ -138,14 +136,13 @@ fun EpisodeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(SnacColors.page),
-        ) {
+        ) { contentPadding ->
             Column(
                 verticalArrangement = Arrangement.spacedBy(24.dp),
                 modifier = Modifier
                     .verticalScroll(rememberScrollState())
-                    .padding(top = 16.dp)
-                    .bottomBarPadding()
-                    .navigationBarsPadding(),
+                    .padding(contentPadding)
+                    .padding(top = 16.dp),
             ) {
                 MediaTagline(
                     state = showTitle,

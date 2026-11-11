@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -22,7 +21,6 @@ import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.data.models.Review
 import com.omasyo.snac.core.data.models.Season
 import com.omasyo.snac.core.ui.components.SignInPrompt
-import com.omasyo.snac.core.ui.components.bottomBarPadding
 import com.omasyo.snac.core.ui.format.formatDayMonth
 import com.omasyo.snac.core.ui.format.formatRuntime
 import com.omasyo.snac.core.ui.models.UiState
@@ -108,14 +106,13 @@ fun SeasonScreen(
                 },
             )
         }
-    ) {
+    ) { contentPadding ->
         Column(
             verticalArrangement = Arrangement.spacedBy(24.dp),
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .padding(top = 16.dp)
-                .bottomBarPadding()
-                .navigationBarsPadding(),
+                .padding(contentPadding)
+                .padding(top = 16.dp),
         ) {
             MediaTagline(
                 state = showTitle,

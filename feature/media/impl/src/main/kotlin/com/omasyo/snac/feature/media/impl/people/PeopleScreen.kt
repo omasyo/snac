@@ -7,17 +7,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
@@ -44,7 +41,6 @@ import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.PeopleList
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
-import com.omasyo.snac.core.ui.components.bottomBarPadding
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.modifiers.TintIndication
 import com.omasyo.snac.core.ui.modifiers.film
@@ -92,8 +88,9 @@ internal fun PeopleScreen(
                 Hero(hero)
             }
         }
-    ) {
-        Column {
+    ) { contentPadding ->
+        val bottomPadding = contentPadding.calculateBottomPadding()
+        Column(Modifier.padding(top = contentPadding.calculateTopPadding())) {
             CastCrewTab(
                 selectedTab = selectedTab,
                 onSelectedTabChange = { selectedTab = it },
@@ -102,13 +99,19 @@ internal fun PeopleScreen(
                     .padding(horizontal = 16.dp)
                     .padding(top = 16.dp)
             )
-            when (selectedTab) {
+            val contentPadding = PaddingValues(
+                start = 16.dp,
+                top = 16.dp,
+                end = 16.dp,
+                bottom = 16.dp + bottomPadding,
+            )
+                when (selectedTab) {
                 Tab.Cast -> {
                     LazyVerticalGrid(
                         columns = GridCells.Adaptive(minSize = 160.dp),
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp),
-                        contentPadding = PaddingValues(16.dp),
+                        contentPadding = contentPadding,
                         modifier = Modifier
                             .fillMaxWidth(),
                     ) {
@@ -119,19 +122,14 @@ internal fun PeopleScreen(
                                     .background(Color.Red)
                             )
                         }
-
-                        item("bottom-padding", { GridItemSpan(maxLineSpan) }) {
-                            Spacer(
-                                Modifier
-                                    .bottomBarPadding()
-                                    .navigationBarsPadding()
-                            )
-                        }
                     }
                 }
 
                 Tab.Crew -> {
-                    LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    LazyColumn(
+                        contentPadding = contentPadding,
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                    ) {
                         items(20) {
                             Box(
                                 Modifier

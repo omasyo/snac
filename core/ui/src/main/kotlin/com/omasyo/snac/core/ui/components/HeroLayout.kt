@@ -7,10 +7,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -26,7 +30,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.Layout
+import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
@@ -37,44 +41,53 @@ import kotlin.math.roundToInt
 fun rememberHeroLayoutState(): CollapsibleHeaderState =
     rememberSaveable(saver = CollapsibleHeaderState.Saver) { CollapsibleHeaderState() }
 
-
 @Composable
 fun HeroLayout(
     modifier: Modifier = Modifier,
     state: CollapsibleHeaderState = rememberHeroLayoutState(),
     hero: @Composable () -> Unit,
     topBar: @Composable () -> Unit,
-    content: @Composable () -> Unit,
+    content: @Composable (PaddingValues) -> Unit,
 ) {
-    Layout(
-        contents = listOf(hero, topBar, content),
+    SubcomposeLayout(
         modifier = modifier
             .clipToBounds()
             .nestedScroll(state.nestedScrollConnection),
-    ) { (heroMeasurables, topBarMeasurables, bodyMeasurables), constraints ->
+    ) { constraints ->
         val looseConstraints = constraints.copy(minHeight = 0)
-        val heroPlaceables = heroMeasurables.map { it.measure(looseConstraints) }
-        val topBarPlaceables = topBarMeasurables.map { it.measure(looseConstraints) }
-        val bodyPlaceables = bodyMeasurables.map { it.measure(constraints) }
 
+        val heroPlaceables = subcompose("hero", hero).map { it.measure(looseConstraints) }
         val heroHeight = heroPlaceables.maxOfOrNull { it.height } ?: 0
+
+        val topBarPlaceables = subcompose("topBar", topBar).map { it.measure(looseConstraints) }
         val topBarHeight = topBarPlaceables.maxOfOrNull { it.height } ?: 0
+
+        state.onMeasured(heroHeight = heroHeight.toFloat(), topBarHeight = topBarHeight.toFloat())
+
+        val topPadding = topBarHeight.toDp()
+        val bodyPlaceables = subcompose("body") {
+            val bottomBarPadding = LocalBottomBarPadding.current.calculateBottomPadding()
+            val navigationBarPadding =
+                WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+            content(
+                PaddingValues(
+                    top = topPadding,
+                    bottom = bottomBarPadding + navigationBarPadding,
+                )
+            )
+        }.map { it.measure(constraints) }
+
         val width = bodyPlaceables.maxOfOrNull { it.width } ?: constraints.minWidth
         val height = constraints.maxHeight
 
-        state.onHeroMeasured(heroHeight.toFloat())
-        state.onTopBarMeasured(topBarHeight.toFloat())
-
         layout(width, height) {
-            val collapseOffset = state.collapseOffset
-
-            val heroY = (-collapseOffset).roundToInt()
+            val heroY = (-state.collapseOffset).roundToInt()
             val heroBottom = heroY + heroHeight
 
-            val topBarY = (-heroBottom).coerceAtLeast(-topBarHeight)
+            val topBarY = (topBarHeight - heroBottom).coerceIn(-topBarHeight, 0)
 
+            bodyPlaceables.forEach { it.placeRelative(0, heroBottom - topBarHeight) }
             heroPlaceables.forEach { it.placeRelative(0, heroY) }
-            bodyPlaceables.forEach { it.placeRelative(0, heroBottom) }
             topBarPlaceables.forEach { it.placeRelative(0, topBarY) }
         }
     }
@@ -83,8 +96,7 @@ fun HeroLayout(
 @Stable
 class CollapsibleHeaderState(initialCollapseOffset: Float = 0f) {
 
-    internal var heroHeight = 0f
-        private set
+    private var heroHeight = 0f
 
     var topBarHeight = 0f
         private set
@@ -92,30 +104,28 @@ class CollapsibleHeaderState(initialCollapseOffset: Float = 0f) {
     internal var collapseOffset by mutableFloatStateOf(initialCollapseOffset)
         private set
 
+    private val maxCollapseOffset: Float
+        get() = (heroHeight - topBarHeight).coerceAtLeast(0f)
+
     private val isHeroPartlyHidden: Boolean
         get() = collapseOffset > 0f
-
 
     val topBarProgress: Float
         get() {
             if (topBarHeight <= 0f) return 0f
-            val shownPx = collapseOffset - (heroHeight - topBarHeight)
+            val shownPx = collapseOffset - (maxCollapseOffset - topBarHeight)
             return (shownPx / topBarHeight).coerceIn(0f, 1f)
         }
 
-    internal fun onHeroMeasured(height: Float) {
-        if (height != heroHeight) {
-            heroHeight = height
-            collapseOffset = collapseOffset.coerceIn(0f, heroHeight)
+    internal fun onMeasured(heroHeight: Float, topBarHeight: Float) {
+        if (heroHeight != this.heroHeight || topBarHeight != this.topBarHeight) {
+            this.heroHeight = heroHeight
+            this.topBarHeight = topBarHeight
         }
     }
 
-    internal fun onTopBarMeasured(height: Float) {
-        topBarHeight = height
-    }
-
     private fun scrollHero(delta: Float): Float {
-        val newOffset = (collapseOffset - delta).coerceIn(0f, heroHeight)
+        val newOffset = (collapseOffset - delta).coerceIn(0f, maxCollapseOffset)
         val consumed = collapseOffset - newOffset
         collapseOffset = newOffset
         return consumed
@@ -210,8 +220,11 @@ private fun Preview() {
                     )
                 }
             },
-        ) {
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+        ) { contentPadding ->
+            LazyColumn(
+                contentPadding = contentPadding,
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
                 items(20) {
                     Box(
                         Modifier
