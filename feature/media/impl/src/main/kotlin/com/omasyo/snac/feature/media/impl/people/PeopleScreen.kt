@@ -64,12 +64,20 @@ private val Tab.label
 
 
 internal data class HeroContent(
-    val slug: String,
     val title: String,
     val posterUrl: String?,
     val secondaryPosterUrl: String?,
     val extra: String,
-)
+) {
+    companion object {
+        val Empty = HeroContent(
+            title = "",
+            posterUrl = null,
+            secondaryPosterUrl = null,
+            extra = "",
+        )
+    }
+}
 
 @Composable
 internal fun PeopleScreen(
@@ -258,7 +266,6 @@ private fun CastCrewTab(
 }
 
 private val PreviewHero = HeroContent(
-    slug = "slug",
     title = "Frankenstein",
     posterUrl = "",
     secondaryPosterUrl = "",

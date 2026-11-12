@@ -7,22 +7,24 @@ import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.common.map
 import com.omasyo.snac.core.data.mappers.toAnticipatedItem
 import com.omasyo.snac.core.data.mappers.toCast
+import com.omasyo.snac.core.data.mappers.toCollectedItem
 import com.omasyo.snac.core.data.mappers.toEpisodeDetails
+import com.omasyo.snac.core.data.mappers.toFavoritedItem
 import com.omasyo.snac.core.data.mappers.toNetworkCommentSort
+import com.omasyo.snac.core.data.mappers.toPeopleList
+import com.omasyo.snac.core.data.mappers.toPeriod
+import com.omasyo.snac.core.data.mappers.toPlayedItem
+import com.omasyo.snac.core.data.mappers.toPopularItem
 import com.omasyo.snac.core.data.mappers.toRatings
 import com.omasyo.snac.core.data.mappers.toReview
 import com.omasyo.snac.core.data.mappers.toSeason
 import com.omasyo.snac.core.data.mappers.toShow
-import com.omasyo.snac.core.data.mappers.toCollectedItem
-import com.omasyo.snac.core.data.mappers.toFavoritedItem
-import com.omasyo.snac.core.data.mappers.toPeriod
-import com.omasyo.snac.core.data.mappers.toPlayedItem
-import com.omasyo.snac.core.data.mappers.toPopularItem
 import com.omasyo.snac.core.data.mappers.toShowDetails
 import com.omasyo.snac.core.data.mappers.toTrendingItem
 import com.omasyo.snac.core.data.mappers.toWatchedItem
 import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.EpisodeDetails
+import com.omasyo.snac.core.data.models.PeopleList
 import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.data.models.Review
 import com.omasyo.snac.core.data.models.Season
@@ -35,11 +37,11 @@ import com.omasyo.snac.core.model.media.ChartItem
 import com.omasyo.snac.core.model.media.Show
 import com.omasyo.snac.core.model.media.TrendingItem
 import com.omasyo.snac.core.network.show.ShowNetworkSource
-import com.omasyo.snac.core.network.models.CommentSort as NetworkCommentSort
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
+import com.omasyo.snac.core.network.models.CommentSort as NetworkCommentSort
 
 
 @ContributesBinding(AppScope::class)
@@ -66,7 +68,8 @@ class ShowRepositoryImpl(
         showNetworkSource.getSeason(slug, season).map { it.toSeason() }
 
     override suspend fun getEpisodes(slug: String, season: Int): SnacResult<List<EpisodeDetails>> =
-        showNetworkSource.getEpisodes(slug, season).map { list -> list.map { it.toEpisodeDetails() } }
+        showNetworkSource.getEpisodes(slug, season)
+            .map { list -> list.map { it.toEpisodeDetails() } }
 
     override suspend fun getEpisode(
         slug: String,
@@ -82,7 +85,13 @@ class ShowRepositoryImpl(
         showNetworkSource.getSeasonPeople(slug, season).map { it.toCast() }
 
     override suspend fun getSeasonTopComments(slug: String, season: Int): SnacResult<List<Review>> =
-        showNetworkSource.getSeasonComments(slug, season, NetworkCommentSort.Likes, page = 1, limit = 2)
+        showNetworkSource.getSeasonComments(
+            slug,
+            season,
+            NetworkCommentSort.Likes,
+            page = 1,
+            limit = 2
+        )
             .map { list -> list.map { it.toReview() } }
 
     override suspend fun getEpisodeRatings(
@@ -114,6 +123,9 @@ class ShowRepositoryImpl(
     override suspend fun getCast(slug: String): SnacResult<List<Cast>> =
         showNetworkSource.getPeople(slug).map { it.toCast() }
 
+    override suspend fun getPeople(slug: String): SnacResult<PeopleList> =
+        showNetworkSource.getPeople(slug).map { it.toPeopleList() }
+
     override fun getRelated(slug: String): Flow<PagingData<Show>> =
         Pager(config = pagingConfig) {
             CustomPagingSource(
@@ -128,7 +140,12 @@ class ShowRepositoryImpl(
             CustomPagingSource(
                 pageSize = PAGE_SIZE,
                 provider = { page ->
-                    showNetworkSource.getComments(slug, sort.toNetworkCommentSort(), page, PAGE_SIZE)
+                    showNetworkSource.getComments(
+                        slug,
+                        sort.toNetworkCommentSort(),
+                        page,
+                        PAGE_SIZE
+                    )
                 },
                 mapper = { it.toReview() },
             )
@@ -138,7 +155,10 @@ class ShowRepositoryImpl(
         showNetworkSource.getComments(slug, NetworkCommentSort.Likes, page = 1, limit = 2)
             .map { list -> list.map { it.toReview() } }
 
-    override fun getMostCollected(period: TimePeriod, startPosition: Int): Flow<PagingData<ChartItem>> =
+    override fun getMostCollected(
+        period: TimePeriod,
+        startPosition: Int
+    ): Flow<PagingData<ChartItem>> =
         Pager(initialKey = startPosition, config = pagingConfig) {
             ChartPagingSource(
                 pageSize = PAGE_SIZE,
@@ -153,7 +173,10 @@ class ShowRepositoryImpl(
             )
         }.flow
 
-    override fun getMostFavorited(period: TimePeriod, startPosition: Int): Flow<PagingData<ChartItem>> =
+    override fun getMostFavorited(
+        period: TimePeriod,
+        startPosition: Int
+    ): Flow<PagingData<ChartItem>> =
         Pager(initialKey = startPosition, config = pagingConfig) {
             ChartPagingSource(
                 pageSize = PAGE_SIZE,
@@ -168,7 +191,10 @@ class ShowRepositoryImpl(
             )
         }.flow
 
-    override fun getMostPlayed(period: TimePeriod, startPosition: Int): Flow<PagingData<ChartItem>> =
+    override fun getMostPlayed(
+        period: TimePeriod,
+        startPosition: Int
+    ): Flow<PagingData<ChartItem>> =
         Pager(initialKey = startPosition, config = pagingConfig) {
             ChartPagingSource(
                 pageSize = PAGE_SIZE,
@@ -183,7 +209,10 @@ class ShowRepositoryImpl(
             )
         }.flow
 
-    override fun getMostWatched(period: TimePeriod, startPosition: Int): Flow<PagingData<ChartItem>> =
+    override fun getMostWatched(
+        period: TimePeriod,
+        startPosition: Int
+    ): Flow<PagingData<ChartItem>> =
         Pager(initialKey = startPosition, config = pagingConfig) {
             ChartPagingSource(
                 pageSize = PAGE_SIZE,

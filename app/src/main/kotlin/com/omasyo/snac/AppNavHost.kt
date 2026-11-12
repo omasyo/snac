@@ -117,6 +117,7 @@ fun AppNavHost(
                                 onMediaClick = onMediaClick,
                                 onSeasonClick = { navigator.navigate(it) },
                                 onEpisodeClick = { navigator.navigate(it) },
+                                onPeopleClick = { navigator.navigate(it) },
                                 onPersonClick = { navigator.navigate(PersonNavKey(it.slug)) },
                             )
                             personEntry(

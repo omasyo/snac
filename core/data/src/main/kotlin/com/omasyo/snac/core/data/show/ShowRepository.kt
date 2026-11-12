@@ -4,6 +4,7 @@ import androidx.paging.PagingData
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.EpisodeDetails
+import com.omasyo.snac.core.data.models.PeopleList
 import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.data.models.Review
 import com.omasyo.snac.core.data.models.Season
@@ -47,6 +48,8 @@ interface ShowRepository {
     suspend fun getRatings(slug: String): SnacResult<Ratings>
 
     suspend fun getCast(slug: String): SnacResult<List<Cast>>
+
+    suspend fun getPeople(slug: String): SnacResult<PeopleList>
 
     fun getRelated(slug: String): Flow<PagingData<Show>>
 
