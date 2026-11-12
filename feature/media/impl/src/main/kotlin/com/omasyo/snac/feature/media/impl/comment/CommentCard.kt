@@ -3,6 +3,7 @@ package com.omasyo.snac.feature.media.impl.comment
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,9 +34,9 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -49,12 +50,12 @@ import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.format.formatCount
 import com.omasyo.snac.core.ui.format.formatRelative
 import com.omasyo.snac.core.ui.modifiers.Side
-import com.omasyo.snac.core.ui.navigation.navSharedBounds
-import com.omasyo.snac.core.ui.navigation.navSharedElement
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.modifiers.TintIndication
 import com.omasyo.snac.core.ui.modifiers.film
 import com.omasyo.snac.core.ui.modifiers.silhouette
+import com.omasyo.snac.core.ui.navigation.navSharedBounds
+import com.omasyo.snac.core.ui.navigation.navSharedElement
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
@@ -154,13 +155,16 @@ private fun CommentHeader(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var blurred by rememberSaveable(comment.isSpoiler) { mutableStateOf(comment.isSpoiler) } //TODO store this at a much higher level, might even get to the DB if we later add one
     val dashColor = SnacColors.rule
+
     Column(
         modifier = modifier
             .zIndex(1f)
-            .clickable(
+            .combinedClickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = SilhouettePressIndication(offset = DpOffset(4.dp, 4.dp)),
+                onLongClick = { blurred = true },
                 onClick = onClick,
             )
             .border(2.dp, SnacColors.outline)
@@ -188,11 +192,17 @@ private fun CommentHeader(
         }
         SpoilerText(
             text = comment.comment,
-            isSpoiler = comment.isSpoiler,
+            blurred = blurred,
             modifier = Modifier
                 .padding(bottom = 4.dp)
                 .drawBehind { drawDashedBottomRule(dashColor) }
-                .padding(bottom = 8.dp),
+                .padding(bottom = 8.dp)
+                .then(
+                    if (blurred) Modifier.clickable(
+                        indication = null,
+                        interactionSource = null,
+                        enabled = comment.isSpoiler,
+                    ) { blurred = false } else Modifier),
         )
         CommentStats(comment)
     }
@@ -203,6 +213,8 @@ private fun ReplyCard(
     reply: Reply,
     modifier: Modifier = Modifier,
 ) {
+    var blurred by rememberSaveable(reply.isSpoiler) { mutableStateOf(reply.isSpoiler) }
+
     val dashColor = SnacColors.rule
     Column(
         modifier = modifier
@@ -239,7 +251,16 @@ private fun ReplyCard(
             Spacer(Modifier.weight(1f))
             ReviewBadges(isReview = reply.isReview, rating = reply.rating)
         }
-        SpoilerText(text = reply.comment, isSpoiler = reply.isSpoiler)
+        SpoilerText(
+            text = reply.comment,
+            blurred = blurred,
+            modifier = Modifier
+                .clickable(
+                    indication = null,
+                    interactionSource = null,
+                    enabled = reply.isSpoiler,
+                ) { blurred = !blurred },
+        )
         CommentStat(
             icon = UiR.drawable.heart_bold,
             count = reply.likesCount,
@@ -323,24 +344,17 @@ private fun ReviewBadges(isReview: Boolean, rating: Int?) {
 @Composable
 private fun SpoilerText(
     text: String,
-    isSpoiler: Boolean,
+    blurred: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    var blurred by rememberSaveable(text, isSpoiler) { mutableStateOf(isSpoiler) }
     Box(modifier) {
         Text(
             text = text,
             style = SnacTypography.body,
-            modifier = Modifier
-                .clickable(
-                    indication = null,
-                    interactionSource = null,
-                    enabled = isSpoiler,
-                ) { blurred = !blurred }
-                .then(
-                    if (blurred) Modifier.blur(8.dp, BlurredEdgeTreatment.Unbounded)
-                    else Modifier
-                )
+            modifier = Modifier.then(
+                if (blurred) Modifier.blur(8.dp, BlurredEdgeTreatment.Unbounded)
+                else Modifier
+            )
         )
         if (blurred) {
             Text(
@@ -380,7 +394,7 @@ private fun CommentCardPreview() {
                 .padding(16.dp),
         ) {
             CommentCard(
-                comment = Comment.PreviewSample.first().copy(isSpoiler = false),
+                comment = Comment.PreviewSample.first().copy(isSpoiler = true),
                 replies = Reply.PreviewSample,
                 onExpand = {},
             )
