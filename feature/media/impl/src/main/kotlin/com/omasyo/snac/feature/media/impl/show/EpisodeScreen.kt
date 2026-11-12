@@ -18,7 +18,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.tooling.preview.Preview
@@ -246,9 +250,21 @@ private fun MediaHero(
 
             is UiState.Success -> {
                 val hero = state.content
+                val brush = Brush.linearGradient(
+                    listOf(
+                        Color.Transparent,
+                        Color.Transparent,
+                        SnacColors.film.copy(0.5f),
+                    ), end = Offset(0f, Float.POSITIVE_INFINITY)
+                )
                 Image(
                     imageUrl = hero.secondaryPosterUrl ?: hero.posterUrl,
-                    modifier = Modifier.matchParentSize(),
+                    modifier = Modifier
+                        .matchParentSize()
+                        .drawWithContent {
+                            drawContent()
+                            drawRect(brush)
+                        },
                 )
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),

@@ -84,6 +84,9 @@ class ShowRepositoryImpl(
     override suspend fun getSeasonCast(slug: String, season: Int): SnacResult<List<Cast>> =
         showNetworkSource.getSeasonPeople(slug, season).map { it.toCast() }
 
+    override suspend fun getSeasonPeople(slug: String, season: Int): SnacResult<PeopleList> =
+        showNetworkSource.getSeasonPeople(slug, season).map { it.toPeopleList() }
+
     override suspend fun getSeasonTopComments(slug: String, season: Int): SnacResult<List<Review>> =
         showNetworkSource.getSeasonComments(
             slug,
@@ -107,6 +110,13 @@ class ShowRepositoryImpl(
         episode: Int,
     ): SnacResult<List<Cast>> =
         showNetworkSource.getEpisodePeople(slug, season, episode).map { it.toCast() }
+
+    override suspend fun getEpisodePeople(
+        slug: String,
+        season: Int,
+        episode: Int,
+    ): SnacResult<PeopleList> =
+        showNetworkSource.getEpisodePeople(slug, season, episode).map { it.toPeopleList() }
 
     override suspend fun getEpisodeTopComments(
         slug: String,

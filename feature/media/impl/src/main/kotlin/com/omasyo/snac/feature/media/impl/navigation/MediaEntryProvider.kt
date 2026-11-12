@@ -5,14 +5,18 @@ import androidx.navigation3.runtime.NavKey
 import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.feature.media.api.navigation.EpisodeNavKey
+import com.omasyo.snac.feature.media.api.navigation.EpisodePeopleNavKey
 import com.omasyo.snac.feature.media.api.navigation.MovieNavKey
 import com.omasyo.snac.feature.media.api.navigation.MoviePeopleNavKey
 import com.omasyo.snac.feature.media.api.navigation.PeopleNavKey
 import com.omasyo.snac.feature.media.api.navigation.SeasonNavKey
+import com.omasyo.snac.feature.media.api.navigation.SeasonPeopleNavKey
 import com.omasyo.snac.feature.media.api.navigation.ShowNavKey
 import com.omasyo.snac.feature.media.api.navigation.ShowPeopleNavKey
 import com.omasyo.snac.feature.media.impl.movie.MovieScreen
+import com.omasyo.snac.feature.media.impl.people.EpisodePeopleScreen
 import com.omasyo.snac.feature.media.impl.people.MoviePeopleScreen
+import com.omasyo.snac.feature.media.impl.people.SeasonPeopleScreen
 import com.omasyo.snac.feature.media.impl.people.ShowPeopleScreen
 import com.omasyo.snac.feature.media.impl.show.EpisodeScreen
 import com.omasyo.snac.feature.media.impl.show.SeasonScreen
@@ -21,10 +25,10 @@ import com.omasyo.snac.feature.media.impl.show.ShowScreen
 fun EntryProviderScope<NavKey>.mediaEntry(
     onBackClick: () -> Unit,
     onMediaClick: (Media) -> Unit,
+    onPersonClick: (Person) -> Unit,
     onSeasonClick: (SeasonNavKey) -> Unit,
     onEpisodeClick: (EpisodeNavKey) -> Unit,
     onPeopleClick: (PeopleNavKey) -> Unit,
-    onPersonClick: (Person) -> Unit,
 ) {
     entry<MovieNavKey> { key ->
         MovieScreen(
@@ -60,7 +64,7 @@ fun EntryProviderScope<NavKey>.mediaEntry(
             onBackClick = onBackClick,
             onEpisodeClick = { onEpisodeClick(EpisodeNavKey(key.showSlug, it.season, it.number)) },
             onPersonClick = onPersonClick,
-            onSeeAllCastClick = {},
+            onSeeAllCastClick = { onPeopleClick(SeasonPeopleNavKey(key.showSlug, key.season)) },
             onReviewClick = {},
             onSeeAllReviewClick = {},
             onCommentClick = {},
@@ -73,7 +77,9 @@ fun EntryProviderScope<NavKey>.mediaEntry(
             episode = key.episode,
             onBackClick = onBackClick,
             onPersonClick = onPersonClick,
-            onSeeAllCastClick = {},
+            onSeeAllCastClick = {
+                onPeopleClick(EpisodePeopleNavKey(key.showSlug, key.season, key.episode))
+            },
             onReviewClick = {},
             onSeeAllReviewClick = {},
             onCommentClick = {},
@@ -89,6 +95,23 @@ fun EntryProviderScope<NavKey>.mediaEntry(
     entry<ShowPeopleNavKey> { key ->
         ShowPeopleScreen(
             slug = key.slug,
+            onBackClick = onBackClick,
+            onPersonClick = onPersonClick,
+        )
+    }
+    entry<SeasonPeopleNavKey> { key ->
+        SeasonPeopleScreen(
+            showSlug = key.showSlug,
+            season = key.season,
+            onBackClick = onBackClick,
+            onPersonClick = onPersonClick,
+        )
+    }
+    entry<EpisodePeopleNavKey> { key ->
+        EpisodePeopleScreen(
+            showSlug = key.showSlug,
+            season = key.season,
+            episode = key.episode,
             onBackClick = onBackClick,
             onPersonClick = onPersonClick,
         )
