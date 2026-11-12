@@ -119,6 +119,8 @@ fun AppNavHost(
                                 onEpisodeClick = { navigator.navigate(it) },
                                 onPeopleClick = { navigator.navigate(it) },
                                 onPersonClick = { navigator.navigate(PersonNavKey(it.slug)) },
+                                onCommentsClick = { navigator.navigate(it) },
+                                onCommentThreadClick = { navigator.navigate(it) },
                             )
                             personEntry(
                                 onBackClick = { navigator.goBack() },
