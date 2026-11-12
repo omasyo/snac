@@ -189,10 +189,10 @@ private fun MovieDetails.info(): List<Pair<String, String>> = listOfNotNull(
     year?.let { stringResource(R.string.info_year) to it.toString() },
     runtime?.let { stringResource(R.string.info_runtime) to it.formatRuntime() },
     certification?.let { stringResource(R.string.info_cert) to it },
-    status?.let { stringResource(R.string.info_status) to it.label() },
     releaseDate?.let { stringResource(R.string.info_released) to it.formatDayMonth() },
     country?.let { stringResource(R.string.info_country) to it.uppercase() },
     language?.let { stringResource(R.string.info_language) to it.uppercase() },
+    status?.let { stringResource(R.string.info_status) to it.label() },
 //    "Trakt" to rating.formatRating(),
 )
 
