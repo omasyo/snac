@@ -25,29 +25,5 @@ data class CommentResponse(
     @SerialName("user_rating")
     val userRating: Int?,
     @SerialName("user")
-    val user: User,
-) {
-    @Serializable
-    data class User( // TODO user might be it's own model
-        @SerialName("ids")
-        val ids: Ids,
-        @SerialName("username")
-        val username: String,
-        @SerialName("name")
-        val name: String?,
-        @SerialName("images")
-        val images: Images?,
-    )
-
-    @Serializable
-    data class Images(
-        @SerialName("avatar")
-        val avatar: Avatar?,
-    )
-
-    @Serializable
-    data class Avatar(
-        @SerialName("full")
-        val full: String?,
-    )
-}
+    val user: UserResponse,
+)

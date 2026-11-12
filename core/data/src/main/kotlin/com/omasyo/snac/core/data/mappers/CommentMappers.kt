@@ -1,9 +1,12 @@
 package com.omasyo.snac.core.data.mappers
 
 import com.omasyo.snac.core.data.models.Comment
+import com.omasyo.snac.core.data.models.Reply
 import com.omasyo.snac.core.data.models.User
 import com.omasyo.snac.core.model.extra.CommentSort
+import com.omasyo.snac.core.network.comment.models.ReplyResponse
 import com.omasyo.snac.core.network.models.CommentResponse
+import com.omasyo.snac.core.network.models.UserResponse
 import java.time.LocalDateTime
 import java.time.ZoneId
 import com.omasyo.snac.core.network.models.CommentSort as NetworkCommentSort
@@ -30,8 +33,20 @@ fun CommentResponse.toReview() = Comment(
     createdAt = LocalDateTime.ofInstant(createdAt, ZoneId.systemDefault()),
 )
 
-private fun CommentResponse.User.toUser() = User(
+private fun UserResponse.toUser() = User(
     slug = ids.slug,
     name = name?.takeIf { it.isNotBlank() } ?: username,
     imageUrl = images?.avatar?.full,
+)
+
+fun ReplyResponse.toReply() = Reply(
+    id = id,
+    comment = comment,
+    isSpoiler = spoiler,
+    isReview = review,
+    repliesCount = replies,
+    likesCount = likes,
+    rating = userRating,
+    user = user.toUser(),
+    createdAt = LocalDateTime.ofInstant(createdAt, ZoneId.systemDefault()),
 )
