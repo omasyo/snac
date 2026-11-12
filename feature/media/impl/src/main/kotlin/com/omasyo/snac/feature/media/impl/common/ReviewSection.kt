@@ -32,8 +32,8 @@ import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
 import com.omasyo.snac.feature.media.impl.components.SectionHeader
-import com.omasyo.snac.core.data.models.Review
-import com.omasyo.snac.feature.media.impl.components.ReviewPreviewCard
+import com.omasyo.snac.core.data.models.Comment
+import com.omasyo.snac.feature.media.impl.components.CommentPreviewCard
 import com.omasyo.snac.feature.media.impl.components.ReviewPreviewPlaceholder
 import kotlinx.coroutines.delay
 import kotlin.random.Random
@@ -42,10 +42,10 @@ import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun ReviewSection(
-    onReviewClick: (Review) -> Unit,
+    onReviewClick: (Comment) -> Unit,
     onSeeAllClick: () -> Unit,
     onCommentClick: () -> Unit,
-    state: UiState<List<Review>>,
+    state: UiState<List<Comment>>,
     modifier: Modifier = Modifier,
 ) {
 
@@ -83,8 +83,8 @@ fun ReviewSection(
                         val rotation =
                             remember(review) { Random(review.id).nextInt(-1, 1).toFloat() }
 
-                        ReviewPreviewCard(
-                            review = review,
+                        CommentPreviewCard(
+                            comment = review,
                             onClick = { onReviewClick(review) },
                             modifier = Modifier.rotate(rotation),
                         )
@@ -149,7 +149,7 @@ private fun Preview() {
                 onReviewClick = {},
                 onSeeAllClick = { },
                 onCommentClick = {},
-                state = UiState.Success(Review.PreviewSample.take(2)),
+                state = UiState.Success(Comment.PreviewSample.take(2)),
                 modifier = Modifier.padding(vertical = 16.dp)
             )
         }
@@ -159,7 +159,7 @@ private fun Preview() {
 @Preview
 @Composable
 private fun LoadingToErrorPreview() {
-    var state by remember { mutableStateOf<UiState<List<Review>>>(UiState.Loading) }
+    var state by remember { mutableStateOf<UiState<List<Comment>>>(UiState.Loading) }
 
     LaunchedEffect(Unit) {
         delay(3.seconds)

@@ -25,7 +25,7 @@ import com.omasyo.snac.core.data.models.MovieDetails
 import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.data.models.ReleaseStatus
-import com.omasyo.snac.core.data.models.Review
+import com.omasyo.snac.core.data.models.Comment
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.ui.components.SignInPrompt
@@ -60,7 +60,7 @@ fun MovieScreen(
     onPersonClick: (Person) -> Unit,
     onSeeAllCastClick: () -> Unit,
     onMediaClick: (Media) -> Unit,
-    onReviewClick: (Review) -> Unit,
+    onReviewClick: (Comment) -> Unit,
     onSeeAllReviewClick: () -> Unit,
     onCommentClick: () -> Unit,
     onSeeAllRelatedClick: () -> Unit,
@@ -81,7 +81,7 @@ fun MovieScreen(
         movie = viewModel.movie.collectAsStateWithLifecycle().value,
         ratings = viewModel.ratings.collectAsStateWithLifecycle().value,
         cast = viewModel.cast.collectAsStateWithLifecycle().value,
-        review = viewModel.review.collectAsStateWithLifecycle().value,
+        comment = viewModel.comment.collectAsStateWithLifecycle().value,
         relatedMovies = viewModel.relatedMovies.collectAsLazyPagingItems(),
         modifier = modifier,
     )
@@ -93,14 +93,14 @@ fun MovieScreen(
     onPersonClick: (Person) -> Unit,
     onSeeAllCastClick: () -> Unit,
     onMediaClick: (Media) -> Unit,
-    onReviewClick: (Review) -> Unit,
+    onReviewClick: (Comment) -> Unit,
     onSeeAllReviewClick: () -> Unit,
     onCommentClick: () -> Unit,
     onSeeAllRelatedClick: () -> Unit,
     movie: UiState<MovieDetails>,
     ratings: UiState<Ratings>,
     cast: UiState<List<Cast>>,
-    review: UiState<List<Review>>,
+    comment: UiState<List<Comment>>,
     relatedMovies: LazyPagingItems<Movie>,
     modifier: Modifier = Modifier,
 ) {
@@ -172,7 +172,7 @@ fun MovieScreen(
                 onReviewClick = onReviewClick,
                 onSeeAllClick = onSeeAllReviewClick,
                 onCommentClick = onCommentClick,
-                state = review,
+                state = comment,
             )
             RelatedSection(
                 onMediaClick = onMediaClick,
@@ -222,7 +222,7 @@ private fun Preview() {
             movie = UiState.Success(MovieDetails.PreviewSample),
             ratings = UiState.Success(Ratings.PreviewSample),
             cast = UiState.Success(Cast.PreviewSample),
-            review = UiState.Success(Review.PreviewSample.take(2)),
+            comment = UiState.Success(Comment.PreviewSample.take(2)),
             relatedMovies = remember { flowOf(PagingData.from(Movie.PreviewSample)) }.collectAsLazyPagingItems(),
             modifier = Modifier.fillMaxSize(),
         )
@@ -245,7 +245,7 @@ private fun LoadingPreview() {
             movie = UiState.Loading,
             ratings = UiState.Loading,
             cast = UiState.Loading,
-            review = UiState.Loading,
+            comment = UiState.Loading,
             relatedMovies = remember {
                 flowOf(
                     PagingData.empty<Movie>(
@@ -279,7 +279,7 @@ private fun ErrorPreview() {
             movie = error,
             ratings = error,
             cast = error,
-            review = error,
+            comment = error,
             relatedMovies = remember {
                 val loadError = LoadState.Error(Exception(SnacResult.Error.Unexpected.message))
                 flowOf(PagingData.empty<Movie>(LoadStates(loadError, loadError, loadError)))

@@ -6,7 +6,7 @@ import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.MovieDetails
 import com.omasyo.snac.core.data.models.PeopleList
 import com.omasyo.snac.core.data.models.Ratings
-import com.omasyo.snac.core.data.models.Review
+import com.omasyo.snac.core.data.models.Comment
 import com.omasyo.snac.core.model.extra.CommentSort
 import com.omasyo.snac.core.model.extra.TimePeriod
 import com.omasyo.snac.core.model.media.BoxOfficeItem
@@ -32,9 +32,9 @@ interface MovieRepository {
 
     fun getRelated(slug: String): Flow<PagingData<Movie>>
 
-    fun getComments(slug: String, sort: CommentSort): Flow<PagingData<Review>>
+    fun getComments(slug: String, sort: CommentSort): Flow<PagingData<Comment>>
 
-    suspend fun getTopComments(slug: String): SnacResult<List<Review>>
+    suspend fun getTopComments(slug: String): SnacResult<List<Comment>>
 
     fun getMostCollected(period: TimePeriod, startPosition: Int): Flow<PagingData<ChartItem>>
 

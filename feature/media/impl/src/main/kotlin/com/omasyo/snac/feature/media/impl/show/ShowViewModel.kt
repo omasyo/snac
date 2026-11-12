@@ -12,7 +12,7 @@ import com.omasyo.snac.core.data.show.ShowRepository
 import com.omasyo.snac.core.model.media.Show
 import com.omasyo.snac.core.ui.models.RefreshWrapper
 import com.omasyo.snac.core.ui.models.UiState
-import com.omasyo.snac.core.data.models.Review
+import com.omasyo.snac.core.data.models.Comment
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
@@ -40,7 +40,7 @@ class ShowViewModel(
     val cast: StateFlow<UiState<List<Cast>>> =
         RefreshWrapper(viewModelScope) { showRepository.getCast(slug) }.response
 
-    val review: StateFlow<UiState<List<Review>>> =
+    val comment: StateFlow<UiState<List<Comment>>> =
         RefreshWrapper(viewModelScope) { showRepository.getTopComments(slug) }.response
 
     val relatedShows: Flow<PagingData<Show>> =

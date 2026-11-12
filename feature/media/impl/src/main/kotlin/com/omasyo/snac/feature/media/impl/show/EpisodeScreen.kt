@@ -36,7 +36,7 @@ import com.omasyo.snac.core.data.models.EpisodeDetails
 import com.omasyo.snac.core.data.models.EpisodeType
 import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.data.models.Ratings
-import com.omasyo.snac.core.data.models.Review
+import com.omasyo.snac.core.data.models.Comment
 import com.omasyo.snac.core.ui.components.BackButton
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.HeroLayout
@@ -79,7 +79,7 @@ fun EpisodeScreen(
     onBackClick: () -> Unit,
     onPersonClick: (Person) -> Unit,
     onSeeAllCastClick: () -> Unit,
-    onReviewClick: (Review) -> Unit,
+    onReviewClick: (Comment) -> Unit,
     onSeeAllReviewClick: () -> Unit,
     onCommentClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -98,7 +98,7 @@ fun EpisodeScreen(
         episode = viewModel.episode.collectAsStateWithLifecycle().value,
         ratings = viewModel.ratings.collectAsStateWithLifecycle().value,
         cast = viewModel.cast.collectAsStateWithLifecycle().value,
-        review = viewModel.review.collectAsStateWithLifecycle().value,
+        comment = viewModel.comment.collectAsStateWithLifecycle().value,
         modifier = modifier,
     )
 }
@@ -108,14 +108,14 @@ fun EpisodeScreen(
     onBackClick: () -> Unit,
     onPersonClick: (Person) -> Unit,
     onSeeAllCastClick: () -> Unit,
-    onReviewClick: (Review) -> Unit,
+    onReviewClick: (Comment) -> Unit,
     onSeeAllReviewClick: () -> Unit,
     onCommentClick: () -> Unit,
     showTitle: UiState<String>,
     episode: UiState<EpisodeDetails>,
     ratings: UiState<Ratings>,
     cast: UiState<List<Cast>>,
-    review: UiState<List<Review>>,
+    comment: UiState<List<Comment>>,
     modifier: Modifier = Modifier,
 ) {
 
@@ -189,7 +189,7 @@ fun EpisodeScreen(
                     onReviewClick = onReviewClick,
                     onSeeAllClick = onSeeAllReviewClick,
                     onCommentClick = onCommentClick,
-                    state = review,
+                    state = comment,
                     modifier = Modifier.padding(bottom = 16.dp),
                 )
             }
@@ -336,7 +336,7 @@ private fun Preview() {
             episode = UiState.Success(EpisodeDetails.PreviewSample.first()),
             ratings = UiState.Success(Ratings.PreviewSample),
             cast = UiState.Success(Cast.PreviewSample),
-            review = UiState.Success(Review.PreviewSample.take(2)),
+            comment = UiState.Success(Comment.PreviewSample.take(2)),
             modifier = Modifier.fillMaxSize(),
         )
     }
@@ -357,7 +357,7 @@ private fun LoadingPreview() {
             episode = UiState.Loading,
             ratings = UiState.Loading,
             cast = UiState.Loading,
-            review = UiState.Loading,
+            comment = UiState.Loading,
             modifier = Modifier.fillMaxSize(),
         )
     }
@@ -379,7 +379,7 @@ private fun ErrorPreview() {
             episode = error,
             ratings = error,
             cast = error,
-            review = error,
+            comment = error,
             modifier = Modifier.fillMaxSize(),
         )
     }

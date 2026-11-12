@@ -25,7 +25,7 @@ import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.MovieDetails
 import com.omasyo.snac.core.data.models.PeopleList
 import com.omasyo.snac.core.data.models.Ratings
-import com.omasyo.snac.core.data.models.Review
+import com.omasyo.snac.core.data.models.Comment
 import com.omasyo.snac.core.data.paging.ChartPagingSource
 import com.omasyo.snac.core.data.paging.CustomPagingSource
 import com.omasyo.snac.core.model.extra.CommentSort
@@ -92,7 +92,7 @@ class MovieRepositoryImpl(
             )
         }.flow
 
-    override fun getComments(slug: String, sort: CommentSort): Flow<PagingData<Review>> =
+    override fun getComments(slug: String, sort: CommentSort): Flow<PagingData<Comment>> =
         Pager(config = pagingConfig) {
             CustomPagingSource(
                 pageSize = PAGE_SIZE,
@@ -103,7 +103,7 @@ class MovieRepositoryImpl(
             )
         }.flow
 
-    override suspend fun getTopComments(slug: String): SnacResult<List<Review>> =
+    override suspend fun getTopComments(slug: String): SnacResult<List<Comment>> =
         movieNetworkSource.getComments(slug, NetworkCommentSort.Likes, page = 1, limit = 2)
             .map { list -> list.map { it.toReview() } }
 

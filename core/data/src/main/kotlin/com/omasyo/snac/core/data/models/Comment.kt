@@ -8,7 +8,7 @@ data class User( // TODO might be it's own model
     val imageUrl: String?,
 )
 
-data class Review(
+data class Comment(
     val id: Long,
     val comment: String,
     val isSpoiler: Boolean,
@@ -21,7 +21,7 @@ data class Review(
 ) {
     companion object {
         val PreviewSample = List(20) {
-            Review(
+            Comment(
                 id = it.toLong(),
                 comment = "Nice music but a weird and trashy movie. In theory, it is a horror movie, but come on, it is far from that. Don’t watch it!",
                 isSpoiler = it % 3 == 0,

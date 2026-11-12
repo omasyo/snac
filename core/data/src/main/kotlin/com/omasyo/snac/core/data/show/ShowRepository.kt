@@ -6,7 +6,7 @@ import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.EpisodeDetails
 import com.omasyo.snac.core.data.models.PeopleList
 import com.omasyo.snac.core.data.models.Ratings
-import com.omasyo.snac.core.data.models.Review
+import com.omasyo.snac.core.data.models.Comment
 import com.omasyo.snac.core.data.models.Season
 import com.omasyo.snac.core.data.models.ShowDetails
 import com.omasyo.snac.core.model.extra.CommentSort
@@ -35,7 +35,7 @@ interface ShowRepository {
 
     suspend fun getSeasonPeople(slug: String, season: Int): SnacResult<PeopleList>
 
-    suspend fun getSeasonTopComments(slug: String, season: Int): SnacResult<List<Review>>
+    suspend fun getSeasonTopComments(slug: String, season: Int): SnacResult<List<Comment>>
 
     suspend fun getEpisodeRatings(slug: String, season: Int, episode: Int): SnacResult<Ratings>
 
@@ -47,7 +47,7 @@ interface ShowRepository {
         slug: String,
         season: Int,
         episode: Int,
-    ): SnacResult<List<Review>>
+    ): SnacResult<List<Comment>>
 
     suspend fun getRatings(slug: String): SnacResult<Ratings>
 
@@ -57,9 +57,9 @@ interface ShowRepository {
 
     fun getRelated(slug: String): Flow<PagingData<Show>>
 
-    fun getComments(slug: String, sort: CommentSort): Flow<PagingData<Review>>
+    fun getComments(slug: String, sort: CommentSort): Flow<PagingData<Comment>>
 
-    suspend fun getTopComments(slug: String): SnacResult<List<Review>>
+    suspend fun getTopComments(slug: String): SnacResult<List<Comment>>
 
     fun getMostCollected(period: TimePeriod, startPosition: Int): Flow<PagingData<ChartItem>>
 

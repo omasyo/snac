@@ -6,7 +6,7 @@ import com.omasyo.snac.core.common.map
 import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.EpisodeDetails
 import com.omasyo.snac.core.data.models.Ratings
-import com.omasyo.snac.core.data.models.Review
+import com.omasyo.snac.core.data.models.Comment
 import com.omasyo.snac.core.data.show.ShowRepository
 import com.omasyo.snac.core.ui.models.RefreshWrapper
 import com.omasyo.snac.core.ui.models.UiState
@@ -46,7 +46,7 @@ class EpisodeViewModel(
             showRepository.getEpisodeCast(showSlug, seasonNumber, episodeNumber)
         }.response
 
-    val review: StateFlow<UiState<List<Review>>> =
+    val comment: StateFlow<UiState<List<Comment>>> =
         RefreshWrapper(viewModelScope) {
             showRepository.getEpisodeTopComments(showSlug, seasonNumber, episodeNumber)
         }.response

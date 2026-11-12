@@ -23,7 +23,7 @@ import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.data.models.Ratings
-import com.omasyo.snac.core.data.models.Review
+import com.omasyo.snac.core.data.models.Comment
 import com.omasyo.snac.core.data.models.Season
 import com.omasyo.snac.core.data.models.ShowDetails
 import com.omasyo.snac.core.data.models.ShowStatus
@@ -62,7 +62,7 @@ fun ShowScreen(
     onPersonClick: (Person) -> Unit,
     onSeeAllCastClick: () -> Unit,
     onMediaClick: (Media) -> Unit,
-    onReviewClick: (Review) -> Unit,
+    onReviewClick: (Comment) -> Unit,
     onSeeAllReviewClick: () -> Unit,
     onCommentClick: () -> Unit,
     onSeeAllRelatedClick: () -> Unit,
@@ -85,7 +85,7 @@ fun ShowScreen(
         ratings = viewModel.ratings.collectAsStateWithLifecycle().value,
         seasons = viewModel.seasons.collectAsStateWithLifecycle().value,
         cast = viewModel.cast.collectAsStateWithLifecycle().value,
-        review = viewModel.review.collectAsStateWithLifecycle().value,
+        comment = viewModel.comment.collectAsStateWithLifecycle().value,
         relatedShows = viewModel.relatedShows.collectAsLazyPagingItems(),
         modifier = modifier,
     )
@@ -98,7 +98,7 @@ fun ShowScreen(
     onPersonClick: (Person) -> Unit,
     onSeeAllCastClick: () -> Unit,
     onMediaClick: (Media) -> Unit,
-    onReviewClick: (Review) -> Unit,
+    onReviewClick: (Comment) -> Unit,
     onSeeAllReviewClick: () -> Unit,
     onCommentClick: () -> Unit,
     onSeeAllRelatedClick: () -> Unit,
@@ -106,7 +106,7 @@ fun ShowScreen(
     ratings: UiState<Ratings>,
     seasons: UiState<List<Season>>,
     cast: UiState<List<Cast>>,
-    review: UiState<List<Review>>,
+    comment: UiState<List<Comment>>,
     relatedShows: LazyPagingItems<Show>,
     modifier: Modifier = Modifier,
 ) {
@@ -182,7 +182,7 @@ fun ShowScreen(
                 onReviewClick = onReviewClick,
                 onSeeAllClick = onSeeAllReviewClick,
                 onCommentClick = onCommentClick,
-                state = review,
+                state = comment,
             )
             RelatedSection(
                 onMediaClick = onMediaClick,
@@ -237,7 +237,7 @@ private fun Preview() {
             ratings = UiState.Success(Ratings.PreviewSample),
             seasons = UiState.Success(Season.PreviewSample),
             cast = UiState.Success(Cast.PreviewSample),
-            review = UiState.Success(Review.PreviewSample.take(2)),
+            comment = UiState.Success(Comment.PreviewSample.take(2)),
             relatedShows = remember { flowOf(PagingData.from(Show.PreviewSample)) }.collectAsLazyPagingItems(),
             modifier = Modifier.fillMaxSize(),
         )
@@ -262,7 +262,7 @@ private fun LoadingPreview() {
             ratings = UiState.Loading,
             seasons = UiState.Loading,
             cast = UiState.Loading,
-            review = UiState.Loading,
+            comment = UiState.Loading,
             relatedShows = remember {
                 flowOf(
                     PagingData.empty<Show>(
@@ -298,7 +298,7 @@ private fun ErrorPreview() {
             ratings = error,
             seasons = error,
             cast = error,
-            review = error,
+            comment = error,
             relatedShows = remember {
                 val loadError = LoadState.Error(Exception(SnacResult.Error.Unexpected.message))
                 flowOf(PagingData.empty<Show>(LoadStates(loadError, loadError, loadError)))

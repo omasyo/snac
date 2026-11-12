@@ -26,7 +26,7 @@ import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.EpisodeDetails
 import com.omasyo.snac.core.data.models.PeopleList
 import com.omasyo.snac.core.data.models.Ratings
-import com.omasyo.snac.core.data.models.Review
+import com.omasyo.snac.core.data.models.Comment
 import com.omasyo.snac.core.data.models.Season
 import com.omasyo.snac.core.data.models.ShowDetails
 import com.omasyo.snac.core.data.paging.ChartPagingSource
@@ -87,7 +87,7 @@ class ShowRepositoryImpl(
     override suspend fun getSeasonPeople(slug: String, season: Int): SnacResult<PeopleList> =
         showNetworkSource.getSeasonPeople(slug, season).map { it.toPeopleList() }
 
-    override suspend fun getSeasonTopComments(slug: String, season: Int): SnacResult<List<Review>> =
+    override suspend fun getSeasonTopComments(slug: String, season: Int): SnacResult<List<Comment>> =
         showNetworkSource.getSeasonComments(
             slug,
             season,
@@ -122,7 +122,7 @@ class ShowRepositoryImpl(
         slug: String,
         season: Int,
         episode: Int,
-    ): SnacResult<List<Review>> =
+    ): SnacResult<List<Comment>> =
         showNetworkSource.getEpisodeComments(
             slug, season, episode, NetworkCommentSort.Likes, page = 1, limit = 2,
         ).map { list -> list.map { it.toReview() } }
@@ -145,7 +145,7 @@ class ShowRepositoryImpl(
             )
         }.flow
 
-    override fun getComments(slug: String, sort: CommentSort): Flow<PagingData<Review>> =
+    override fun getComments(slug: String, sort: CommentSort): Flow<PagingData<Comment>> =
         Pager(config = pagingConfig) {
             CustomPagingSource(
                 pageSize = PAGE_SIZE,
@@ -161,7 +161,7 @@ class ShowRepositoryImpl(
             )
         }.flow
 
-    override suspend fun getTopComments(slug: String): SnacResult<List<Review>> =
+    override suspend fun getTopComments(slug: String): SnacResult<List<Comment>> =
         showNetworkSource.getComments(slug, NetworkCommentSort.Likes, page = 1, limit = 2)
             .map { list -> list.map { it.toReview() } }
 

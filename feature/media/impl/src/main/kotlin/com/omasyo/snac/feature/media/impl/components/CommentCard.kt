@@ -48,15 +48,15 @@ import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
 import com.omasyo.snac.feature.media.impl.R
-import com.omasyo.snac.core.data.models.Review
+import com.omasyo.snac.core.data.models.Comment
 
 @Composable
-fun ReviewCard(
-    review: Review,
+fun CommentCard(
+    comment: Comment,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var blurred by rememberSaveable(review) { mutableStateOf(review.isSpoiler) }
+    var blurred by rememberSaveable(comment) { mutableStateOf(comment.isSpoiler) }
     Column(
         modifier = modifier
             .clickable(
@@ -74,7 +74,7 @@ fun ReviewCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Image(
-                imageUrl = review.user.imageUrl,
+                imageUrl = comment.user.imageUrl,
                 modifier = Modifier
                     .size(32.dp)
                     .border(2.dp, SnacColors.outline, CircleShape)
@@ -82,16 +82,16 @@ fun ReviewCard(
             )
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = review.user.name,
+                    text = comment.user.name,
                     style = SnacTypography.label,
                 )
                 Text(
-                    text = review.createdAt.formatRelative(),
+                    text = comment.createdAt.formatRelative(),
                     style = SnacTypography.caption,
                     color = SnacColors.muted
                 )
             }
-            if (review.isReview) {
+            if (comment.isReview) {
                 Text(
                     text = "REVIEW",
                     style = SnacTypography.overline,
@@ -101,7 +101,7 @@ fun ReviewCard(
                         .padding(horizontal = 8.dp, vertical = 2.dp)
                 )
             }
-            review.rating?.let {
+            comment.rating?.let {
                 Text(
                     text = it.toString(),
                     style = SnacTypography.subtitle,
@@ -111,13 +111,13 @@ fun ReviewCard(
         }
         Box {
             Text(
-                text = review.comment,
+                text = comment.comment,
                 style = SnacTypography.body,
                 modifier = Modifier
                     .clickable(
                         indication = null,
                         interactionSource = null,
-                        enabled = review.isSpoiler,
+                        enabled = comment.isSpoiler,
                     ) {
                         blurred = !blurred
 
@@ -141,38 +141,38 @@ fun ReviewCard(
                 )
             }
         }
-        ReviewStats(review)
+        CommentStats(comment)
     }
 }
 
 @Composable
-private fun ReviewStats(review: Review) {
+private fun CommentStats(comment: Comment) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        ReviewStat(
+        CommentStat(
             icon = UiR.drawable.heart_bold,
-            count = review.likesCount,
+            count = comment.likesCount,
             description = pluralStringResource(
                 R.plurals.likes,
-                review.likesCount,
-                review.likesCount.formatCount(),
+                comment.likesCount,
+                comment.likesCount.formatCount(),
             ),
         )
-        ReviewStat(
+        CommentStat(
             icon = UiR.drawable.chat_circle_bold,
-            count = review.repliesCount,
+            count = comment.repliesCount,
             description = pluralStringResource(
                 R.plurals.replies,
-                review.repliesCount,
-                review.repliesCount.formatCount(),
+                comment.repliesCount,
+                comment.repliesCount.formatCount(),
             ),
         )
     }
 }
 
 @Composable
-private fun ReviewStat(
+private fun CommentStat(
     @DrawableRes icon: Int,
     count: Int,
     description: String,
@@ -197,12 +197,12 @@ private fun ReviewStat(
 }
 
 @Composable
-fun ReviewPreviewCard(
-    review: Review,
+fun CommentPreviewCard(
+    comment: Comment,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var blurred by rememberSaveable(review) { mutableStateOf(review.isSpoiler) }
+    var blurred by rememberSaveable(comment) { mutableStateOf(comment.isSpoiler) }
     Column(
         modifier = modifier
             .clickable(
@@ -220,18 +220,18 @@ fun ReviewPreviewCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Image(
-                imageUrl = review.user.imageUrl,
+                imageUrl = comment.user.imageUrl,
                 modifier = Modifier
                     .size(32.dp)
                     .border(2.dp, SnacColors.outline, CircleShape)
                     .clip(CircleShape)
             )
             Text(
-                text = review.user.name,
+                text = comment.user.name,
                 style = SnacTypography.label,
                 modifier = Modifier.weight(1f),
             )
-            if (review.isReview) {
+            if (comment.isReview) {
                 Text(
                     text = "REVIEW",
                     style = SnacTypography.overline,
@@ -241,7 +241,7 @@ fun ReviewPreviewCard(
                         .padding(horizontal = 8.dp, vertical = 2.dp)
                 )
             }
-            review.rating?.let {
+            comment.rating?.let {
                 Text(
                     text = it.toString(),
                     style = SnacTypography.subtitle,
@@ -250,13 +250,13 @@ fun ReviewPreviewCard(
             }
         }
         Text(
-            text = review.comment,
+            text = comment.comment,
             style = SnacTypography.caption,
             maxLines = 3,
             modifier = if (blurred) Modifier.blur(8.dp, BlurredEdgeTreatment.Unbounded)
             else Modifier
         )
-        ReviewStats(review)
+        CommentStats(comment)
     }
 }
 
@@ -346,8 +346,8 @@ private fun Preview() {
                 .background(SnacColors.page)
                 .padding(16.dp),
         ) {
-            ReviewCard(
-                review = Review.PreviewSample.first().copy(isSpoiler = true),
+            CommentCard(
+                comment = Comment.PreviewSample.first().copy(isSpoiler = true),
                 onClick = {},
             )
         }
@@ -363,8 +363,8 @@ private fun PreviewCardPreview() {
                 .background(SnacColors.page)
                 .padding(16.dp),
         ) {
-            ReviewPreviewCard(
-                review = Review.PreviewSample.first().copy(isSpoiler = true),
+            CommentPreviewCard(
+                comment = Comment.PreviewSample.first().copy(isSpoiler = true),
                 onClick = {},
             )
         }

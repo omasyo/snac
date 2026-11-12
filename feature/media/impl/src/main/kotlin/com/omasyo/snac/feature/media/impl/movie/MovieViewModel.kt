@@ -11,7 +11,7 @@ import com.omasyo.snac.core.data.movie.MovieRepository
 import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.ui.models.RefreshWrapper
 import com.omasyo.snac.core.ui.models.UiState
-import com.omasyo.snac.core.data.models.Review
+import com.omasyo.snac.core.data.models.Comment
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
@@ -36,7 +36,7 @@ class MovieViewModel(
     val cast: StateFlow<UiState<List<Cast>>> =
         RefreshWrapper(viewModelScope) { movieRepository.getCast(slug) }.response
 
-    val review: StateFlow<UiState<List<Review>>> =
+    val comment: StateFlow<UiState<List<Comment>>> =
         RefreshWrapper(viewModelScope) { movieRepository.getTopComments(slug) }.response
 
     val relatedMovies: Flow<PagingData<Movie>> =

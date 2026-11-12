@@ -1,6 +1,6 @@
 package com.omasyo.snac.core.data.mappers
 
-import com.omasyo.snac.core.data.models.Review
+import com.omasyo.snac.core.data.models.Comment
 import com.omasyo.snac.core.data.models.User
 import com.omasyo.snac.core.model.extra.CommentSort
 import com.omasyo.snac.core.network.models.CommentResponse
@@ -18,7 +18,7 @@ fun CommentSort.toNetworkCommentSort(): NetworkCommentSort = when (this) {
     CommentSort.Plays -> NetworkCommentSort.Plays
 }
 
-fun CommentResponse.toReview() = Review(
+fun CommentResponse.toReview() = Comment(
     id = id,
     comment = comment,
     isSpoiler = spoiler,
