@@ -7,8 +7,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalGridApi
+import androidx.compose.foundation.layout.Grid
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -39,6 +40,7 @@ import com.omasyo.snac.core.ui.theme.colors.colors
 import com.omasyo.snac.core.ui.theme.isDark
 import kotlin.random.Random
 
+@OptIn(ExperimentalGridApi::class)
 @Composable
 internal fun AppearanceCard(
     settings: ThemeSettings,
@@ -61,29 +63,29 @@ internal fun AppearanceCard(
             text = stringResource(R.string.theme_label),
             style = SnacTypography.overline,
         )
-        Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp),
+        Grid(
+            config = {
+                repeat(2) {
+                    column(1.fr)
+                }
+                gap(12.dp)
+            },
             modifier = Modifier.selectableGroup(),
         ) {
-            AppTheme.entries.chunked(2).forEach { row ->
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    row.forEach { theme ->
-
-                        val rotation = Random(theme.hashCode()).nextInt(-2, 2).toFloat()
-                        ThemeOption(
-                            name = stringResource(theme.label),
-                            colors = theme.colorScheme.colors(darkTheme),
-                            selected = theme == settings.theme,
-                            onClick = { onThemeChange(theme) },
-                            modifier = Modifier
-                                .rotate(rotation)
-                                .weight(1f),
-                        )
-                    }
-                    if (row.size == 1) Spacer(Modifier.weight(1f))
-                }
+            for (theme in AppTheme.entries) {
+                val rotation = remember(theme) { Random(theme.hashCode()).nextInt(-2, 2).toFloat() }
+                ThemeOption(
+                    name = stringResource(theme.label),
+                    colors = theme.colorScheme.colors(darkTheme),
+                    selected = theme == settings.theme,
+                    onClick = { onThemeChange(theme) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .rotate(rotation),
+                )
             }
         }
+
         Text(
             text = stringResource(R.string.mode_label),
             style = SnacTypography.overline,
@@ -120,7 +122,7 @@ private fun ThemeOption(
                 onClick = onClick,
             )
             .border(2.dp, if (selected) selectionColor else colors.outline)
-            .background(SnacColors.film)
+            .background(colors.film)
             .padding(top = 16.dp)
             .background(colors.page)
             .padding(12.dp),
@@ -129,7 +131,7 @@ private fun ThemeOption(
             horizontalArrangement = Arrangement.spacedBy(6.dp),
         ) {
             listOf(colors.accent, colors.signal, colors.tape, colors.card).forEach {
-                val rotation = Random(it.hashCode()).nextInt(-3, 3).toFloat()
+                val rotation = remember(it) { Random(it.hashCode()).nextInt(-3, 3).toFloat() }
                 Box(
                     Modifier
                         .rotate(rotation)
