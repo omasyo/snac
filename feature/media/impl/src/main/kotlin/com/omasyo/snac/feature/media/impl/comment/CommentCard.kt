@@ -54,7 +54,6 @@ import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.modifiers.TintIndication
 import com.omasyo.snac.core.ui.modifiers.film
 import com.omasyo.snac.core.ui.modifiers.silhouette
-import com.omasyo.snac.core.ui.navigation.navSharedBounds
 import com.omasyo.snac.core.ui.navigation.navSharedElement
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
@@ -80,7 +79,6 @@ internal fun CommentCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .sharedReplySection(comment)
                 .replySection()
                 .clipToBounds()
                 .padding(vertical = 12.dp),
@@ -88,7 +86,6 @@ internal fun CommentCard(
             replies.take(2).forEach { reply ->
                 ReplyCard(
                     reply = reply,
-                    modifier = Modifier.sharedReply(comment, reply),
                 )
             }
             ViewAllReplies(
@@ -116,14 +113,12 @@ internal fun CommentThread(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .sharedReplySection(comment)
                 .replySection(),
             contentPadding = PaddingValues(vertical = 12.dp),
         ) {
             items(replies, key = { it.id }) { reply ->
                 ReplyCard(
                     reply = reply,
-                    modifier = Modifier.sharedReply(comment, reply),
                 )
             }
         }
@@ -133,14 +128,6 @@ internal fun CommentThread(
 @Composable
 private fun Modifier.sharedHeader(comment: Comment): Modifier =
     navSharedElement(key = "comment-header-${comment.id}", zIndexInOverlay = 2f)
-
-@Composable
-private fun Modifier.sharedReplySection(comment: Comment): Modifier =
-    navSharedBounds(key = "comment-replies-${comment.id}")
-
-@Composable
-private fun Modifier.sharedReply(comment: Comment, reply: Reply): Modifier =
-    navSharedElement(key = "comment-reply-${comment.id}-${reply.id}", zIndexInOverlay = 1f)
 
 @Composable
 private fun Modifier.replySection(): Modifier = this

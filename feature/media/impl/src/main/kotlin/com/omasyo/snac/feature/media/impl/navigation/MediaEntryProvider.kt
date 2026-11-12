@@ -20,7 +20,6 @@ import com.omasyo.snac.feature.media.api.navigation.ShowCommentsNavKey
 import com.omasyo.snac.feature.media.api.navigation.ShowNavKey
 import com.omasyo.snac.feature.media.api.navigation.ShowPeopleNavKey
 import com.omasyo.snac.feature.media.impl.comment.CommentThreadScreen
-import com.omasyo.snac.feature.media.impl.comment.CommentThreadTransitionMetadata
 import com.omasyo.snac.feature.media.impl.comment.CommentsScreen
 import com.omasyo.snac.feature.media.impl.comment.HeroContent
 import com.omasyo.snac.feature.media.impl.movie.MovieScreen
@@ -147,7 +146,7 @@ fun EntryProviderScope<NavKey>.mediaEntry(
             onCommentClick = { onCommentThreadClick(CommentThreadNavKey(it.id)) },
         )
     }
-    entry<CommentThreadNavKey>(metadata = CommentThreadTransitionMetadata) { key ->
+    entry<CommentThreadNavKey> { key ->
         CommentThreadScreen(
             comment = Comment.PreviewSample.first { it.id == key.commentId },
             replies = Reply.PreviewSample,
