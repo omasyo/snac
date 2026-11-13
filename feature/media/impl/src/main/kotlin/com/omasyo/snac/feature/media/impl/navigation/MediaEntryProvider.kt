@@ -2,9 +2,7 @@ package com.omasyo.snac.feature.media.impl.navigation
 
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
-import com.omasyo.snac.core.data.models.Comment
 import com.omasyo.snac.core.data.models.Person
-import com.omasyo.snac.core.data.models.Reply
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.feature.media.api.navigation.CommentThreadNavKey
 import com.omasyo.snac.feature.media.api.navigation.CommentsNavKey
@@ -21,7 +19,7 @@ import com.omasyo.snac.feature.media.api.navigation.ShowNavKey
 import com.omasyo.snac.feature.media.api.navigation.ShowPeopleNavKey
 import com.omasyo.snac.feature.media.impl.comment.CommentThreadScreen
 import com.omasyo.snac.feature.media.impl.comment.CommentsScreen
-import com.omasyo.snac.feature.media.impl.comment.HeroContent
+import com.omasyo.snac.feature.media.impl.comment.toThreadNavKey
 import com.omasyo.snac.feature.media.impl.movie.MovieScreen
 import com.omasyo.snac.feature.media.impl.people.EpisodePeopleScreen
 import com.omasyo.snac.feature.media.impl.people.MoviePeopleScreen
@@ -48,7 +46,7 @@ fun EntryProviderScope<NavKey>.mediaEntry(
             onPersonClick = onPersonClick,
             onSeeAllCastClick = { onPeopleClick(MoviePeopleNavKey(key.slug)) },
             onMediaClick = onMediaClick,
-            onReviewClick = {},
+            onReviewClick = { onCommentThreadClick(it.toThreadNavKey()) },
             onSeeAllReviewClick = { onCommentsClick(MovieCommentsNavKey(key.slug)) },
             onCommentClick = {},
             onSeeAllRelatedClick = {},
@@ -62,7 +60,7 @@ fun EntryProviderScope<NavKey>.mediaEntry(
             onPersonClick = onPersonClick,
             onSeeAllCastClick = { onPeopleClick(ShowPeopleNavKey(key.slug)) },
             onMediaClick = onMediaClick,
-            onReviewClick = {},
+            onReviewClick = { onCommentThreadClick(it.toThreadNavKey()) },
             onSeeAllReviewClick = { onCommentsClick(ShowCommentsNavKey(key.slug)) },
             onCommentClick = {},
             onSeeAllRelatedClick = {},
@@ -76,7 +74,7 @@ fun EntryProviderScope<NavKey>.mediaEntry(
             onEpisodeClick = { onEpisodeClick(EpisodeNavKey(key.showSlug, it.season, it.number)) },
             onPersonClick = onPersonClick,
             onSeeAllCastClick = { onPeopleClick(SeasonPeopleNavKey(key.showSlug, key.season)) },
-            onReviewClick = {},
+            onReviewClick = { onCommentThreadClick(it.toThreadNavKey()) },
             onSeeAllReviewClick = {},
             onCommentClick = {},
         )
@@ -91,7 +89,7 @@ fun EntryProviderScope<NavKey>.mediaEntry(
             onSeeAllCastClick = {
                 onPeopleClick(EpisodePeopleNavKey(key.showSlug, key.season, key.episode))
             },
-            onReviewClick = {},
+            onReviewClick = { onCommentThreadClick(it.toThreadNavKey()) },
             onSeeAllReviewClick = {},
             onCommentClick = {},
         )
@@ -127,29 +125,23 @@ fun EntryProviderScope<NavKey>.mediaEntry(
             onPersonClick = onPersonClick,
         )
     }
-    // TODO replace preview data with real comments
-    entry<MovieCommentsNavKey> {
+    entry<MovieCommentsNavKey> { key ->
         CommentsScreen(
-            hero = HeroContent.Empty,
-            comments = Comment.PreviewSample,
-            replies = Reply.PreviewSample,
+            key = key,
             onBackClick = onBackClick,
-            onCommentClick = { onCommentThreadClick(CommentThreadNavKey(it.id)) },
+            onCommentClick = { onCommentThreadClick(it.toThreadNavKey()) },
         )
     }
-    entry<ShowCommentsNavKey> {
+    entry<ShowCommentsNavKey> { key ->
         CommentsScreen(
-            hero = HeroContent.Empty,
-            comments = Comment.PreviewSample,
-            replies = Reply.PreviewSample,
+            key = key,
             onBackClick = onBackClick,
-            onCommentClick = { onCommentThreadClick(CommentThreadNavKey(it.id)) },
+            onCommentClick = { onCommentThreadClick(it.toThreadNavKey()) },
         )
     }
     entry<CommentThreadNavKey> { key ->
         CommentThreadScreen(
-            comment = Comment.PreviewSample.first { it.id == key.commentId },
-            replies = Reply.PreviewSample,
+            key = key,
             onBackClick = onBackClick,
         )
     }
