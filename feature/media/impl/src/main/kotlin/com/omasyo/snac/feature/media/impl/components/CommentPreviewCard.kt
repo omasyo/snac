@@ -110,8 +110,11 @@ fun CommentPreviewCard(
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = SilhouettePressIndication(offset = DpOffset(4.dp, 4.dp)),
-                onClick = onClick,
-            )
+            ) {
+                if (comment.repliesCount > 0) {
+                    onClick()
+                }
+            }
             .border(2.dp, SnacColors.outline)
             .background(SnacColors.card)
             .padding(12.dp),

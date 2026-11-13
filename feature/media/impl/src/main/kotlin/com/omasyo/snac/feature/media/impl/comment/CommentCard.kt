@@ -93,7 +93,11 @@ internal fun CommentCard(
     Column(modifier) {
         CommentHeader(
             comment = comment,
-            onExpandThread = onExpand,
+            onExpandThread = {
+                if (comment.repliesCount > 0) {
+                    onExpand()
+                }
+            },
             modifier = Modifier.sharedHeader(comment),
         )
         if (comment.repliesCount > 0) {
