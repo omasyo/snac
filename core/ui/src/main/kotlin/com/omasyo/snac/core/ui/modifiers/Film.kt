@@ -6,13 +6,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.ClipOp
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -30,53 +31,46 @@ fun Modifier.film(
     holeGap: Dp = 12.dp,
     crossEdgeInset: Dp = 4.dp,
     edgeInset: Dp = 0.dp,
-): Modifier = graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-    .drawWithContent {
-        drawContent()
+): Modifier = drawWithCache {
+    val vertical = orientation == Orientation.Vertical
+    val mainSize = if (vertical) size.height else size.width
+    val crossSize = if (vertical) size.width else size.height
 
-        val vertical = orientation == Orientation.Vertical
-        val mainSize = if (vertical) size.height else size.width
-        val crossSize = if (vertical) size.width else size.height
+    val length = holeLength.toPx()
+    val depth = holeDepth.toPx()
+    val gap = holeGap.toPx()
+    val crossInset = crossEdgeInset.toPx()
+    val inset = edgeInset.toPx()
+    val pitch = length + gap
 
-        val length = holeLength.toPx()
-        val depth = holeDepth.toPx()
-        val gap = holeGap.toPx()
-        val crossInset = crossEdgeInset.toPx()
-        val inset = edgeInset.toPx()
-        val pitch = length + gap
+    val count = ((mainSize + gap - inset) / pitch).toInt()
+    val start = (mainSize - (count * pitch - gap)) / 2f
 
-        val count = ((mainSize + gap - inset) / pitch).toInt()
-        if (count <= 0) return@drawWithContent
+    val crossPositions = buildList {
+        if (side != Side.End) add(crossInset)
+        if (side != Side.Start) add(crossSize - crossInset - depth)
+    }
 
-
-        val start = (mainSize - (count * pitch - gap)) / 2f
-
-        val holeSize = if (vertical) Size(depth, length) else Size(length, depth)
-
-        fun topLeft(main: Float, cross: Float) =
-            if (vertical) Offset(cross, main) else Offset(main, cross)
-
-        repeat(count) { i ->
+    val holes = Path().apply {
+        repeat(count.coerceAtLeast(0)) { i ->
             val main = start + i * pitch
-
-            buildList {
-                if (side == Side.Both || side == Side.Start) {
-                    add(crossInset)
+            crossPositions.forEach { cross ->
+                val rect = if (vertical) {
+                    Rect(Offset(cross, main), Size(depth, length))
+                } else {
+                    Rect(Offset(main, cross), Size(length, depth))
                 }
-                if (side == Side.Both || side == Side.End) {
-                    add(crossSize - crossInset - depth)
-                }
-            }.forEach { cross ->
-                drawRect(
-                    color = Color.Black, // ignored by BlendMode.Clear
-                    topLeft = topLeft(main, cross),
-                    size = holeSize,
-                    blendMode = BlendMode.Clear,
-                )
+                addRect(rect)
             }
         }
     }
 
+    onDrawWithContent {
+        clipPath(holes, clipOp = ClipOp.Difference) {
+            this@onDrawWithContent.drawContent()
+        }
+    }
+}
 
 @Preview(showBackground = true)
 @Composable

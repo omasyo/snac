@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,6 +39,7 @@ import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
+import com.omasyo.snac.core.ui.modifiers.bleedVertically
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
@@ -226,16 +228,14 @@ internal fun CalendarScreen(
     Column(
         modifier = modifier
             .fillMaxSize()
-            .background(SnacColors.page)
-            .padding(top = 16.dp)
-            .bottomBarPadding()
-            .statusBarsPadding()
-            .navigationBarsPadding(),
+            .background(SnacColors.page),
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
+                .statusBarsPadding()
+                .padding(top = 16.dp)
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth(),
         ) {
@@ -274,9 +274,10 @@ internal fun CalendarScreen(
         )
 
         LazyColumn(
-            contentPadding = PaddingValues(16.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 36.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             state = listState,
+            modifier = Modifier.bleedVertically(36.dp)
         ) {
             items(
                 items = items,
@@ -335,6 +336,13 @@ internal fun CalendarScreen(
                         )
                     }
                 }
+            }
+            item {
+                Spacer(
+                    Modifier
+                        .bottomBarPadding()
+                        .navigationBarsPadding()
+                )
             }
         }
     }
