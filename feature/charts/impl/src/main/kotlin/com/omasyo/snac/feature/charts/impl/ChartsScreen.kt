@@ -59,7 +59,6 @@ import com.omasyo.snac.core.model.media.PlayedItem
 import com.omasyo.snac.core.model.media.PopularItem
 import com.omasyo.snac.core.model.media.TrendingItem
 import com.omasyo.snac.core.model.media.WatchedItem
-import com.omasyo.snac.core.ui.R as UiR
 import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.IconButton
@@ -77,6 +76,7 @@ import com.omasyo.snac.core.ui.theme.colors.SnacColors
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOf
+import com.omasyo.snac.core.ui.R as UiR
 
 enum class MediaTab(val label: String) {
     Movie("Movie"), Show("Show")
@@ -199,7 +199,7 @@ fun ChartsScreen(
                 ) {
                     Box(Modifier.weight(1f)) {
                         Text(
-                            text = "CHARTS",
+                            text = "Charts".uppercase(),
                             style = SnacTypography.headline,
                             modifier = Modifier
                                 .rotate(-3f)
