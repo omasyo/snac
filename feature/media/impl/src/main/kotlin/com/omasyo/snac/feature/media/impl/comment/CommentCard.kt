@@ -3,7 +3,6 @@ package com.omasyo.snac.feature.media.impl.comment
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,10 +13,13 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +40,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -77,6 +80,8 @@ import kotlin.math.min
 import com.omasyo.snac.core.ui.R as UiR
 
 private const val PREVIEW_REPLIES = 2
+private const val COLLAPSED_LINES = 3
+private val MAX_HEADER_HEIGHT = 360.dp
 
 @Composable
 internal fun CommentCard(
@@ -88,7 +93,7 @@ internal fun CommentCard(
     Column(modifier) {
         CommentHeader(
             comment = comment,
-            onClick = onExpand,
+            onExpandThread = onExpand,
             modifier = Modifier.sharedHeader(comment),
         )
         if (comment.repliesCount > 0) {
@@ -105,7 +110,7 @@ internal fun CommentCard(
                     }
 
                     is UiState.Success -> replies.content.take(PREVIEW_REPLIES).forEach { reply ->
-                        ReplyCard(reply = reply)
+                        ReplyCard(reply = reply, onExpandThread = onExpand)
                     }
                 }
                 ViewAllReplies(
@@ -121,13 +126,12 @@ internal fun CommentCard(
 internal fun CommentThread(
     comment: Comment,
     replies: LazyPagingItems<Reply>,
-    onCollapse: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier) {
         CommentHeader(
             comment = comment,
-            onClick = onCollapse,
+            onExpandThread = null,
             modifier = Modifier.sharedHeader(comment),
         )
         LazyColumn(
@@ -161,7 +165,7 @@ internal fun CommentThread(
                     }
                 }
 
-                is LoadState.NotLoading -> { }
+                is LoadState.NotLoading -> {}
             }
 
             items(
@@ -169,7 +173,11 @@ internal fun CommentThread(
                 key = replies.itemKey { it.id },
             ) { index ->
                 val reply = replies[index]
-                if (reply != null) ReplyCard(reply = reply) else ReplyCardPlaceholder()
+                if (reply != null) {
+                    ReplyCard(reply = reply, onExpandThread = null)
+                } else {
+                    ReplyCardPlaceholder()
+                }
             }
             when (replies.loadState.append) {
                 is LoadState.Loading -> item("append-loading") { ReplyCardPlaceholder() }
@@ -234,20 +242,23 @@ internal fun Modifier.replyCardFrame(): Modifier {
 @Composable
 private fun CommentHeader(
     comment: Comment,
-    onClick: () -> Unit,
+    onExpandThread: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     var blurred by rememberSaveable(comment.isSpoiler) { mutableStateOf(comment.isSpoiler) } //TODO store this at a much higher level, might even get to the DB if we later add one
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
+
     val dashColor = SnacColors.rule
 
     Column(
         modifier = modifier
             .zIndex(1f)
-            .combinedClickable(
+            .heightIn(max = MAX_HEADER_HEIGHT)
+            .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = SilhouettePressIndication(offset = DpOffset(4.dp, 4.dp)),
-                onLongClick = { blurred = true },
-                onClick = onClick,
+                onClick = onExpandThread ?: { if (comment.isSpoiler) blurred = !blurred },
             )
             .border(2.dp, SnacColors.outline)
             .background(SnacColors.card)
@@ -275,16 +286,14 @@ private fun CommentHeader(
         SpoilerText(
             text = comment.comment,
             blurred = blurred,
+            expanded = expanded,
+            onToggleExpanded = onExpandThread ?: { expanded = !expanded },
             modifier = Modifier
+                .weight(1f, false)
+                .then(if (onExpandThread == null) Modifier.verticalScroll(scrollState) else Modifier)
                 .padding(bottom = 4.dp)
                 .drawBehind { drawDashedBottomRule(dashColor) }
-                .padding(bottom = 8.dp)
-                .then(
-                    if (blurred) Modifier.clickable(
-                        indication = null,
-                        interactionSource = null,
-                        enabled = comment.isSpoiler,
-                    ) { blurred = false } else Modifier),
+                .padding(bottom = 8.dp),
         )
         CommentStats(comment)
     }
@@ -293,9 +302,11 @@ private fun CommentHeader(
 @Composable
 private fun ReplyCard(
     reply: Reply,
+    onExpandThread: (() -> Unit)?,
     modifier: Modifier = Modifier,
 ) {
     var blurred by rememberSaveable(reply.isSpoiler) { mutableStateOf(reply.isSpoiler) }
+    var expanded by rememberSaveable { mutableStateOf(false) }
 
     Column(
         modifier = modifier.replyCardFrame(),
@@ -323,12 +334,14 @@ private fun ReplyCard(
         SpoilerText(
             text = reply.comment,
             blurred = blurred,
-            modifier = Modifier
-                .clickable(
-                    indication = null,
-                    interactionSource = null,
-                    enabled = reply.isSpoiler,
-                ) { blurred = !blurred },
+            expanded = expanded,
+            onToggleExpanded = onExpandThread ?: { expanded = !expanded },
+            modifier = Modifier.clickable(
+                indication = null,
+                interactionSource = null,
+                enabled = reply.isSpoiler,
+                onClick = onExpandThread ?: { blurred = !blurred },
+            ),
         )
         CommentStat(
             icon = UiR.drawable.heart_bold,
@@ -348,21 +361,12 @@ private fun ViewAllReplies(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val tintColor = SnacColors.page
     Row(
         horizontalArrangement = Arrangement.spacedBy(2.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = modifier
             .padding(start = 24.dp, end = 12.dp)
-            .clickable(
-                interactionSource = null,
-                indication = TintIndication(
-                    contentOnly = true,
-                    focusOpacity = 0.2f,
-                    pressOpacity = 0.5f
-                ) { tintColor },
-                onClick = onClick,
-            ),
+            .linkClickable(onClick),
     ) {
         Text(
             text = "VIEW ALL ${count.formatCount()} REPLIES",
@@ -414,31 +418,69 @@ private fun ReviewBadges(isReview: Boolean, rating: Int?) {
 private fun SpoilerText(
     text: String,
     blurred: Boolean,
+    expanded: Boolean,
+    onToggleExpanded: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Box(modifier) {
-        Text(
-            text = text,
-            style = SnacTypography.body,
-            modifier = Modifier.then(
-                if (blurred) Modifier.blur(8.dp, BlurredEdgeTreatment.Unbounded)
-                else Modifier
-            )
-        )
-        if (blurred) {
+    var hasOverflow by remember { mutableStateOf(false) }
+    Column(modifier) {
+        Box {
             Text(
-                text = "SPOILER",
-                style = SnacTypography.caption,
-                color = SnacColors.signal,
-                modifier = Modifier
-                    .rotate(-12f)
-                    .align(BiasAlignment(0.8f, 0f))
-                    .border(2.dp, SnacColors.signal)
-                    .background(SnacColors.chip)
-                    .padding(horizontal = 8.dp)
+                text = text,
+                style = SnacTypography.body,
+                maxLines = if (expanded) Int.MAX_VALUE else COLLAPSED_LINES,
+                onTextLayout = { hasOverflow = it.hasVisualOverflow },
+                modifier = Modifier.then(
+                    if (blurred) Modifier.blur(8.dp, BlurredEdgeTreatment.Unbounded)
+                    else Modifier
+                ),
             )
+            if (blurred) {
+                Text(
+                    text = "SPOILER",
+                    style = SnacTypography.caption,
+                    color = SnacColors.signal,
+                    modifier = Modifier
+                        .rotate(-12f)
+                        .align(BiasAlignment(0.8f, 0f))
+                        .border(2.dp, SnacColors.signal)
+                        .background(SnacColors.chip)
+                        .padding(horizontal = 8.dp)
+                )
+            }
+        }
+        if (hasOverflow || expanded) {
+            ReadMoreToggle(expanded = expanded, onClick = onToggleExpanded)
         }
     }
+}
+
+@Composable
+private fun ReadMoreToggle(
+    expanded: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = stringResource(if (expanded) UiR.string.show_less else UiR.string.read_more),
+        style = SnacTypography.label,
+        color = SnacColors.signal,
+        modifier = modifier.linkClickable(onClick),
+    )
+}
+
+@Composable
+private fun Modifier.linkClickable(onClick: () -> Unit): Modifier {
+    val tintColor = SnacColors.page
+    return clickable(
+        interactionSource = null,
+        indication = TintIndication(
+            contentOnly = true,
+            focusOpacity = 0.2f,
+            pressOpacity = 0.5f,
+        ) { tintColor },
+        onClick = onClick,
+    )
 }
 
 private fun DrawScope.drawDashedBottomRule(color: Color) {
@@ -504,7 +546,6 @@ private fun CommentThreadPreview() {
             CommentThread(
                 comment = Comment.PreviewSample.first().copy(isSpoiler = false),
                 replies = replies,
-                onCollapse = {},
                 modifier = Modifier.fillMaxSize(),
             )
         }
@@ -527,7 +568,6 @@ private fun CommentThreadLoadingPreview() {
             CommentThread(
                 comment = Comment.PreviewSample.first().copy(isSpoiler = false),
                 replies = replies,
-                onCollapse = {},
                 modifier = Modifier.fillMaxSize(),
             )
         }

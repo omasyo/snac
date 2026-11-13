@@ -140,9 +140,6 @@ fun EntryProviderScope<NavKey>.mediaEntry(
         )
     }
     entry<CommentThreadNavKey> { key ->
-        CommentThreadScreen(
-            key = key,
-            onBackClick = onBackClick,
-        )
+        CommentThreadScreen(key = key)
     }
 }

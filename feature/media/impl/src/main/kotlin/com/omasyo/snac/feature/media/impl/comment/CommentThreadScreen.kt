@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.flowOf
 @Composable
 internal fun CommentThreadScreen(
     key: CommentThreadNavKey,
-    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CommentThreadViewModel =
         assistedMetroViewModel<CommentThreadViewModel, CommentThreadViewModel.Factory> {
@@ -33,7 +32,6 @@ internal fun CommentThreadScreen(
     CommentThreadScreen(
         comment = remember(key) { key.toComment() },
         replies = viewModel.replies.collectAsLazyPagingItems(),
-        onBackClick = onBackClick,
         modifier = modifier,
     )
 }
@@ -42,13 +40,11 @@ internal fun CommentThreadScreen(
 internal fun CommentThreadScreen(
     comment: Comment,
     replies: LazyPagingItems<Reply>,
-    onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     CommentThread(
         comment = comment,
         replies = replies,
-        onCollapse = onBackClick,
         modifier = modifier
             .fillMaxSize()
             .systemBarsPadding()
@@ -65,7 +61,6 @@ private fun Preview() {
         CommentThreadScreen(
             comment = Comment.PreviewSample.first(),
             replies = replies,
-            onBackClick = {},
             modifier = Modifier.background(SnacColors.page),
         )
     }

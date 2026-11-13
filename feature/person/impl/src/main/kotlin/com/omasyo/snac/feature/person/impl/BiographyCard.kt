@@ -29,6 +29,7 @@ import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
+import com.omasyo.snac.core.ui.R as UiR
 
 @Composable
 internal fun BiographyCard(
@@ -62,7 +63,7 @@ internal fun BiographyCard(
                 )
                 if (hasOverflow) {
                     ArrowLink(
-                        text = stringResource(R.string.read_more),
+                        text = stringResource(UiR.string.read_more),
                         onClick = { expanded = true },
                     )
                 }

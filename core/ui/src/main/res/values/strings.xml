@@ -2,6 +2,9 @@
 <resources>
     <string name="back">Back</string>
 
+    <string name="read_more">Read more</string>
+    <string name="show_less">Show less</string> <!-- TODO does this text make sense-->
+
     <string name="runtime_hours_minutes">%1$dh %2$dm</string>
     <string name="runtime_minutes">%1$dm</string>
 </resources>
