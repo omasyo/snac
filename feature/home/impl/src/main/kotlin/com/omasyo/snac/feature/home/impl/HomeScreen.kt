@@ -24,6 +24,7 @@ import com.omasyo.snac.core.model.media.BoxOfficeItem
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.TrendingItem
 import com.omasyo.snac.core.ui.components.Button
+import com.omasyo.snac.core.ui.components.RootScaffoldLayout
 import com.omasyo.snac.core.ui.components.SignInPrompt
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
@@ -72,69 +73,72 @@ internal fun HomeScreen(
     anticipated: UiState<List<AnticipatedItem>>,
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(24.dp),
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .background(SnacColors.page)
-            .bottomBarPadding()
-            .statusBarsPadding()
-            .navigationBarsPadding(),
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
+    RootScaffoldLayout(modifier) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(24.dp),
             modifier = Modifier
-                .padding(horizontal = 16.dp)
-                .fillMaxWidth(),
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .background(SnacColors.page)
+                .padding(top = 16.dp)
+                .bottomBarPadding()
+                .statusBarsPadding()
+                .navigationBarsPadding(),
         ) {
-            Text(
-                text = "snac",
-                style = SnacTypography.headline,
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .rotate(-3f)
-                    .silhouette(SnacColors.signalShadow),
-            )
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+            ) {
+                Text(
+                    text = "snac",
+                    style = SnacTypography.headline,
+                    modifier = Modifier
+                        .rotate(-3f)
+                        .silhouette(SnacColors.signalShadow),
+                )
 //            Button(
 //                text = "SIGN IN",
 //                onClick = onSignInClick,
 //            )
-            Button(
-                text = "SETTINGS",
-                onClick = onSettingsClick,
+                Button(
+                    text = "SETTINGS",
+                    onClick = onSettingsClick,
+                )
+            }
+            topTrendingMedia.transpose()?.let {
+                TrendingSpotlight(
+                    state = it,
+                    onClick = onMediaClick,
+                )
+            }
+            SignInPrompt(
+                title = "Track what you watch",
+                message = "Sign in to get Up Next, check-ins, paused playback and recommendations from your Trakt account.",
+                onSignInClick = {},
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
-        }
-        topTrendingMedia.transpose()?.let {
-            TrendingSpotlight(
-                state = it,
-                onClick = onMediaClick,
+            TrendingSection(
+                onMediaClick = onMediaClick,
+                moviesState = trendingMovies,
+                showsState = trendingShows,
+                modifier = Modifier
+                    .rotate(-1.5f),
             )
-        }
-        SignInPrompt(
-            title = "Track what you watch",
-            message = "Sign in to get Up Next, check-ins, paused playback and recommendations from your Trakt account.",
-            onSignInClick = {},
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-        TrendingSection(
-            onMediaClick = onMediaClick,
-            moviesState = trendingMovies,
-            showsState = trendingShows,
-            modifier = Modifier
-                .rotate(-1.5f),
-        )
 
-        BoxOfficeSection(
-            onMovieClick = onMediaClick,
-            state = boxOffice,
-            modifier = Modifier.padding(16.dp),
-        )
-        AnticipatedSection(
-            onMediaClick = onMediaClick,
-            onAllChartsClick = onAllChartsClick,
-            state = anticipated,
-        )
+            BoxOfficeSection(
+                onMovieClick = onMediaClick,
+                state = boxOffice,
+                modifier = Modifier.padding(16.dp),
+            )
+            AnticipatedSection(
+                onMediaClick = onMediaClick,
+                onAllChartsClick = onAllChartsClick,
+                state = anticipated,
+            )
+        }
     }
 }
 
