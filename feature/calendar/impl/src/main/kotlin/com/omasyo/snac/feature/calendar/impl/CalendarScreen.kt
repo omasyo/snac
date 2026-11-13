@@ -1,13 +1,19 @@
 package com.omasyo.snac.feature.calendar.impl
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.DragInteraction
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -27,15 +33,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
+import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
+import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
+import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalAdjusters
+import java.util.Locale
 
 sealed interface CalendarUiItem {
     data class Date(val date: LocalDate) : CalendarUiItem
@@ -239,14 +252,24 @@ internal fun CalendarScreen(
             selectedDate = selectedDate,
             onDateTap = { date ->
                 tappedDate = date
-                val dateIndex =
-                    items.indexOfFirst { item -> item is CalendarUiItem.Date && item.date == date }
+
+//                val dateIndex =
+//                    items.indexOfFirst { item -> item is CalendarUiItem.Date && item.date == date }
+//                if (dateIndex >= 0) {
+//                    coroutineScope.launch { listState.animateScrollToItem(dateIndex) }
+//                }
+
+                // Will this work with paging?
+                val dateIndex = items
+                    .indexOfFirst { item -> item is CalendarUiItem.Date && !item.date.isBefore(date) }
+
                 if (dateIndex >= 0) {
                     coroutineScope.launch { listState.animateScrollToItem(dateIndex) }
                 }
             },
             listState = dateStripListState,
             modifier = Modifier
+                .zIndex(1f)
                 .rotate(-1.5f),
         )
 
@@ -267,22 +290,68 @@ internal fun CalendarScreen(
             ) {
                 when (it) {
                     is CalendarUiItem.Content -> {
-                        Text(
-                            text = it.text
-                        )
+                        Row(
+                            modifier = Modifier
+                                .height(IntrinsicSize.Min)
+                                .clickable(
+                                    indication = remember { SilhouettePressIndication() },
+                                    interactionSource = remember { MutableInteractionSource() },
+                                ) {}
+                                .border(2.dp, SnacColors.ink)
+                                .background(SnacColors.card)
+                                .padding(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            Image(
+                                imageUrl = null,
+                                modifier = Modifier.aspectRatio(16f / 9f),
+                            )
+                            Column(
+                                modifier = Modifier.weight(1f),
+                            ) {
+                                Text(
+                                    text = "The Long Static",
+                                    style = SnacTypography.subtitle,
+                                )
+                                Text(
+                                    text = "S03E05 · Carrier Wave",
+                                    style = SnacTypography.caption,
+                                )
+                                Text(
+                                    text = "Coastline TV · 48 min",
+                                    style = SnacTypography.caption,
+                                    color = SnacColors.muted,
+                                )
+                            }
+                        }
                     }
 
                     is CalendarUiItem.Date -> {
 
                         Text(
-                            text = it.date.toString(),
-                            style = SnacTypography.subtitle,
-                            color = SnacColors.accent,
+                            text = it.date.formatted().uppercase(),
+                            style = SnacTypography.title,
+                            modifier = Modifier.silhouette(SnacColors.accent),
                         )
                     }
                 }
             }
         }
+    }
+}
+
+private fun LocalDate.formatted(): String {
+    val locale = Locale.getDefault()
+    val today = LocalDate.now()
+
+    fun fmt(pattern: String) = format(DateTimeFormatter.ofPattern(pattern, locale))
+    fun LocalDate.weekStart() = with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+
+    return when {
+        this == today -> "Today ${fmt("EEE d")}"             // Today Fri 13
+        year != today.year -> fmt("d MMM yyyy")              // 3 Mar 2027
+        weekStart() == today.weekStart() -> fmt("EEE d")     // Wed 11
+        else -> fmt("d MMM")                                 // 27 Nov
     }
 }
 
