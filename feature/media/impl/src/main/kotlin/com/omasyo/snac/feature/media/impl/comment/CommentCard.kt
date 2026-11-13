@@ -8,15 +8,14 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
@@ -40,7 +39,6 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -58,7 +56,6 @@ import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Icon
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
-import com.omasyo.snac.core.ui.components.imageGradient
 import com.omasyo.snac.core.ui.format.formatCount
 import com.omasyo.snac.core.ui.format.formatRelative
 import com.omasyo.snac.core.ui.models.UiState
@@ -79,6 +76,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlin.math.min
 import com.omasyo.snac.core.ui.R as UiR
 
+private const val PREVIEW_REPLIES = 2
+
 @Composable
 internal fun CommentCard(
     comment: Comment,
@@ -93,22 +92,16 @@ internal fun CommentCard(
             modifier = Modifier.sharedHeader(comment),
         )
         if (comment.repliesCount > 0) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .replySection()
-                    .clipToBounds()
-                    .padding(vertical = 12.dp),
-            ) {
+            ReplyPreviews {
                 val previewCount = min(comment.repliesCount, PREVIEW_REPLIES)
                 when (replies) {
-                    UiState.Loading -> repeat(previewCount) { ReplyCardPlaceholder() }
+                    UiState.Loading -> ReplyCardPlaceholders(previewCount)
 
                     is UiState.Error -> ErrorBox(
                         description = replies.error.message,
                         onRetry = replies.refresh,
                     ) {
-                        Column { repeat(previewCount) { ReplyCardPlaceholder() } }
+                        ReplyCardPlaceholders(previewCount)
                     }
 
                     is UiState.Success -> replies.content.take(PREVIEW_REPLIES).forEach { reply ->
@@ -119,27 +112,6 @@ internal fun CommentCard(
                     count = comment.repliesCount,
                     onClick = onExpand,
                 )
-            }
-        }
-    }
-}
-
-@Composable
-internal fun CommentCardPlaceholder(
-    seed: Int,
-    modifier: Modifier = Modifier,
-) {
-    Column(modifier) {
-        CommentHeaderPlaceholder()
-        if (seed % 2 == 0) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .replySection()
-                    .clipToBounds()
-                    .padding(vertical = 12.dp),
-            ) {
-                repeat(1 + seed % 3) { ReplyCardPlaceholder() }
             }
         }
     }
@@ -165,35 +137,33 @@ internal fun CommentThread(
                 .replySection(),
             contentPadding = PaddingValues(vertical = 12.dp),
         ) {
-            val placeholderCount = min(comment.repliesCount, 6).coerceAtLeast(1)
-            val refresh = replies.loadState.refresh
-            when {
-                replies.itemCount > 0 -> {}
+            val placeholderCount = comment.repliesCount.coerceIn(1, 6)
+            val isEmpty = replies.itemCount == 0
 
-                refresh is LoadState.Loading -> items(
-                    placeholderCount,
-                    key = { "placeholder-$it" }) {
-                    ReplyCardPlaceholder()
-                }
-
-                refresh is LoadState.Error -> item("refresh-error") {
-                    ErrorBox(
-                        description = refresh.error.message ?: SnacResult.Error.Unexpected.message,
-                        onRetry = replies::retry,
-                    ) {
-                        Column { repeat(placeholderCount) { ReplyCardPlaceholder() } }
+            when (val refreshState = replies.loadState.refresh) {
+                is LoadState.Loading -> {
+                    if (isEmpty) {
+                        item("refresh-loading") { ReplyCardPlaceholders(placeholderCount) }
                     }
                 }
 
-                else -> item("empty") {
-                    Text(
-                        text = "NO REPLIES YET",
-                        style = SnacTypography.tag,
-                        color = SnacColors.muted,
-                        modifier = Modifier.padding(horizontal = 24.dp, vertical = 4.dp),
-                    )
+                is LoadState.Error -> {
+                    if (isEmpty) {
+                        item("refresh-error") {
+                            ErrorBox(
+                                description = refreshState.error.message
+                                    ?: SnacResult.Error.Unexpected.message,
+                                onRetry = replies::retry,
+                            ) {
+                                ReplyCardPlaceholders(placeholderCount)
+                            }
+                        }
+                    }
                 }
+
+                is LoadState.NotLoading -> { }
             }
+
             items(
                 count = replies.itemCount,
                 key = replies.itemKey { it.id },
@@ -220,8 +190,6 @@ internal fun CommentThread(
     }
 }
 
-private const val PREVIEW_REPLIES = 2
-
 @Composable
 private fun Modifier.sharedHeader(comment: Comment): Modifier =
     navSharedElement(key = "comment-header-${comment.id}", zIndexInOverlay = 2f)
@@ -232,6 +200,36 @@ private fun Modifier.replySection(): Modifier = this
     .padding(start = 20.dp)
     .border(2.dp, SnacColors.outline)
     .background(SnacColors.chip)
+
+@Composable
+internal fun ReplyPreviews(content: @Composable ColumnScope.() -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .replySection()
+            .clipToBounds()
+            .padding(vertical = 12.dp),
+        content = content,
+    )
+}
+
+@Composable
+internal fun Modifier.replyCardFrame(): Modifier {
+    val dashColor = SnacColors.rule
+    return this
+        .background(SnacColors.ink)
+        .film(
+            side = Side.Start,
+            holeLength = 8.dp,
+            holeDepth = 10.dp,
+            holeGap = 8.dp,
+        )
+        .background(SnacColors.chip)
+        .padding(bottom = 12.dp)
+        .drawBehind { drawDashedBottomRule(dashColor) }
+        .padding(bottom = 12.dp)
+        .padding(start = 24.dp, end = 12.dp)
+}
 
 @Composable
 private fun CommentHeader(
@@ -299,21 +297,8 @@ private fun ReplyCard(
 ) {
     var blurred by rememberSaveable(reply.isSpoiler) { mutableStateOf(reply.isSpoiler) }
 
-    val dashColor = SnacColors.rule
     Column(
-        modifier = modifier
-            .background(SnacColors.ink)
-            .film(
-                side = Side.Start,
-                holeLength = 8.dp,
-                holeDepth = 10.dp,
-                holeGap = 8.dp,
-            )
-            .background(SnacColors.chip)
-            .padding(bottom = 12.dp)
-            .drawBehind { drawDashedBottomRule(dashColor) }
-            .padding(bottom = 12.dp)
-            .padding(start = 24.dp, end = 12.dp),
+        modifier = modifier.replyCardFrame(),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
         Row(
@@ -355,122 +340,6 @@ private fun ReplyCard(
             ),
         )
     }
-}
-
-@Composable
-private fun CommentHeaderPlaceholder(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .border(2.dp, SnacColors.outline)
-            .background(SnacColors.card)
-            .padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            AvatarPlaceholder()
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
-            ) {
-                PlaceholderBar(width = 72.dp, height = 10.dp)
-                PlaceholderBar(width = 40.dp, height = 8.dp)
-            }
-            PlaceholderBar(width = 12.dp, height = 16.dp)
-        }
-        repeat(2) {
-            PlaceholderBar(
-                height = 12.dp,
-                modifier = Modifier
-                    .padding(vertical = 2.dp)
-                    .fillMaxWidth(),
-            )
-        }
-        PlaceholderBar(
-            width = 160.dp,
-            height = 12.dp,
-            modifier = Modifier.padding(top = 2.dp, bottom = 12.dp),
-        )
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            repeat(2) {
-                PlaceholderBar(
-                    width = 40.dp,
-                    height = 10.dp,
-                    modifier = Modifier.padding(vertical = 8.dp),
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ReplyCardPlaceholder(modifier: Modifier = Modifier) {
-    val dashColor = SnacColors.rule
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(SnacColors.ink)
-            .film(
-                side = Side.Start,
-                holeLength = 8.dp,
-                holeDepth = 10.dp,
-                holeGap = 8.dp,
-            )
-            .background(SnacColors.chip)
-            .padding(bottom = 12.dp)
-            .drawBehind { drawDashedBottomRule(dashColor) }
-            .padding(bottom = 12.dp)
-            .padding(start = 24.dp, end = 12.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            AvatarPlaceholder()
-            PlaceholderBar(width = 72.dp, height = 10.dp)
-            PlaceholderBar(width = 32.dp, height = 8.dp)
-        }
-        PlaceholderBar(
-            height = 12.dp,
-            modifier = Modifier
-                .padding(vertical = 2.dp)
-                .fillMaxWidth(),
-        )
-        PlaceholderBar(width = 160.dp, height = 12.dp)
-        PlaceholderBar(
-            width = 32.dp,
-            height = 10.dp,
-            modifier = Modifier.padding(vertical = 4.dp),
-        )
-    }
-}
-
-@Composable
-private fun AvatarPlaceholder() {
-    Box(
-        modifier = Modifier
-            .size(32.dp)
-            .border(2.dp, SnacColors.outline, CircleShape)
-            .clip(CircleShape)
-            .background(imageGradient())
-    )
-}
-
-@Composable
-private fun PlaceholderBar(
-    height: Dp,
-    modifier: Modifier = Modifier,
-    width: Dp = Dp.Unspecified,
-) {
-    Box(
-        modifier
-            .then(if (width != Dp.Unspecified) Modifier.width(width) else Modifier)
-            .height(height)
-            .background(SnacColors.placeholder)
-    )
 }
 
 @Composable
@@ -616,20 +485,6 @@ private fun CommentCardLoadingPreview() {
                 replies = UiState.Loading,
                 onExpand = {},
             )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun CommentCardPlaceholderPreview() {
-    SnacTheme {
-        Box(
-            modifier = Modifier
-                .background(SnacColors.page)
-                .padding(16.dp),
-        ) {
-            CommentCardPlaceholder(seed = 2)
         }
     }
 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.common.map
 import com.omasyo.snac.core.data.comment.CommentRepository
 import com.omasyo.snac.core.data.models.Comment
@@ -25,7 +26,10 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 @AssistedInject
 class CommentsViewModel(
@@ -37,21 +41,11 @@ class CommentsViewModel(
     val hero: StateFlow<UiState<HeroContent>> = RefreshWrapper(viewModelScope) {
         when (key) {
             is MovieCommentsNavKey -> movieRepository.getDetails(key.slug).map {
-                HeroContent(
-                    it.title,
-                    it.posterUrl,
-                    it.secondaryPosterUrl,
-                    heroExtra(it.year, it.genres)
-                )
+                heroContent(it.title, it.posterUrl, it.secondaryPosterUrl, it.year, it.genres)
             }
 
             is ShowCommentsNavKey -> showRepository.getDetails(key.slug).map {
-                HeroContent(
-                    it.title,
-                    it.posterUrl,
-                    it.secondaryPosterUrl,
-                    heroExtra(it.year, it.genres)
-                )
+                heroContent(it.title, it.posterUrl, it.secondaryPosterUrl, it.year, it.genres)
             }
         }
     }.response
@@ -61,12 +55,24 @@ class CommentsViewModel(
         is ShowCommentsNavKey -> showRepository.getComments(key.slug, CommentSort.Likes)
     }.cachedIn(viewModelScope)
 
-    private val topReplies = mutableMapOf<Long, RefreshWrapper<List<Reply>>>()
+    val topReplies: StateFlow<Map<Long, UiState<List<Reply>>>>
+        field = MutableStateFlow(emptyMap())
 
-    fun getTopReplies(commentId: Long): StateFlow<UiState<List<Reply>>> =
-        topReplies.getOrPut(commentId) {
-            RefreshWrapper(viewModelScope) { commentRepository.getTopReplies(commentId) }
-        }.response
+    fun loadTopReplies(comment: Comment) {
+        if (comment.repliesCount == 0 || comment.id in topReplies.value) return
+        fetchTopReplies(comment.id)
+    }
+
+    private fun fetchTopReplies(commentId: Long) {
+        topReplies.update { it + (commentId to UiState.Loading) }
+        viewModelScope.launch {
+            val state = when (val result = commentRepository.getTopReplies(commentId)) {
+                is SnacResult.Failure -> UiState.Error(result.error) { fetchTopReplies(commentId) }
+                is SnacResult.Success -> UiState.Success(result.value)
+            }
+            topReplies.update { it + (commentId to state) }
+        }
+    }
 
     @AssistedFactory
     @ManualViewModelAssistedFactoryKey
@@ -77,7 +83,18 @@ class CommentsViewModel(
 }
 
 
-private fun heroExtra(year: Int?, genres: List<Genre>): String = listOfNotNull(
-    year?.toString(),
-    genres.take(2).joinToString(", ") { it.name }.takeIf { it.isNotEmpty() },
-).joinToString(" · ")
+private fun heroContent(
+    title: String,
+    posterUrl: String?,
+    secondaryPosterUrl: String?,
+    year: Int?,
+    genres: List<Genre>,
+) = HeroContent(
+    title = title,
+    posterUrl = posterUrl,
+    secondaryPosterUrl = secondaryPosterUrl,
+    extra = listOfNotNull(
+        year?.toString(),
+        genres.take(2).joinToString(", ") { it.name }.takeIf { it.isNotEmpty() },
+    ).joinToString(" · "),
+)

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,8 +56,6 @@ import com.omasyo.snac.core.ui.theme.colors.SnacColors
 import com.omasyo.snac.feature.media.api.navigation.CommentsNavKey
 import com.omasyo.snac.feature.media.impl.common.MediaDetailsLayout
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flowOf
 
 
@@ -80,7 +79,8 @@ internal fun CommentsScreen(
     CommentsScreen(
         hero = viewModel.hero.collectAsStateWithLifecycle().value,
         comments = viewModel.comments.collectAsLazyPagingItems(),
-        replies = viewModel::getTopReplies,
+        topReplies = viewModel.topReplies.collectAsStateWithLifecycle().value,
+        onTopRepliesNeeded = viewModel::loadTopReplies,
         onBackClick = onBackClick,
         onCommentClick = onCommentClick,
         modifier = modifier,
@@ -91,7 +91,8 @@ internal fun CommentsScreen(
 internal fun CommentsScreen(
     hero: UiState<HeroContent>,
     comments: LazyPagingItems<Comment>,
-    replies: (commentId: Long) -> StateFlow<UiState<List<Reply>>>,
+    topReplies: Map<Long, UiState<List<Reply>>>,
+    onTopRepliesNeeded: (Comment) -> Unit,
     onBackClick: () -> Unit,
     onCommentClick: (Comment) -> Unit,
     modifier: Modifier = Modifier,
@@ -147,14 +148,10 @@ internal fun CommentsScreen(
             ) { index ->
                 val comment = comments[index]
                 if (comment != null) {
-                    val repliesState = if (comment.repliesCount > 0) {
-                        remember(comment.id) { replies(comment.id) }.collectAsStateWithLifecycle().value
-                    } else {
-                        UiState.Success(emptyList())
-                    }
+                    LaunchedEffect(comment.id) { onTopRepliesNeeded(comment) }
                     CommentCard(
                         comment = comment,
-                        replies = repliesState,
+                        replies = topReplies[comment.id] ?: UiState.Loading,
                         onExpand = { onCommentClick(comment) },
                     )
                 } else {
@@ -333,7 +330,10 @@ private fun Preview() {
         CommentsScreen(
             hero = UiState.Success(PreviewHero),
             comments = comments,
-            replies = { MutableStateFlow(UiState.Success(Reply.PreviewSample)) },
+            topReplies = Comment.PreviewSample.associate {
+                it.id to UiState.Success(Reply.PreviewSample)
+            },
+            onTopRepliesNeeded = {},
             onBackClick = {},
             onCommentClick = {},
             modifier = Modifier.fillMaxSize(),
@@ -352,7 +352,8 @@ private fun LoadingPreview() {
         CommentsScreen(
             hero = UiState.Loading,
             comments = comments,
-            replies = { MutableStateFlow(UiState.Loading) },
+            topReplies = emptyMap(),
+            onTopRepliesNeeded = {},
             onBackClick = {},
             onCommentClick = {},
             modifier = Modifier.fillMaxSize(),
@@ -375,7 +376,8 @@ private fun ErrorPreview() {
         CommentsScreen(
             hero = UiState.Loading,
             comments = comments,
-            replies = { MutableStateFlow(UiState.Loading) },
+            topReplies = emptyMap(),
+            onTopRepliesNeeded = {},
             onBackClick = {},
             onCommentClick = {},
             modifier = Modifier.fillMaxSize(),
