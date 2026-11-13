@@ -247,8 +247,7 @@ internal fun CalendarScreen(
             },
             listState = dateStripListState,
             modifier = Modifier
-                .background(SnacColors.page)
-                .padding(vertical = 16.dp),
+                .rotate(-1.5f),
         )
 
         LazyColumn(

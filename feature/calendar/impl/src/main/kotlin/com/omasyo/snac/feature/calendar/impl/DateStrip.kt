@@ -1,19 +1,24 @@
 package com.omasyo.snac.feature.calendar.impl
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListLayoutInfo
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.annotation.FrequentlyChangingValue
 import androidx.compose.runtime.derivedStateOf
@@ -21,12 +26,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.Text
+import com.omasyo.snac.core.ui.modifiers.Orientation
+import com.omasyo.snac.core.ui.modifiers.bleedHorizontally
+import com.omasyo.snac.core.ui.modifiers.film
+import com.omasyo.snac.core.ui.theme.CapHeightLineHeightStyle
+import com.omasyo.snac.core.ui.theme.LocalContentColor
 import com.omasyo.snac.core.ui.theme.SnacTheme
+import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -69,7 +82,6 @@ fun DateStrip(
         val dayDiff = ChronoUnit.DAYS.between(Today, selectedDate).toInt()
 
         val index = START + dayDiff
-        println("JJJJJJ $indices $dayDiff")
 
         if (index !in indices) {
             listState.animateScrollToDate(selectedDate)
@@ -77,29 +89,64 @@ fun DateStrip(
     }
 
     LazyRow(
-        modifier = modifier,
         state = listState.listState,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(horizontal = 12.dp),
+        modifier = modifier
+            .bleedHorizontally(8.dp)
+            .film(
+                orientation = Orientation.Horizontal,
+                crossEdgeInset = 16.dp
+            )
+            .background(SnacColors.film)
+            .padding(vertical = 40.dp, horizontal = 8.dp)
+            .fillMaxWidth(),
     ) {
         items(Int.MAX_VALUE) {
-
             val date = Today.plusDays(it.toLong() - START)
-            val selected = selectedDate == date
-            Box(
-                modifier = Modifier
-                    .clickable(
-                        indication = null,
-                        interactionSource = null,
-                    ) {
-                        onDateTap(date)
-                    }
-                    .width(100.dp)
-                    .padding(vertical = 16.dp)
-            ) {
-                Text(
-                    text = date.toString(),
-                    color = if (selected) SnacColors.signal else SnacColors.ink,
+            DateCard(
+                date = date,
+                selected = selectedDate == date,
+                onClick = { onDateTap(date) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun DateCard(
+    date: LocalDate,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val backgroundColor by animateColorAsState(if (selected) SnacColors.accent else SnacColors.filmLine)
+    val contentColor by animateColorAsState(if (selected) SnacColors.ink else SnacColors.chip)
+    val rotation by animateFloatAsState(if (selected) -6f else 0f)
+
+    CompositionLocalProvider(LocalContentColor provides contentColor) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier
+                .rotate(rotation)
+                .clickable(
+                    onClick = onClick,
                 )
-            }
+                .background(backgroundColor)
+                .padding(12.dp),
+        ) {
+            Text(
+                text = date.dayOfWeek.name.take(3),
+                style = SnacTypography.overline,
+            )
+            Text(
+                text = date.dayOfMonth.toString(),
+                style = SnacTypography.title.copy(
+                    lineHeightStyle = CapHeightLineHeightStyle,
+                ),
+            )
+            Spacer(Modifier.height(4.dp))
         }
     }
 }
