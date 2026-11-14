@@ -36,6 +36,7 @@
     <string name="info_episodes">Episodes</string>
     <string name="info_premiered">Premiered</string>
     <string name="info_season">Season</string>
+    <string name="show_poster_description">Open show</string>
     <string name="info_episode">Episode</string>
     <string name="info_aired">Aired</string>
     <string name="info_type">Type</string>

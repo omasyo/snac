@@ -1,6 +1,12 @@
 package com.omasyo.snac.feature.media.impl.show
 
 import androidx.compose.foundation.background
+import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
+import com.omasyo.snac.core.ui.components.imageGradient
+import androidx.compose.runtime.remember
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,6 +42,7 @@ import com.omasyo.snac.core.data.models.EpisodeDetails
 import com.omasyo.snac.core.data.models.EpisodeType
 import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.data.models.Ratings
+import com.omasyo.snac.core.data.models.ShowDetails
 import com.omasyo.snac.core.data.models.Comment
 import com.omasyo.snac.core.ui.components.BackButton
 import com.omasyo.snac.core.ui.components.ErrorBox
@@ -77,6 +84,7 @@ fun EpisodeScreen(
     season: Int,
     episode: Int,
     onBackClick: () -> Unit,
+    onShowClick: () -> Unit,
     onPersonClick: (Person) -> Unit,
     onSeeAllCastClick: () -> Unit,
     onReviewClick: (Comment) -> Unit,
@@ -89,12 +97,13 @@ fun EpisodeScreen(
 ) {
     EpisodeScreen(
         onBackClick = onBackClick,
+        onShowClick = onShowClick,
         onPersonClick = onPersonClick,
         onSeeAllCastClick = onSeeAllCastClick,
         onReviewClick = onReviewClick,
         onSeeAllReviewClick = onSeeAllReviewClick,
         onCommentClick = onCommentClick,
-        showTitle = viewModel.showTitle.collectAsStateWithLifecycle().value,
+        show = viewModel.show.collectAsStateWithLifecycle().value,
         episode = viewModel.episode.collectAsStateWithLifecycle().value,
         ratings = viewModel.ratings.collectAsStateWithLifecycle().value,
         cast = viewModel.cast.collectAsStateWithLifecycle().value,
@@ -106,12 +115,13 @@ fun EpisodeScreen(
 @Composable
 fun EpisodeScreen(
     onBackClick: () -> Unit,
+    onShowClick: () -> Unit,
     onPersonClick: (Person) -> Unit,
     onSeeAllCastClick: () -> Unit,
     onReviewClick: (Comment) -> Unit,
     onSeeAllReviewClick: () -> Unit,
     onCommentClick: () -> Unit,
-    showTitle: UiState<String>,
+    show: UiState<ShowDetails>,
     episode: UiState<EpisodeDetails>,
     ratings: UiState<Ratings>,
     cast: UiState<List<Cast>>,
@@ -135,6 +145,8 @@ fun EpisodeScreen(
                             secondaryPosterUrl = null,
                         )
                     },
+                    onShowClick = onShowClick,
+                    showPoster = show.map { it.posterUrl },
                     modifier = Modifier.heroScrollable(scrollState),
                 )
             },
@@ -153,7 +165,7 @@ fun EpisodeScreen(
                     .padding(top = 16.dp),
             ) {
                 MediaTagline(
-                    state = showTitle,
+                    state = show.map { it.title },
                     modifier = Modifier.padding(horizontal = 16.dp),
                 )
                 MediaInfo(
@@ -210,6 +222,8 @@ fun EpisodeScreen(
 @Composable
 private fun MediaHero(
     state: UiState<MediaHeroContent>,
+    onShowClick: () -> Unit,
+    showPoster: UiState<String?>,
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -297,6 +311,14 @@ private fun MediaHero(
                 }
             }
         }
+        ShowPoster(
+            onClick = onShowClick,
+            state = showPoster,
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .statusBarsPadding()
+                .padding(top = 32.dp, end = 32.dp),
+        )
     }
 }
 
@@ -327,12 +349,13 @@ private fun Preview() {
     SnacTheme {
         EpisodeScreen(
             onBackClick = {},
+            onShowClick = {},
             onPersonClick = {},
             onSeeAllCastClick = {},
             onReviewClick = {},
             onSeeAllReviewClick = {},
             onCommentClick = {},
-            showTitle = UiState.Success("Dark"),
+            show = UiState.Success(ShowDetails.PreviewSample),
             episode = UiState.Success(EpisodeDetails.PreviewSample.first()),
             ratings = UiState.Success(Ratings.PreviewSample),
             cast = UiState.Success(Cast.PreviewSample),
@@ -348,12 +371,13 @@ private fun LoadingPreview() {
     SnacTheme {
         EpisodeScreen(
             onBackClick = {},
+            onShowClick = {},
             onPersonClick = {},
             onSeeAllCastClick = {},
             onReviewClick = {},
             onSeeAllReviewClick = {},
             onCommentClick = {},
-            showTitle = UiState.Loading,
+            show = UiState.Loading,
             episode = UiState.Loading,
             ratings = UiState.Loading,
             cast = UiState.Loading,
@@ -370,12 +394,13 @@ private fun ErrorPreview() {
     SnacTheme {
         EpisodeScreen(
             onBackClick = {},
+            onShowClick = {},
             onPersonClick = {},
             onSeeAllCastClick = {},
             onReviewClick = {},
             onSeeAllReviewClick = {},
             onCommentClick = {},
-            showTitle = error,
+            show = error,
             episode = error,
             ratings = error,
             cast = error,

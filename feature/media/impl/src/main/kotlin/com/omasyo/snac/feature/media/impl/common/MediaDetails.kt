@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
@@ -101,6 +102,7 @@ internal fun MediaDetailsLayout(
 internal fun MediaHero(
     state: UiState<MediaHeroContent>,
     modifier: Modifier = Modifier,
+    overlay: @Composable BoxScope.() -> Unit = {},
 ) {
     Box(
         modifier = modifier
@@ -200,6 +202,7 @@ internal fun MediaHero(
                 }
             }
         }
+        overlay()
     }
 }
 

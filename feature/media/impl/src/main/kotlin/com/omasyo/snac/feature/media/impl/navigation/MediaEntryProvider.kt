@@ -73,6 +73,7 @@ fun EntryProviderScope<NavKey>.mediaEntry(navigator: Navigator) {
             showSlug = key.showSlug,
             season = key.season,
             onBackClick = onBackClick,
+            onShowClick = { navigator.navigate(ShowNavKey(key.showSlug)) },
             onEpisodeClick = {
                 navigator.navigate(
                     EpisodeNavKey(
@@ -102,6 +103,7 @@ fun EntryProviderScope<NavKey>.mediaEntry(navigator: Navigator) {
             season = key.season,
             episode = key.episode,
             onBackClick = onBackClick,
+            onShowClick = { navigator.navigate(ShowNavKey(key.showSlug)) },
             onPersonClick = onPersonClick,
             onSeeAllCastClick = {
                 navigator.navigate(EpisodePeopleNavKey(key.showSlug, key.season, key.episode))

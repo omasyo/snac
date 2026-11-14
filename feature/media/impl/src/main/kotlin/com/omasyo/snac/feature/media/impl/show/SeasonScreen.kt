@@ -5,9 +5,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -15,11 +17,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.data.models.Cast
+import com.omasyo.snac.core.data.models.Comment
 import com.omasyo.snac.core.data.models.EpisodeDetails
 import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.data.models.Ratings
-import com.omasyo.snac.core.data.models.Comment
 import com.omasyo.snac.core.data.models.Season
+import com.omasyo.snac.core.data.models.ShowDetails
 import com.omasyo.snac.core.ui.components.SignInPrompt
 import com.omasyo.snac.core.ui.components.heroScrollable
 import com.omasyo.snac.core.ui.format.formatDayMonth
@@ -46,6 +49,7 @@ fun SeasonScreen(
     showSlug: String,
     season: Int,
     onBackClick: () -> Unit,
+    onShowClick: () -> Unit,
     onEpisodeClick: (EpisodeDetails) -> Unit,
     onPersonClick: (Person) -> Unit,
     onSeeAllCastClick: () -> Unit,
@@ -59,13 +63,14 @@ fun SeasonScreen(
 ) {
     SeasonScreen(
         onBackClick = onBackClick,
+        onShowClick = onShowClick,
         onEpisodeClick = onEpisodeClick,
         onPersonClick = onPersonClick,
         onSeeAllCastClick = onSeeAllCastClick,
         onReviewClick = onReviewClick,
         onSeeAllReviewClick = onSeeAllReviewClick,
         onCommentClick = onCommentClick,
-        showTitle = viewModel.showTitle.collectAsStateWithLifecycle().value,
+        show = viewModel.show.collectAsStateWithLifecycle().value,
         season = viewModel.season.collectAsStateWithLifecycle().value,
         ratings = viewModel.ratings.collectAsStateWithLifecycle().value,
         episodes = viewModel.episodes.collectAsStateWithLifecycle().value,
@@ -78,13 +83,14 @@ fun SeasonScreen(
 @Composable
 fun SeasonScreen(
     onBackClick: () -> Unit,
+    onShowClick: () -> Unit,
     onEpisodeClick: (EpisodeDetails) -> Unit,
     onPersonClick: (Person) -> Unit,
     onSeeAllCastClick: () -> Unit,
     onReviewClick: (Comment) -> Unit,
     onSeeAllReviewClick: () -> Unit,
     onCommentClick: () -> Unit,
-    showTitle: UiState<String>,
+    show: UiState<ShowDetails>,
     season: UiState<Season>,
     ratings: UiState<Ratings>,
     episodes: UiState<List<EpisodeDetails>>,
@@ -107,7 +113,16 @@ fun SeasonScreen(
                     )
                 },
                 modifier = Modifier.heroScrollable(scrollState),
-            )
+            ) {
+                ShowPoster(
+                    onClick = onShowClick,
+                    state = show.map { it.posterUrl },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .statusBarsPadding()
+                        .padding(top = 16.dp, end = 32.dp),
+                )
+            }
         }
     ) { contentPadding ->
         Column(
@@ -118,7 +133,7 @@ fun SeasonScreen(
                 .padding(top = 16.dp),
         ) {
             MediaTagline(
-                state = showTitle,
+                state = show.map { it.title },
                 modifier = Modifier.padding(horizontal = 16.dp),
             )
             MediaInfo(
@@ -187,13 +202,14 @@ private fun Preview() {
     SnacTheme {
         SeasonScreen(
             onBackClick = {},
+            onShowClick = {},
             onEpisodeClick = {},
             onPersonClick = {},
             onSeeAllCastClick = {},
             onReviewClick = {},
             onSeeAllReviewClick = {},
             onCommentClick = {},
-            showTitle = UiState.Success("Dark"),
+            show = UiState.Success(ShowDetails.PreviewSample),
             season = UiState.Success(
                 Season.PreviewSample.first()
                     .copy(overview = "A missing child brings four families together, and the search leads somewhere none of them expected.")
@@ -213,13 +229,14 @@ private fun LoadingPreview() {
     SnacTheme {
         SeasonScreen(
             onBackClick = {},
+            onShowClick = {},
             onEpisodeClick = {},
             onPersonClick = {},
             onSeeAllCastClick = {},
             onReviewClick = {},
             onSeeAllReviewClick = {},
             onCommentClick = {},
-            showTitle = UiState.Loading,
+            show = UiState.Loading,
             season = UiState.Loading,
             ratings = UiState.Loading,
             episodes = UiState.Loading,
@@ -237,13 +254,14 @@ private fun ErrorPreview() {
     SnacTheme {
         SeasonScreen(
             onBackClick = {},
+            onShowClick = {},
             onEpisodeClick = {},
             onPersonClick = {},
             onSeeAllCastClick = {},
             onReviewClick = {},
             onSeeAllReviewClick = {},
             onCommentClick = {},
-            showTitle = error,
+            show = error,
             season = error,
             ratings = error,
             episodes = error,

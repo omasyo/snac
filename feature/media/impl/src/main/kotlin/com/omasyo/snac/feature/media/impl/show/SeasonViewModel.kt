@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.EpisodeDetails
 import com.omasyo.snac.core.data.models.Ratings
-import com.omasyo.snac.core.common.map
 import com.omasyo.snac.core.data.models.Season
+import com.omasyo.snac.core.data.models.ShowDetails
 import com.omasyo.snac.core.data.show.ShowRepository
 import com.omasyo.snac.core.ui.models.RefreshWrapper
 import com.omasyo.snac.core.ui.models.UiState
@@ -26,8 +26,8 @@ class SeasonViewModel(
     @Assisted private val seasonNumber: Int,
     private val showRepository: ShowRepository,
 ) : ViewModel() {
-    val showTitle: StateFlow<UiState<String>> =
-        RefreshWrapper(viewModelScope) { showRepository.getDetails(showSlug).map { it.title } }.response
+    val show: StateFlow<UiState<ShowDetails>> =
+        RefreshWrapper(viewModelScope) { showRepository.getDetails(showSlug) }.response
 
     val season: StateFlow<UiState<Season>> =
         RefreshWrapper(viewModelScope) { showRepository.getSeason(showSlug, seasonNumber) }.response

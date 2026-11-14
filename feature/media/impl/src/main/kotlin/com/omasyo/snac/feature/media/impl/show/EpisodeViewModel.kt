@@ -2,10 +2,10 @@ package com.omasyo.snac.feature.media.impl.show
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.omasyo.snac.core.common.map
 import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.EpisodeDetails
 import com.omasyo.snac.core.data.models.Ratings
+import com.omasyo.snac.core.data.models.ShowDetails
 import com.omasyo.snac.core.data.models.Comment
 import com.omasyo.snac.core.data.show.ShowRepository
 import com.omasyo.snac.core.ui.models.RefreshWrapper
@@ -26,9 +26,9 @@ class EpisodeViewModel(
     @Assisted private val episodeNumber: Int,
     private val showRepository: ShowRepository,
 ) : ViewModel() {
-    val showTitle: StateFlow<UiState<String>> =
+    val show: StateFlow<UiState<ShowDetails>> =
         RefreshWrapper(viewModelScope) {
-            showRepository.getDetails(showSlug).map { it.title }
+            showRepository.getDetails(showSlug)
         }.response
 
     val episode: StateFlow<UiState<EpisodeDetails>> =
