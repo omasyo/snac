@@ -34,10 +34,10 @@ fun Text(
     maxLines: Int = Int.MAX_VALUE,
     minLines: Int = 1,
     overflow: TextOverflow = TextOverflow.Ellipsis,
-    autoSize: TextAutoSize?  = null,
+    autoSize: TextAutoSize? = null,
     onTextLayout: ((TextLayoutResult) -> Unit)? = null,
 ) {
-    val color = color.takeOrElse { LocalContentColor.current }
+    val color = color.takeOrElse { style.color.takeOrElse { LocalContentColor.current } }
     BasicText(
         text = text,
         style = LocalTextStyle.current.merge(style),
