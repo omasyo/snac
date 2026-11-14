@@ -319,7 +319,7 @@ internal fun CalendarScreen(
                                     style = SnacTypography.caption,
                                 )
                                 Text(
-                                    text = "Coastline TV · 48 min",
+                                    text = "48 min",
                                     style = SnacTypography.caption,
                                     color = SnacColors.muted,
                                 )
