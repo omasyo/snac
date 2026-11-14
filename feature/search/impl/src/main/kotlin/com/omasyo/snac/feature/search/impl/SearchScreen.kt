@@ -32,8 +32,9 @@ import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.omasyo.snac.core.common.SnacException
 import com.omasyo.snac.core.common.SnacResult
-import com.omasyo.snac.core.model.media.Media
+import com.omasyo.snac.core.model.media.TrendingSearchItem
 import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.ui.R
 import com.omasyo.snac.core.ui.components.ClapperboardStripes
@@ -41,11 +42,11 @@ import com.omasyo.snac.core.ui.components.Icon
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.LocalBottomBarPadding
 import com.omasyo.snac.core.ui.components.Text
-import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -54,11 +55,12 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 fun SearchScreen(
     modifier: Modifier = Modifier,
+    viewModel: SearchViewModel = metroViewModel(),
 ) {
     SearchScreen(
         onSearchClick = {},
         onMediaClick = {},
-        media = remember { flowOf(PagingData.from<Media>(Movie.PreviewSample + Movie.PreviewSample + Movie.PreviewSample)) }.collectAsLazyPagingItems(),
+        trendingSearches = viewModel.trendingSearches.collectAsLazyPagingItems(),
         modifier = modifier
     )
 }
@@ -67,7 +69,7 @@ fun SearchScreen(
 fun SearchScreen(
     onSearchClick: () -> Unit,
     onMediaClick: () -> Unit,
-    media: LazyPagingItems<Media>,
+    trendingSearches: LazyPagingItems<TrendingSearchItem>,
     modifier: Modifier = Modifier,
 ) {
 
@@ -120,7 +122,7 @@ fun SearchScreen(
     ) { innerPadding ->
         BentoGrid(
             contentPadding = innerPadding,
-            items = media,
+            items = trendingSearches,
         ) { item ->
             Box(
                 modifier = Modifier
@@ -133,7 +135,7 @@ fun SearchScreen(
                     )
             ) {
                 Image(
-                    imageUrl = item.imageUrl,
+                    imageUrl = item.media.imageUrl,
                     modifier = Modifier.matchParentSize(),
                 )
             }
@@ -178,13 +180,15 @@ private fun SearchScreenLayout(
 @Preview
 @Composable
 private fun Preview() {
-    val media =
-        remember { flowOf(PagingData.from<Media>(Movie.PreviewSample + Movie.PreviewSample + Movie.PreviewSample)) }.collectAsLazyPagingItems()
+    val trendingSearches = remember {
+        val sample = List(3) { Movie.PreviewSample }.flatten().map { TrendingSearchItem(it, count = 1204) }
+        flowOf(PagingData.from(sample))
+    }.collectAsLazyPagingItems()
     SnacTheme {
         SearchScreen(
             onSearchClick = {},
             onMediaClick = {},
-            media = media,
+            trendingSearches = trendingSearches,
         )
     }
 }
@@ -194,7 +198,7 @@ private fun Preview() {
 private fun LoadingToErrorPreview() {
     val flow = remember {
         MutableStateFlow(
-            PagingData.empty<Media>(
+            PagingData.empty<TrendingSearchItem>(
                 LoadStates(
                     LoadState.Loading,
                     LoadState.Loading,
@@ -206,16 +210,16 @@ private fun LoadingToErrorPreview() {
 
     LaunchedEffect(Unit) {
         delay(3.seconds)
-        val error = LoadState.Error(Exception(SnacResult.Error.Unexpected.message))
+        val error = LoadState.Error(SnacException(SnacResult.Error.Unexpected))
         flow.value = PagingData.empty(LoadStates(error, error, error))
     }
 
-    val media = flow.collectAsLazyPagingItems()
+    val trendingSearches = flow.collectAsLazyPagingItems()
     SnacTheme {
         SearchScreen(
             onSearchClick = {},
             onMediaClick = {},
-            media = media,
+            trendingSearches = trendingSearches,
         )
     }
 }

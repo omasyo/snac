@@ -25,11 +25,18 @@ import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
+import com.omasyo.snac.core.ui.components.Button
+import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Text
+import com.omasyo.snac.core.ui.components.imageGradient
+import com.omasyo.snac.core.ui.models.snacMessage
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import kotlinx.coroutines.flow.flowOf
 
 private const val ROWS_PER_BLOCK = 3
+
+/** Enough cells for two full bento blocks while the first page loads. */
+private const val PLACEHOLDER_ITEM_COUNT = ROWS_PER_BLOCK * 3 * 2
 
 private sealed interface RowSpec {
     data class Feature(val start: Int, val bigOnLeft: Boolean) : RowSpec
@@ -53,7 +60,8 @@ fun <T : Any> BentoGrid(
     items: LazyPagingItems<T>,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues.Zero,
-    placeholder: @Composable () -> Unit = {},
+    placeholder: @Composable () -> Unit = { BentoPlaceholderCell() },
+    errorPadding: PaddingValues = PaddingValues(top = 48.dp),
     itemContent: @Composable (T) -> Unit,
 ) {
     val count = items.itemCount
@@ -66,6 +74,31 @@ fun <T : Any> BentoGrid(
     }
 
     LazyColumn(modifier = modifier, contentPadding = contentPadding) {
+        when (val refreshState = items.loadState.refresh) {
+            is LoadState.Loading -> {
+                if (count == 0) {
+                    item("refresh-loading") { PlaceholderRows(PLACEHOLDER_ITEM_COUNT, placeholder) }
+                }
+            }
+
+            is LoadState.Error -> {
+                if (count == 0) {
+                    item("refresh-error") {
+                        ErrorBox(
+                            description = refreshState.error.snacMessage,
+                            onRetry = items::retry,
+                            alignment = Alignment.TopCenter,
+                            errorPadding = errorPadding,
+                        ) {
+                            PlaceholderRows(PLACEHOLDER_ITEM_COUNT, placeholder)
+                        }
+                    }
+                }
+            }
+
+            is LoadState.NotLoading -> {}
+        }
+
         items(
             count = bentoRowCount(count),
             contentType = { bentoRowSpec(it, count)::class },
@@ -76,18 +109,54 @@ fun <T : Any> BentoGrid(
             }
         }
 
-        if (items.loadState.append is LoadState.Loading) {
-            item(contentType = "loading") {
-                Box(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp), contentAlignment = Alignment.Center
-                ) {
-//                    CircularProgressIndicator()
+        when (items.loadState.append) {
+            is LoadState.Loading -> item("append-loading") {
+                SinglesRow(RowSpec.Singles(start = 0, count = 3)) { _, cellModifier ->
+                    Box(cellModifier) { placeholder() }
                 }
+            }
+
+            is LoadState.Error -> item("append-error") {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                ) {
+                    Button(text = "Retry", onClick = items::retry)
+                }
+            }
+
+            is LoadState.NotLoading -> {}
+        }
+    }
+}
+
+/** Lays out [itemCount] placeholder cells in the same bento rows as real items. */
+@Composable
+private fun PlaceholderRows(itemCount: Int, placeholder: @Composable () -> Unit) {
+    val cell: @Composable (Int, Modifier) -> Unit = { _, cellModifier ->
+        Box(cellModifier) { placeholder() }
+    }
+    Column {
+        repeat(bentoRowCount(itemCount)) { row ->
+            when (val spec = bentoRowSpec(row, itemCount)) {
+                is RowSpec.Feature -> FeatureRow(spec, cell)
+                is RowSpec.Singles -> SinglesRow(spec, cell)
             }
         }
     }
+}
+
+/** Stands in for an image cell, using the same gradient as an image that hasn't loaded. */
+@Composable
+fun BentoPlaceholderCell(modifier: Modifier = Modifier) {
+    Box(
+        modifier
+            .fillMaxSize()
+            .padding(1.dp)
+            .background(imageGradient())
+    )
 }
 
 @Composable
