@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.common.SnacResult
+import com.omasyo.snac.core.common.format.formatRating
 import com.omasyo.snac.core.data.models.EpisodeDetails
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Icon
@@ -33,7 +34,6 @@ import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.format.MetaSeparator
 import com.omasyo.snac.core.ui.format.formatFullDate
-import com.omasyo.snac.core.ui.format.formatRating
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.Side

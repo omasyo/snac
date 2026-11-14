@@ -13,6 +13,7 @@ import com.omasyo.snac.core.data.models.Reply
 import com.omasyo.snac.core.data.movie.MovieRepository
 import com.omasyo.snac.core.data.show.ShowRepository
 import com.omasyo.snac.core.model.extra.CommentSort
+import com.omasyo.snac.core.ui.format.metaLine
 import com.omasyo.snac.core.ui.models.RefreshWrapper
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.feature.media.api.navigation.CommentsNavKey
@@ -93,8 +94,8 @@ private fun heroContent(
     title = title,
     posterUrl = posterUrl,
     secondaryPosterUrl = secondaryPosterUrl,
-    extra = listOfNotNull(
+    extra = metaLine(
         year?.toString(),
         genres.take(2).joinToString(", ") { it.name }.takeIf { it.isNotEmpty() },
-    ).joinToString(" · "),
+    ),
 )

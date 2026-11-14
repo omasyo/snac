@@ -3,8 +3,9 @@ package com.omasyo.snac.feature.media.impl.people
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.omasyo.snac.core.data.models.EpisodeDetails
 import com.omasyo.snac.core.data.models.Person
+import com.omasyo.snac.core.ui.format.formatEpisodeCode
+import com.omasyo.snac.core.ui.format.metaLine
 import com.omasyo.snac.core.ui.models.mapOrNull
 import com.omasyo.snac.feature.media.impl.show.displayTitle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
@@ -31,7 +32,7 @@ fun EpisodePeopleScreen(
                 title = it.displayTitle(),
                 posterUrl = show?.posterUrl,
                 secondaryPosterUrl = it.screenshotUrl,
-                extra = listOfNotNull(show?.title, it.code()).joinToString(" · "),
+                extra = metaLine(show?.title, formatEpisodeCode(it.season, it.number)),
             )
         } ?: HeroContent.Empty,
         onBackClick = onBackClick,
@@ -40,6 +41,3 @@ fun EpisodePeopleScreen(
         modifier = modifier,
     )
 }
-
-private fun EpisodeDetails.code() =
-    "S%02dE%02d".format(season, number)

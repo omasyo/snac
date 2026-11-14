@@ -23,7 +23,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,7 +32,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.node.Ref
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -52,6 +50,9 @@ import com.omasyo.snac.core.model.media.Show
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
+import com.omasyo.snac.core.ui.format.formatEpisodeCode
+import com.omasyo.snac.core.ui.format.formatLocalTime
+import com.omasyo.snac.core.ui.format.metaLine
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.modifiers.bleedVertically
 import com.omasyo.snac.core.ui.modifiers.silhouette
@@ -66,7 +67,6 @@ import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import java.time.temporal.TemporalAdjusters
 import java.util.Locale
 
@@ -104,7 +104,7 @@ internal fun CalendarScreen(
             .filterIsInstance<DragInteraction.Start>()
             .collect { tappedDate = null }
     }
-    
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -180,7 +180,14 @@ private fun CalendarList(
         ) { index ->
             when (val item = items[index]) {
                 is CalendarUiItem.Header -> DateHeader(item.date)
-                is CalendarUiItem.Entry -> CalendarCard(item.item)
+                is CalendarUiItem.Entry -> CalendarCard(
+                    title = item.item.title,
+                    subtitle = item.item.subtitle,
+                    caption = item.item.caption,
+                    imageUrl = item.item.media.imageUrl,
+                    onClick = {},
+                )
+
                 null -> Unit
             }
         }
@@ -196,7 +203,11 @@ private fun CalendarList(
 
 @Composable
 private fun CalendarCard(
-    item: CalendarItem,
+    title: String,
+    subtitle: String,
+    caption: String?,
+    imageUrl: String?,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -205,51 +216,36 @@ private fun CalendarCard(
             .clickable(
                 indication = remember { SilhouettePressIndication() },
                 interactionSource = remember { MutableInteractionSource() },
-            ) {}
+                onClick = onClick,
+            )
             .border(2.dp, SnacColors.ink)
             .background(SnacColors.card)
             .padding(8.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Image(
-            imageUrl = item.media.imageUrl,
+            imageUrl = imageUrl,
             modifier = Modifier.aspectRatio(16f / 9f),
         )
         Column(
             modifier = Modifier.weight(1f),
         ) {
             Text(
-                text = item.media.title,
+                text = title,
+                maxLines = 1,
                 style = SnacTypography.subtitle,
             )
-            when (item) {
-                is EpisodeAiring -> {
-                    Text(
-                        text = item.episodeLabel(),
-                        style = SnacTypography.caption,
-                    )
-                    Text(
-                        text = item.firstAired.atZone(ZoneId.systemDefault())
-                            .format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)),
-                        style = SnacTypography.caption,
-                        color = SnacColors.muted,
-                    )
-                }
-
-                is MovieRelease -> {
-                    Text(
-                        text = "Movie",
-                        style = SnacTypography.caption,
-                        color = SnacColors.muted,
-                    )
-                    // Empty third line, so movie cards are as tall as episode cards.
-                    Text(
-                        text = "",
-                        style = SnacTypography.caption,
-                        color = SnacColors.muted,
-                    )
-                }
-            }
+            Text(
+                text = subtitle,
+                maxLines = 1,
+                style = SnacTypography.caption,
+            )
+            Text(
+                text = caption.orEmpty(),
+                maxLines = 1,
+                style = SnacTypography.caption,
+                color = SnacColors.muted,
+            )
         }
     }
 }
@@ -266,14 +262,31 @@ private fun DateHeader(
     )
 }
 
-private fun Episode.code() = "S%02dE%02d".format(season, number)
+private val CalendarItem.title: String
+    get() = media.title
 
-private fun EpisodeAiring.episodeLabel(): String =
-    if (episodes.size > 1) {
-        "${episodes.first().code()}–${episodes.last().code()} · ${episodes.size} episodes"
-    } else {
-        listOfNotNull(episode.code(), episode.title).joinToString(" · ")
+private val CalendarItem.subtitle: String
+    get() = when (this) {
+        is EpisodeAiring -> if (episodes.size > 1) {
+            metaLine(
+                "${episodes.first().code()}–${episodes.last().code()}",
+                "${episodes.size} episodes"
+            )
+        } else {
+            metaLine(episode.code(), episode.title)
+        }
+
+        is MovieRelease -> "Movie"
     }
+
+private val CalendarItem.caption: String?
+    get() = when (this) {
+        is EpisodeAiring -> firstAired.formatLocalTime()
+
+        is MovieRelease -> null
+    }
+
+private fun Episode.code() = formatEpisodeCode(season, number)
 
 private fun LocalDate.formatted(): String {
     val locale = Locale.getDefault()

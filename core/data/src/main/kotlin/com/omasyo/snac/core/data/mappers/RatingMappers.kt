@@ -1,18 +1,18 @@
 package com.omasyo.snac.core.data.mappers
 
+import com.omasyo.snac.core.common.format.formatCount
+import com.omasyo.snac.core.common.format.formatRating
 import com.omasyo.snac.core.data.models.Rating
 import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.network.models.RatingsResponse
-import java.text.DecimalFormat
-import java.text.NumberFormat
 
 fun RatingsResponse.toRatings() = Ratings(
     traktRating = trakt.rating,
     voteCount = trakt.votes,
     distribution = trakt.distribution,
     externalRatings = listOfNotNull(
-        tmdb?.toRating(title = "TMDB", outOf = "10", pattern = "#.#"),
-        imdb?.toRating(title = "IMDb", outOf = "10", pattern = "#.#"),
+        tmdb?.toRating(title = "TMDB", outOf = "10", maxFractionDigits = 1),
+        imdb?.toRating(title = "IMDb", outOf = "10", maxFractionDigits = 1),
         rottenTomatoes?.let { rt ->
             rt.rating?.let { Rating(title = "Tomatometer", rating = "$it%", extra = rt.state.orEmpty().toTitleCase()) }
         },
@@ -20,17 +20,17 @@ fun RatingsResponse.toRatings() = Ratings(
             rt.userRating?.let { Rating(title = "Popcornometer", rating = "$it%", extra = rt.userState.orEmpty().toTitleCase()) }
         },
         metascore?.rating?.let { Rating(title = "Metascore", rating = it.toString(), extra = "Critic reviews", outOf = "100") },
-        letterboxd?.toRating(title = "Letterboxd", outOf = "5", pattern = "#.##"),
-        mal?.toRating(title = "MAL", outOf = "10", pattern = "#.##"),
+        letterboxd?.toRating(title = "Letterboxd", outOf = "5", maxFractionDigits = 2),
+        mal?.toRating(title = "MAL", outOf = "10", maxFractionDigits = 2),
     ),
 )
 
-private fun RatingsResponse.Scored.toRating(title: String, outOf: String, pattern: String): Rating? {
+private fun RatingsResponse.Scored.toRating(title: String, outOf: String, maxFractionDigits: Int): Rating? {
     val rating = rating ?: return null
     return Rating(
         title = title,
-        rating = DecimalFormat(pattern).format(rating),
-        extra = votes?.let { "${NumberFormat.getIntegerInstance().format(it)} ${if (it == 1) "vote" else "votes"}" }.orEmpty(),
+        rating = rating.formatRating(maxFractionDigits),
+        extra = votes?.let { "${it.formatCount()} ${if (it == 1) "vote" else "votes"}" }.orEmpty(),
         outOf = outOf,
     )
 }

@@ -2,10 +2,12 @@ package com.omasyo.snac.core.ui.format
 
 import android.text.format.DateFormat
 import android.text.format.DateUtils
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.Locale
 
 fun LocalDate.formatDayMonth(): String = formatBestPattern("dMMM")
@@ -24,3 +26,6 @@ fun LocalDateTime.formatRelative(): String = DateUtils.getRelativeTimeSpanString
     DateUtils.MINUTE_IN_MILLIS,
     DateUtils.FORMAT_ABBREV_RELATIVE,
 ).toString()
+
+fun Instant.formatLocalTime(): String = atZone(ZoneId.systemDefault())
+    .format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT))

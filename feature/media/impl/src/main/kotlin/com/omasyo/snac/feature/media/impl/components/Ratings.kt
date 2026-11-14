@@ -36,12 +36,12 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.common.SnacResult
+import com.omasyo.snac.core.common.format.formatCount
+import com.omasyo.snac.core.common.format.formatRating
 import com.omasyo.snac.core.data.models.Rating
 import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Text
-import com.omasyo.snac.core.ui.format.formatCount
-import com.omasyo.snac.core.ui.format.formatRating
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication

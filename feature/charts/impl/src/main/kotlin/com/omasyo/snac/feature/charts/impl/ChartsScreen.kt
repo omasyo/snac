@@ -48,6 +48,8 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.omasyo.snac.core.common.format.formatCount
+import com.omasyo.snac.core.common.format.formatRevenue
 import com.omasyo.snac.core.model.extra.TimePeriod
 import com.omasyo.snac.core.model.media.AnticipatedItem
 import com.omasyo.snac.core.model.media.BoxOfficeItem
@@ -65,8 +67,6 @@ import com.omasyo.snac.core.ui.components.IconButton
 import com.omasyo.snac.core.ui.components.TabRow
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
-import com.omasyo.snac.core.ui.format.formatCount
-import com.omasyo.snac.core.ui.format.formatRevenue
 import com.omasyo.snac.core.ui.modifiers.Side
 import com.omasyo.snac.core.ui.modifiers.film
 import com.omasyo.snac.core.ui.modifiers.silhouette

@@ -52,6 +52,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
 import com.omasyo.snac.core.common.SnacResult
+import com.omasyo.snac.core.common.format.formatCount
 import com.omasyo.snac.core.data.models.Comment
 import com.omasyo.snac.core.data.models.Reply
 import com.omasyo.snac.core.ui.components.Button
@@ -59,7 +60,6 @@ import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Icon
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
-import com.omasyo.snac.core.ui.format.formatCount
 import com.omasyo.snac.core.ui.format.formatRelative
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message

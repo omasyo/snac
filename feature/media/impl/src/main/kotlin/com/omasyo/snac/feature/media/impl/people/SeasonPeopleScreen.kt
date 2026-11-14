@@ -6,6 +6,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.data.models.Season
 import com.omasyo.snac.core.data.models.ShowDetails
+import com.omasyo.snac.core.ui.format.metaLine
 import com.omasyo.snac.core.ui.models.mapOrNull
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
@@ -37,5 +38,5 @@ private fun Season.toHeroContent(show: ShowDetails?) = HeroContent(
     title = title,
     posterUrl = posterUrl ?: show?.posterUrl,
     secondaryPosterUrl = show?.secondaryPosterUrl,
-    extra = listOfNotNull(show?.title, firstAired?.year?.toString()).joinToString(" · "),
+    extra = metaLine(show?.title, firstAired?.year?.toString()),
 )

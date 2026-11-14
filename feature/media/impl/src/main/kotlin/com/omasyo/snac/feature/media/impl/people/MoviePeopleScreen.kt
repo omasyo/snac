@@ -6,6 +6,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.omasyo.snac.core.data.models.MovieDetails
 import com.omasyo.snac.core.data.models.PeopleList
 import com.omasyo.snac.core.data.models.Person
+import com.omasyo.snac.core.ui.format.metaLine
 import com.omasyo.snac.core.ui.models.mapOrNull
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
@@ -37,10 +38,10 @@ private fun MovieDetails.toHeroContent(directors: List<String>) = HeroContent(
     title = title,
     posterUrl = posterUrl,
     secondaryPosterUrl = secondaryPosterUrl,
-    extra = listOfNotNull(
+    extra = metaLine(
         year?.toString(),
         directors.takeIf { it.isNotEmpty() }?.joinToString(", "),
-    ).joinToString(" · "),
+    ),
 )
 
 private fun PeopleList.directors(): List<String> = crew.entries
