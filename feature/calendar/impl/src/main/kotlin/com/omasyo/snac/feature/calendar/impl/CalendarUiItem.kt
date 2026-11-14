@@ -34,8 +34,3 @@ fun CalendarUiItem.key(): String = when(this) {
     is MovieRelease -> "${media.slug}-$date"
     is EpisodeAiring -> "${media.slug}-$date-${episode.season}x${episode.number}"
 }
-
-internal fun List<CalendarUiItem>.indexOfDate(date: LocalDate): Int? {
-    if (isEmpty() || date < first().date || date > last().date) return null
-    return indexOfFirst { it.date >= date }
-}

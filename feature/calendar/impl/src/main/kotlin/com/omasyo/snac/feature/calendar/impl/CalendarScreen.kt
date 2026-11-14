@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +34,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.node.Ref
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -81,7 +83,7 @@ import java.util.Locale
 @Composable
 internal fun CalendarScreen(
     onMovieClick: (Movie) -> Unit,
-    onEpisodeClick: (Episode) -> Unit,
+    onEpisodeClick: (EpisodeAiring) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CalendarViewModel = metroViewModel(),
 ) {
@@ -97,7 +99,7 @@ internal fun CalendarScreen(
 @Composable
 internal fun CalendarScreen(
     onMovieClick: (Movie) -> Unit,
-    onEpisodeClick: (Episode) -> Unit,
+    onEpisodeClick: (EpisodeAiring) -> Unit,
     items: LazyPagingItems<CalendarUiItem>,
     onJumpToDate: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
@@ -146,13 +148,14 @@ internal fun CalendarScreen(
             selectedDate = selectedDate,
             onDateTap = { date ->
                 tappedDate = date
-                val loadedIndex = items.itemSnapshotList.items.indexOfDate(date)
+                val loadedIndex =
+                    items.itemSnapshotList.items.indexOfFirst { it is CalendarUiItem.Header && it.date == date }
                 coroutineScope.launch {
-                    if (loadedIndex != null) {
+                    if (loadedIndex >= 0) {
                         listState.animateScrollToItem(loadedIndex)
                     } else {
                         onJumpToDate(date)
-                        // TODO MAYBE don't scroll immediately
+                        // TODO MAYBE don't scroll immediately or invalidate results
                         listState.scrollToItem(0)
                     }
                 }
@@ -175,7 +178,7 @@ internal fun CalendarScreen(
 @Composable
 private fun CalendarList(
     onMovieClick: (Movie) -> Unit,
-    onEpisodeClick: (Episode) -> Unit,
+    onEpisodeClick: (EpisodeAiring) -> Unit,
     items: LazyPagingItems<CalendarUiItem>,
     listState: LazyListState,
     modifier: Modifier = Modifier,
@@ -236,7 +239,7 @@ private fun CalendarList(
                     imageUrl = item.item.media.imageUrl,
                     onClick = {
                         when (item.item) {
-                            is EpisodeAiring -> onEpisodeClick(item.item.episode)
+                            is EpisodeAiring -> onEpisodeClick(item.item)
                             is MovieRelease -> onMovieClick(item.item.media)
                         }
                     },
