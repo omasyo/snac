@@ -37,7 +37,7 @@ class CalendarRepositoryImpl(
         const val WINDOW_DAYS = 7
 
         val pagingConfig = PagingConfig(
-            pageSize = 20,
+            pageSize = 5,
             enablePlaceholders = false,
         )
     }

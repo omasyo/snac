@@ -11,8 +11,11 @@ import java.time.LocalDate
 
 internal class CalendarPagingSource(
     private val windowDays: Int,
+    private val maxEmptyWindowsAhead: Int = 8,
     private val provider: suspend (startDate: LocalDate, days: Int) -> SnacResult<List<CalendarMediaResponse>>,
 ) : PagingSource<LocalDate, CalendarDay>() {
+
+    private var emptyWindowsAhead = 0
 
     override fun getRefreshKey(state: PagingState<LocalDate, CalendarDay>): LocalDate? =
         state.anchorPosition?.let { state.closestItemToPosition(it)?.date }
@@ -35,10 +38,14 @@ internal class CalendarPagingSource(
             .sortedBy { it.date }
             .toList()
 
+        if (params !is LoadParams.Prepend) {
+            emptyWindowsAhead = if (days.isEmpty()) emptyWindowsAhead + 1 else 0
+        }
+
         return LoadResult.Page(
             data = days,
             prevKey = start.minusDays(windowDays.toLong()),
-            nextKey = end,
+            nextKey = if (emptyWindowsAhead >= maxEmptyWindowsAhead) null else end,
         )
     }
 }

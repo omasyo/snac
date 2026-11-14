@@ -121,6 +121,8 @@ internal fun CalendarScreen(
             .collect { tappedDate = null }
     }
 
+    KeepPlaceWhenEarlierDaysLoad(listState, items.itemSnapshotList.items)
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -259,6 +261,26 @@ private fun CalendarList(
                 Modifier
                     .bottomBarPadding()
                     .navigationBarsPadding()
+            )
+        }
+    }
+}
+
+@Composable
+private fun KeepPlaceWhenEarlierDaysLoad(
+    listState: LazyListState,
+    items: List<CalendarUiItem>,
+) {
+    val previousFirstKey = remember { Ref<String>() }
+
+    SideEffect {
+        val rowsAddedAbove = items.indexOfFirst { it.key() == previousFirstKey.value }
+        previousFirstKey.value = items.firstOrNull()?.key()
+
+        if (rowsAddedAbove > 0) {
+            listState.requestScrollToItem(
+                index = listState.firstVisibleItemIndex + rowsAddedAbove,
+                scrollOffset = listState.firstVisibleItemScrollOffset,
             )
         }
     }
