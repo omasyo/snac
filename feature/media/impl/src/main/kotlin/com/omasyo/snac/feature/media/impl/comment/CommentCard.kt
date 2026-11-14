@@ -78,6 +78,7 @@ import com.omasyo.snac.feature.media.impl.components.CommentStats
 import kotlinx.coroutines.flow.flowOf
 import kotlin.math.min
 import com.omasyo.snac.core.ui.R as UiR
+import com.omasyo.snac.core.ui.models.snacMessage
 
 private const val PREVIEW_REPLIES = 2
 private const val COLLAPSED_LINES = 3
@@ -159,8 +160,7 @@ internal fun CommentThread(
                     if (isEmpty) {
                         item("refresh-error") {
                             ErrorBox(
-                                description = refreshState.error.message
-                                    ?: SnacResult.Error.Unexpected.message,
+                                description = refreshState.error.snacMessage,
                                 onRetry = replies::retry,
                             ) {
                                 ReplyCardPlaceholders(placeholderCount)

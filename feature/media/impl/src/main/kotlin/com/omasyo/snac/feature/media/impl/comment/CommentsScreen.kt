@@ -57,6 +57,8 @@ import com.omasyo.snac.feature.media.api.navigation.CommentsNavKey
 import com.omasyo.snac.feature.media.impl.common.MediaDetailsLayout
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.coroutines.flow.flowOf
+import com.omasyo.snac.core.common.SnacException
+import com.omasyo.snac.core.ui.models.snacMessage
 
 
 data class HeroContent(
@@ -128,8 +130,7 @@ internal fun CommentsScreen(
                 is LoadState.Error -> {
                     item("refresh-error") {
                         ErrorBox(
-                            description = refreshState.error.message
-                                ?: SnacResult.Error.Unexpected.message,
+                            description = refreshState.error.snacMessage,
                             onRetry = comments::retry,
                             alignment = Alignment.TopCenter,
                             errorPadding = PaddingValues(top = 48.dp),
@@ -366,7 +367,7 @@ private fun LoadingPreview() {
 @Composable
 private fun ErrorPreview() {
     val loading = LoadStates(
-        LoadState.Error(Exception("Couldn't get comments")),
+        LoadState.Error(SnacException(SnacResult.Error.NoConnection)),
         LoadState.NotLoading(false),
         LoadState.NotLoading(false)
     )

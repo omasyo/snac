@@ -1,6 +1,14 @@
 package com.omasyo.snac.feature.calendar.impl
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.paging.LoadState
+import androidx.paging.LoadStates
+import com.omasyo.snac.core.common.SnacException
+import com.omasyo.snac.core.common.SnacResult
+import com.omasyo.snac.core.ui.components.Button
+import com.omasyo.snac.core.ui.components.ErrorBox
+import com.omasyo.snac.core.ui.models.snacMessage
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.DragInteraction
@@ -163,11 +171,42 @@ private fun CalendarList(
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 36.dp),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 48.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         state = listState,
-        modifier = modifier.bleedVertically(36.dp),
+        modifier = modifier.bleedVertically(32.dp),
     ) {
+        when (val refreshState = items.loadState.refresh) {
+            is LoadState.Loading -> {
+                if (items.itemCount == 0) {
+                    item("refresh-loading") { CalendarDayPlaceholder() }
+                }
+            }
+
+            is LoadState.Error -> {
+                if (items.itemCount == 0) {
+                    item("refresh-error") {
+                        ErrorBox(
+                            description = refreshState.error.snacMessage,
+                            onRetry = items::retry,
+                            alignment = Alignment.TopCenter,
+                            errorPadding = PaddingValues(top = 48.dp),
+                        ) {
+                            CalendarDayPlaceholder()
+                        }
+                    }
+                }
+            }
+
+            is LoadState.NotLoading -> {}
+        }
+
+        when (items.loadState.prepend) {
+            is LoadState.Loading -> item("prepend-loading") { CalendarCardPlaceholder() }
+            is LoadState.Error -> item("prepend-error") { RetryButton(onRetry = items::retry) }
+            is LoadState.NotLoading -> {}
+        }
+
         items(
             count = items.itemCount,
             key = items.itemKey(CalendarUiItem::key),
@@ -191,6 +230,12 @@ private fun CalendarList(
                 null -> Unit
             }
         }
+        when (items.loadState.append) {
+            is LoadState.Loading -> item("append-loading") { CalendarCardPlaceholder() }
+            is LoadState.Error -> item("append-error") { RetryButton(onRetry = items::retry) }
+            is LoadState.NotLoading -> {}
+        }
+
         item {
             Spacer(
                 Modifier
@@ -247,6 +292,19 @@ private fun CalendarCard(
                 color = SnacColors.muted,
             )
         }
+    }
+}
+
+@Composable
+private fun RetryButton(
+    onRetry: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier.fillMaxWidth(),
+    ) {
+        Button(text = "Retry", onClick = onRetry)
     }
 }
 
@@ -326,6 +384,39 @@ private fun Preview() {
         flowOf(PagingData.from(days).toUiItems())
     }.collectAsLazyPagingItems()
 
+    SnacTheme {
+        CalendarScreen(
+            items = items,
+            onJumpToDate = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun LoadingPreview() {
+    val loading =
+        LoadStates(LoadState.Loading, LoadState.NotLoading(false), LoadState.NotLoading(false))
+    val items =
+        remember { flowOf(PagingData.empty<CalendarUiItem>(loading)) }.collectAsLazyPagingItems()
+    SnacTheme {
+        CalendarScreen(
+            items = items,
+            onJumpToDate = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun ErrorPreview() {
+    val error = LoadStates(
+        LoadState.Error(SnacException(SnacResult.Error.NoConnection)),
+        LoadState.NotLoading(false),
+        LoadState.NotLoading(false),
+    )
+    val items =
+        remember { flowOf(PagingData.empty<CalendarUiItem>(error)) }.collectAsLazyPagingItems()
     SnacTheme {
         CalendarScreen(
             items = items,

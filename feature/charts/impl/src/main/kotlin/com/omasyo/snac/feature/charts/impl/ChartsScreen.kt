@@ -48,6 +48,8 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.omasyo.snac.core.common.SnacException
+import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.common.format.formatCount
 import com.omasyo.snac.core.common.format.formatRevenue
 import com.omasyo.snac.core.model.extra.TimePeriod
@@ -67,6 +69,7 @@ import com.omasyo.snac.core.ui.components.IconButton
 import com.omasyo.snac.core.ui.components.TabRow
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
+import com.omasyo.snac.core.ui.models.snacMessage
 import com.omasyo.snac.core.ui.modifiers.Side
 import com.omasyo.snac.core.ui.modifiers.film
 import com.omasyo.snac.core.ui.modifiers.silhouette
@@ -270,8 +273,7 @@ fun ChartsScreen(
                 if (results.itemCount == 0) {
                     item("refresh-error") {
                         ErrorBox(
-                            description = refreshState.error.localizedMessage
-                                ?: "Failed to load charts.",
+                            description = refreshState.error.snacMessage,
                             onRetry = { results.retry() },
                             alignment = Alignment.TopCenter,
                             errorPadding = PaddingValues(top = 120.dp)
@@ -346,7 +348,7 @@ fun ChartsScreen(
                             .padding(16.dp),
                     ) {
                         Text(
-                            text = "Error loading more: ${appendState.error.localizedMessage ?: "Unknown error"}",
+                            text = "Error loading more: ${appendState.error.snacMessage}",
                             style = SnacTypography.caption,
                             color = SnacColors.signal,
                             modifier = Modifier.weight(1f),
@@ -505,7 +507,7 @@ private fun PreviewError() {
         flowOf(
             PagingData.empty<ChartItem>(
                 sourceLoadStates = LoadStates(
-                    refresh = LoadState.Error(Exception("Couldn't get trending films")),
+                    refresh = LoadState.Error(SnacException(SnacResult.Error.NoConnection)),
                     prepend = LoadState.NotLoading(endOfPaginationReached = true),
                     append = LoadState.NotLoading(endOfPaginationReached = true),
                 )

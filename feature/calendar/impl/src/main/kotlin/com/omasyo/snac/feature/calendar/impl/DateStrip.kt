@@ -121,7 +121,7 @@ private fun DateCard(
     modifier: Modifier = Modifier,
 ) {
     val backgroundColor by animateColorAsState(if (selected) SnacColors.accent else SnacColors.filmLine)
-    val contentColor by animateColorAsState(if (selected) SnacColors.ink else SnacColors.chip)
+    val contentColor by animateColorAsState(if (selected) SnacColors.onAccent else SnacColors.onFilm)
     val rotation by animateFloatAsState(if (selected) -6f else 0f)
 
     CompositionLocalProvider(LocalContentColor provides contentColor) {

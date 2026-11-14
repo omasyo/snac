@@ -2,6 +2,7 @@ package com.omasyo.snac.core.data.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.omasyo.snac.core.common.SnacException
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.model.media.ChartItem
 
@@ -20,7 +21,7 @@ internal open class CustomPagingSource<T, R : Any>(
         val page = pageForPosition(params.key ?: 0)
 
         val result = when(val response = provider(page)) {
-            is SnacResult.Failure -> return LoadResult.Error(Exception(response.error.toString()))
+            is SnacResult.Failure -> return LoadResult.Error(SnacException(response.error))
             is SnacResult.Success -> response.value
         }
 

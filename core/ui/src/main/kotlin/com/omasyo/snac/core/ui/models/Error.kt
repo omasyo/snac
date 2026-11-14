@@ -1,5 +1,6 @@
 package com.omasyo.snac.core.ui.models
 
+import com.omasyo.snac.core.common.SnacException
 import com.omasyo.snac.core.common.SnacResult
 
 val SnacResult.Error.message: String
@@ -12,3 +13,6 @@ val SnacResult.Error.message: String
         is SnacResult.Error.RateLimitExceeded -> "Too many requests. Try again shortly"
         SnacResult.Error.Unexpected -> "An error occurred"
     }
+
+val Throwable.snacMessage: String
+    get() = ((this as? SnacException)?.error ?: SnacResult.Error.Unexpected).message
