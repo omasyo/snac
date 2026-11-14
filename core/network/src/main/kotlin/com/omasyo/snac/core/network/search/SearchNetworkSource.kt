@@ -1,0 +1,9 @@
+package com.omasyo.snac.core.network.search
+
+import com.omasyo.snac.core.common.SnacResult
+import com.omasyo.snac.core.network.NetworkSource
+import com.omasyo.snac.core.network.search.models.TrendingSearchResponse
+
+interface SearchNetworkSource : NetworkSource {
+    suspend fun getTrendingSearchResults(page: Int, limit: Int): SnacResult<List<TrendingSearchResponse>>
+}
