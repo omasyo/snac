@@ -3,15 +3,20 @@ package com.omasyo.snac.core.model.media
 import java.time.Instant
 import java.time.LocalDate
 
-sealed interface CalendarItem
+sealed interface CalendarItem {
+    val media: Media
+    val date: LocalDate
+}
 
 data class MovieRelease(
-    val movie: Movie,
-    val released: LocalDate,
+    override val media: Movie,
+    override val date: LocalDate,
 ) : CalendarItem
 
 data class EpisodeAiring(
+    override val media: Show,
     val episode: Episode,
-    val show: Show,
+    val episodes: List<Episode>,
     val firstAired: Instant,
+    override val date: LocalDate,
 ) : CalendarItem
