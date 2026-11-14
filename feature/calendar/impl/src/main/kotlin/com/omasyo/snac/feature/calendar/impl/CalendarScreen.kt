@@ -34,7 +34,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.node.Ref
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -121,7 +120,7 @@ internal fun CalendarScreen(
             .collect { tappedDate = null }
     }
 
-    KeepPlaceWhenEarlierDaysLoad(listState, items.itemSnapshotList.items)
+    KeepPlaceWhenEarlierDaysLoad(listState, items)
 
     Column(
         modifier = modifier
@@ -266,23 +265,34 @@ private fun CalendarList(
     }
 }
 
+private class LastComposition {
+    var firstKey: String? = null
+    var rowsBeforeItems = 0
+}
+
 @Composable
 private fun KeepPlaceWhenEarlierDaysLoad(
     listState: LazyListState,
-    items: List<CalendarUiItem>,
+    items: LazyPagingItems<CalendarUiItem>,
+    rowsBeforeItems: Int = if (items.loadState.prepend !is LoadState.NotLoading) 1 else 0,
 ) {
-    val previousFirstKey = remember { Ref<String>() }
+    val itemList = items.itemSnapshotList.items
+
+    val last = remember { LastComposition() }
 
     SideEffect {
-        val rowsAddedAbove = items.indexOfFirst { it.key() == previousFirstKey.value }
-        previousFirstKey.value = items.firstOrNull()?.key()
+        val rowsAddedAbove = itemList.indexOfFirst { it.key() == last.firstKey }
 
         if (rowsAddedAbove > 0) {
+            val itemIndex = maxOf(0, listState.firstVisibleItemIndex - last.rowsBeforeItems)
             listState.requestScrollToItem(
-                index = listState.firstVisibleItemIndex + rowsAddedAbove,
+                index = rowsBeforeItems + rowsAddedAbove + itemIndex,
                 scrollOffset = listState.firstVisibleItemScrollOffset,
             )
         }
+
+        last.firstKey = itemList.firstOrNull()?.key()
+        last.rowsBeforeItems = rowsBeforeItems
     }
 }
 
