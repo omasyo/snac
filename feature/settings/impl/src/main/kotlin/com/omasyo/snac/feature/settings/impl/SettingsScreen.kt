@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -23,9 +22,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.omasyo.snac.core.model.settings.AppTheme
 import com.omasyo.snac.core.model.settings.ThemeMode
 import com.omasyo.snac.core.model.settings.ThemeSettings
-import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.BackButton
-import com.omasyo.snac.core.ui.components.IconButton
+import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.SignInPrompt
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
@@ -35,7 +33,6 @@ import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.CuttingRoom
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
 import dev.zacsweers.metrox.viewmodel.metroViewModel
-import com.omasyo.snac.core.ui.R as UiR
 
 @Composable
 fun SettingsScreen(
@@ -75,7 +72,6 @@ fun SettingsScreen(
             .background(SnacColors.page)
             .bottomBarPadding()
             .statusBarsPadding()
-            .navigationBarsPadding()
             .padding(16.dp),
     ) {
         Row(

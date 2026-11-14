@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -57,14 +56,13 @@ import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 
 @Composable
-fun ColumnScope.CrewTab(
+fun CrewTab(
     onPersonClick: (Person) -> Unit,
     crewGroup: UiState<Map<String, List<Crew>>>,
     listState: LazyListState,
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
-    val modifier = modifier.weight(1f)
     Box(modifier) {
         val placeholder =
             remember {
@@ -95,7 +93,6 @@ fun ColumnScope.CrewTab(
                 LazyColumn(
                     state = listState,
                     contentPadding = contentPadding,
-                    modifier = modifier,
                 ) {
                     for ((group, people) in crewGroup.content) {
                         item(

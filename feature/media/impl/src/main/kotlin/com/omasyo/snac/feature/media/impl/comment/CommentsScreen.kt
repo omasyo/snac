@@ -35,6 +35,7 @@ import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
+import com.omasyo.snac.core.common.SnacException
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.data.models.Comment
 import com.omasyo.snac.core.data.models.Reply
@@ -47,6 +48,7 @@ import com.omasyo.snac.core.ui.components.imageGradient
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.mapOrNull
 import com.omasyo.snac.core.ui.models.message
+import com.omasyo.snac.core.ui.models.snacMessage
 import com.omasyo.snac.core.ui.modifiers.film
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.CapHeightLineHeightStyle
@@ -57,8 +59,6 @@ import com.omasyo.snac.feature.media.api.navigation.CommentsNavKey
 import com.omasyo.snac.feature.media.impl.common.MediaDetailsLayout
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.coroutines.flow.flowOf
-import com.omasyo.snac.core.common.SnacException
-import com.omasyo.snac.core.ui.models.snacMessage
 
 
 data class HeroContent(
@@ -115,10 +115,14 @@ internal fun CommentsScreen(
         LazyColumn(
             state = listState,
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(16.dp),
+            contentPadding = PaddingValues(
+                top = contentPadding.calculateTopPadding() + 16.dp,
+                bottom = contentPadding.calculateBottomPadding() + 16.dp,
+                start = 16.dp,
+                end = 16.dp,
+            ),
             modifier = Modifier
-                .fillMaxSize()
-                .padding(top = contentPadding.calculateTopPadding()),
+                .fillMaxSize(),
         ) {
             when (val refreshState = comments.loadState.refresh) {
                 is LoadState.Loading -> {

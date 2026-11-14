@@ -127,7 +127,7 @@ fun MovieScreen(
             modifier = Modifier
                 .verticalScroll(scrollState)
                 .padding(contentPadding)
-                .padding(top = 16.dp),
+                .padding(vertical = 16.dp),
         ) {
             movie.map { it.tagline }.transpose()?.let {
                 MediaTagline(

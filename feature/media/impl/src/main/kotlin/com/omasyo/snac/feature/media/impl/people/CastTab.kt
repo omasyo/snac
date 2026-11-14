@@ -60,7 +60,6 @@ fun ColumnScope.CastTab(
     contentPadding: PaddingValues,
     modifier: Modifier = Modifier,
 ) {
-    val modifier = modifier.weight(1f)
     val placeholder =
         remember {
             movableContentOf<Boolean> { scrollable ->
@@ -93,7 +92,6 @@ fun ColumnScope.CastTab(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 contentPadding = contentPadding,
-                modifier = modifier,
             ) {
                 items(cast.content, key = { it.person.slug }) { item ->
                     CastCard(
@@ -185,6 +183,7 @@ private fun Placeholder(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         contentPadding = contentPadding,
         userScrollEnabled = scrollable,
+        modifier = modifier,
     ) {
         items(10) {
             val rotation = remember(it) { Random(it + 80).nextInt(-3, 3).toFloat() }

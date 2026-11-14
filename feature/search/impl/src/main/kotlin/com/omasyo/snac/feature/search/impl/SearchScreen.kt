@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,9 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
@@ -40,6 +39,7 @@ import com.omasyo.snac.core.ui.R
 import com.omasyo.snac.core.ui.components.ClapperboardStripes
 import com.omasyo.snac.core.ui.components.Icon
 import com.omasyo.snac.core.ui.components.Image
+import com.omasyo.snac.core.ui.components.LocalBottomBarPadding
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
@@ -58,7 +58,7 @@ fun SearchScreen(
     SearchScreen(
         onSearchClick = {},
         onMediaClick = {},
-        media = remember { flowOf(PagingData.from<Media>(Movie.PreviewSample)) }.collectAsLazyPagingItems(),
+        media = remember { flowOf(PagingData.from<Media>(Movie.PreviewSample + Movie.PreviewSample + Movie.PreviewSample)) }.collectAsLazyPagingItems(),
         modifier = modifier
     )
 }
@@ -72,13 +72,15 @@ fun SearchScreen(
 ) {
 
     SearchScreenLayout(
-        modifier = modifier.background(SnacColors.page),
+        modifier = modifier
+            .fillMaxSize()
+            .background(SnacColors.page),
         header = {
             val shadowColor = SnacColors.signalShadow
             Column(
                 modifier = modifier
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 24.dp, bottom = 16.dp)
+                    .statusBarsPadding()
+                    .padding(16.dp)
                     .rotate(-1f)
                     .clickable(
                         indication = SilhouettePressIndication(
@@ -116,8 +118,6 @@ fun SearchScreen(
             }
         },
     ) { innerPadding ->
-
-
         BentoGrid(
             contentPadding = innerPadding,
             items = media,
@@ -154,21 +154,17 @@ private fun SearchScreenLayout(
 
         val headerHeight = headerPlaceable.height.toDp()
 
+
         val gridPlaceable =
             subcompose("grid") {
+                val bottomBarPadding = LocalBottomBarPadding.current
                 val windowPaddingValues = WindowInsets.systemBars.asPaddingValues()
-                content(object : PaddingValues {
-                    override fun calculateLeftPadding(layoutDirection: LayoutDirection): Dp =
-                        windowPaddingValues.calculateLeftPadding(layoutDirection)
-
-                    override fun calculateTopPadding(): Dp = headerHeight
-
-                    override fun calculateRightPadding(layoutDirection: LayoutDirection): Dp =
-                        windowPaddingValues.calculateRightPadding(layoutDirection)
-
-                    override fun calculateBottomPadding(): Dp =
-                        windowPaddingValues.calculateBottomPadding()
-                })
+                content(
+                    PaddingValues(
+                        top = headerHeight,
+                        bottom = bottomBarPadding.calculateBottomPadding(),
+                    )
+                )
             }.first()
                 .measure(constraint)
 
@@ -183,7 +179,7 @@ private fun SearchScreenLayout(
 @Composable
 private fun Preview() {
     val media =
-        remember { flowOf(PagingData.from<Media>(Movie.PreviewSample)) }.collectAsLazyPagingItems()
+        remember { flowOf(PagingData.from<Media>(Movie.PreviewSample + Movie.PreviewSample + Movie.PreviewSample)) }.collectAsLazyPagingItems()
     SnacTheme {
         SearchScreen(
             onSearchClick = {},

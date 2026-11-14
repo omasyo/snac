@@ -130,7 +130,7 @@ fun SeasonScreen(
             modifier = Modifier
                 .verticalScroll(scrollState)
                 .padding(contentPadding)
-                .padding(top = 16.dp),
+                .padding(vertical = 16.dp),
         ) {
             MediaTagline(
                 state = show.map { it.title },
