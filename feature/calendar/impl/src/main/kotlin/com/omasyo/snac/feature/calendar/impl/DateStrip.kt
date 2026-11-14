@@ -76,7 +76,7 @@ fun DateStrip(
 
     LaunchedEffect(selectedDate) {
 
-        val indices = itemsInfo.map { it.index }
+        val indices = itemsInfo.drop(1).dropLast(1).map { it.index }
 
 
         val dayDiff = ChronoUnit.DAYS.between(Today, selectedDate).toInt()

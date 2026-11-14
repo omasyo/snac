@@ -4,14 +4,15 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.model.media.Media
+import com.omasyo.snac.core.model.media.Movie
+import com.omasyo.snac.core.model.media.Show
+import com.omasyo.snac.core.ui.navigation.Navigator
 import com.omasyo.snac.feature.media.api.navigation.CommentThreadNavKey
-import com.omasyo.snac.feature.media.api.navigation.CommentsNavKey
 import com.omasyo.snac.feature.media.api.navigation.EpisodeNavKey
 import com.omasyo.snac.feature.media.api.navigation.EpisodePeopleNavKey
 import com.omasyo.snac.feature.media.api.navigation.MovieCommentsNavKey
 import com.omasyo.snac.feature.media.api.navigation.MovieNavKey
 import com.omasyo.snac.feature.media.api.navigation.MoviePeopleNavKey
-import com.omasyo.snac.feature.media.api.navigation.PeopleNavKey
 import com.omasyo.snac.feature.media.api.navigation.SeasonNavKey
 import com.omasyo.snac.feature.media.api.navigation.SeasonPeopleNavKey
 import com.omasyo.snac.feature.media.api.navigation.ShowCommentsNavKey
@@ -28,26 +29,27 @@ import com.omasyo.snac.feature.media.impl.people.ShowPeopleScreen
 import com.omasyo.snac.feature.media.impl.show.EpisodeScreen
 import com.omasyo.snac.feature.media.impl.show.SeasonScreen
 import com.omasyo.snac.feature.media.impl.show.ShowScreen
+import com.omasyo.snac.feature.person.api.navigation.PersonNavKey
 
-fun EntryProviderScope<NavKey>.mediaEntry(
-    onBackClick: () -> Unit,
-    onMediaClick: (Media) -> Unit,
-    onPersonClick: (Person) -> Unit,
-    onSeasonClick: (SeasonNavKey) -> Unit,
-    onEpisodeClick: (EpisodeNavKey) -> Unit,
-    onPeopleClick: (PeopleNavKey) -> Unit,
-    onCommentsClick: (CommentsNavKey) -> Unit,
-    onCommentThreadClick: (CommentThreadNavKey) -> Unit,
-) {
+fun EntryProviderScope<NavKey>.mediaEntry(navigator: Navigator) {
+    val onBackClick: () -> Unit = navigator::goBack
+    val onMediaClick: (Media) -> Unit = {
+        when (it) {
+            is Movie -> navigator.navigate(MovieNavKey(it.slug))
+            is Show -> navigator.navigate(ShowNavKey(it.slug))
+        }
+    }
+    val onPersonClick: (Person) -> Unit = { navigator.navigate(PersonNavKey(it.slug)) }
+
     entry<MovieNavKey> { key ->
         MovieScreen(
             slug = key.slug,
             onBackClick = onBackClick,
             onPersonClick = onPersonClick,
-            onSeeAllCastClick = { onPeopleClick(MoviePeopleNavKey(key.slug)) },
+            onSeeAllCastClick = { navigator.navigate(MoviePeopleNavKey(key.slug)) },
             onMediaClick = onMediaClick,
-            onReviewClick = { onCommentThreadClick(it.toThreadNavKey()) },
-            onSeeAllReviewClick = { onCommentsClick(MovieCommentsNavKey(key.slug)) },
+            onReviewClick = { navigator.navigate(it.toThreadNavKey()) },
+            onSeeAllReviewClick = { navigator.navigate(MovieCommentsNavKey(key.slug)) },
             onCommentClick = {},
             onSeeAllRelatedClick = {},
         )
@@ -56,12 +58,12 @@ fun EntryProviderScope<NavKey>.mediaEntry(
         ShowScreen(
             slug = key.slug,
             onBackClick = onBackClick,
-            onSeasonClick = { onSeasonClick(SeasonNavKey(key.slug, it.number)) },
+            onSeasonClick = { navigator.navigate(SeasonNavKey(key.slug, it.number)) },
             onPersonClick = onPersonClick,
-            onSeeAllCastClick = { onPeopleClick(ShowPeopleNavKey(key.slug)) },
+            onSeeAllCastClick = { navigator.navigate(ShowPeopleNavKey(key.slug)) },
             onMediaClick = onMediaClick,
-            onReviewClick = { onCommentThreadClick(it.toThreadNavKey()) },
-            onSeeAllReviewClick = { onCommentsClick(ShowCommentsNavKey(key.slug)) },
+            onReviewClick = { navigator.navigate(it.toThreadNavKey()) },
+            onSeeAllReviewClick = { navigator.navigate(ShowCommentsNavKey(key.slug)) },
             onCommentClick = {},
             onSeeAllRelatedClick = {},
         )
@@ -71,10 +73,25 @@ fun EntryProviderScope<NavKey>.mediaEntry(
             showSlug = key.showSlug,
             season = key.season,
             onBackClick = onBackClick,
-            onEpisodeClick = { onEpisodeClick(EpisodeNavKey(key.showSlug, it.season, it.number)) },
+            onEpisodeClick = {
+                navigator.navigate(
+                    EpisodeNavKey(
+                        key.showSlug,
+                        it.season,
+                        it.number
+                    )
+                )
+            },
             onPersonClick = onPersonClick,
-            onSeeAllCastClick = { onPeopleClick(SeasonPeopleNavKey(key.showSlug, key.season)) },
-            onReviewClick = { onCommentThreadClick(it.toThreadNavKey()) },
+            onSeeAllCastClick = {
+                navigator.navigate(
+                    SeasonPeopleNavKey(
+                        key.showSlug,
+                        key.season
+                    )
+                )
+            },
+            onReviewClick = { navigator.navigate(it.toThreadNavKey()) },
             onSeeAllReviewClick = {},
             onCommentClick = {},
         )
@@ -87,9 +104,9 @@ fun EntryProviderScope<NavKey>.mediaEntry(
             onBackClick = onBackClick,
             onPersonClick = onPersonClick,
             onSeeAllCastClick = {
-                onPeopleClick(EpisodePeopleNavKey(key.showSlug, key.season, key.episode))
+                navigator.navigate(EpisodePeopleNavKey(key.showSlug, key.season, key.episode))
             },
-            onReviewClick = { onCommentThreadClick(it.toThreadNavKey()) },
+            onReviewClick = { navigator.navigate(it.toThreadNavKey()) },
             onSeeAllReviewClick = {},
             onCommentClick = {},
         )
@@ -129,14 +146,14 @@ fun EntryProviderScope<NavKey>.mediaEntry(
         CommentsScreen(
             key = key,
             onBackClick = onBackClick,
-            onCommentClick = { onCommentThreadClick(it.toThreadNavKey()) },
+            onCommentClick = { navigator.navigate(it.toThreadNavKey()) },
         )
     }
     entry<ShowCommentsNavKey> { key ->
         CommentsScreen(
             key = key,
             onBackClick = onBackClick,
-            onCommentClick = { onCommentThreadClick(it.toThreadNavKey()) },
+            onCommentClick = { navigator.navigate(it.toThreadNavKey()) },
         )
     }
     entry<CommentThreadNavKey> { key ->

@@ -1,19 +1,12 @@
 package com.omasyo.snac.feature.calendar.impl
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.paging.LoadState
-import androidx.paging.LoadStates
-import com.omasyo.snac.core.common.SnacException
-import com.omasyo.snac.core.common.SnacResult
-import com.omasyo.snac.core.ui.components.Button
-import com.omasyo.snac.core.ui.components.ErrorBox
-import com.omasyo.snac.core.ui.models.snacMessage
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -43,11 +36,15 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.paging.LoadState
+import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
+import com.omasyo.snac.core.common.SnacException
+import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.model.media.CalendarDay
 import com.omasyo.snac.core.model.media.CalendarItem
 import com.omasyo.snac.core.model.media.Episode
@@ -55,12 +52,15 @@ import com.omasyo.snac.core.model.media.EpisodeAiring
 import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.model.media.MovieRelease
 import com.omasyo.snac.core.model.media.Show
+import com.omasyo.snac.core.ui.components.Button
+import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
 import com.omasyo.snac.core.ui.format.formatEpisodeCode
 import com.omasyo.snac.core.ui.format.formatLocalTime
 import com.omasyo.snac.core.ui.format.metaLine
+import com.omasyo.snac.core.ui.models.snacMessage
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.modifiers.bleedVertically
 import com.omasyo.snac.core.ui.modifiers.silhouette
@@ -80,10 +80,14 @@ import java.util.Locale
 
 @Composable
 internal fun CalendarScreen(
+    onMovieClick: (Movie) -> Unit,
+    onEpisodeClick: (Episode) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: CalendarViewModel = metroViewModel(),
 ) {
     CalendarScreen(
+        onMovieClick = onMovieClick,
+        onEpisodeClick = onEpisodeClick,
         items = viewModel.items.collectAsLazyPagingItems(),
         onJumpToDate = viewModel::jumpToDate,
         modifier = modifier,
@@ -92,6 +96,8 @@ internal fun CalendarScreen(
 
 @Composable
 internal fun CalendarScreen(
+    onMovieClick: (Movie) -> Unit,
+    onEpisodeClick: (Episode) -> Unit,
     items: LazyPagingItems<CalendarUiItem>,
     onJumpToDate: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
@@ -158,6 +164,8 @@ internal fun CalendarScreen(
         )
 
         CalendarList(
+            onMovieClick = onMovieClick,
+            onEpisodeClick = onEpisodeClick,
             items = items,
             listState = listState,
         )
@@ -166,6 +174,8 @@ internal fun CalendarScreen(
 
 @Composable
 private fun CalendarList(
+    onMovieClick: (Movie) -> Unit,
+    onEpisodeClick: (Episode) -> Unit,
     items: LazyPagingItems<CalendarUiItem>,
     listState: LazyListState,
     modifier: Modifier = Modifier,
@@ -224,7 +234,12 @@ private fun CalendarList(
                     subtitle = item.item.subtitle,
                     caption = item.item.caption,
                     imageUrl = item.item.media.imageUrl,
-                    onClick = {},
+                    onClick = {
+                        when (item.item) {
+                            is EpisodeAiring -> onEpisodeClick(item.item.episode)
+                            is MovieRelease -> onMovieClick(item.item.media)
+                        }
+                    },
                 )
 
                 null -> Unit
@@ -386,6 +401,8 @@ private fun Preview() {
 
     SnacTheme {
         CalendarScreen(
+            onMovieClick = {},
+            onEpisodeClick = {},
             items = items,
             onJumpToDate = {},
         )
@@ -401,6 +418,8 @@ private fun LoadingPreview() {
         remember { flowOf(PagingData.empty<CalendarUiItem>(loading)) }.collectAsLazyPagingItems()
     SnacTheme {
         CalendarScreen(
+            onMovieClick = {},
+            onEpisodeClick = {},
             items = items,
             onJumpToDate = {},
         )
@@ -419,6 +438,8 @@ private fun ErrorPreview() {
         remember { flowOf(PagingData.empty<CalendarUiItem>(error)) }.collectAsLazyPagingItems()
     SnacTheme {
         CalendarScreen(
+            onMovieClick = {},
+            onEpisodeClick = {},
             items = items,
             onJumpToDate = {},
         )

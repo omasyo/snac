@@ -8,5 +8,7 @@ android {
 
 dependencies {
     implementation(projects.feature.home.api)
+    implementation(projects.feature.settings.api)
+    implementation(projects.feature.media.api)
     implementation(projects.feature.auth.api)
 }

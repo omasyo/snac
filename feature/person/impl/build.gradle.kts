@@ -8,4 +8,5 @@ android {
 
 dependencies {
     implementation(projects.feature.person.api)
+    implementation(projects.feature.media.api)
 }
