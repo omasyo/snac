@@ -175,7 +175,6 @@ fun SeasonScreen(
                 onSeeAllClick = onSeeAllReviewClick,
                 onCommentClick = onCommentClick,
                 state = comment,
-                modifier = Modifier.padding(bottom = 16.dp),
             )
         }
     }

@@ -88,11 +88,11 @@ internal fun CommentStat(
             icon = icon,
             contentDescription = null,
             tint = SnacColors.muted,
-            modifier = Modifier.size(14.dp),
+            modifier = Modifier.size(16.dp),
         )
         Text(
             text = count.formatCount(),
-            style = SnacTypography.overline,
+            style = SnacTypography.caption,
             color = SnacColors.muted
         )
     }
@@ -118,7 +118,7 @@ fun CommentPreviewCard(
             .border(2.dp, SnacColors.outline)
             .background(SnacColors.card)
             .padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),

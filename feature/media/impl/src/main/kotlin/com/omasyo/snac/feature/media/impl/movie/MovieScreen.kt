@@ -178,7 +178,6 @@ fun MovieScreen(
                 onMediaClick = onMediaClick,
                 onSeeAllClick = onSeeAllRelatedClick,
                 items = relatedMovies,
-                modifier = Modifier.padding(bottom = 16.dp),
             )
         }
     }

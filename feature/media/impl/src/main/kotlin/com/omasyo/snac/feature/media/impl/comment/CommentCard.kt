@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -44,14 +45,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import androidx.paging.compose.itemKey
-import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.common.format.formatCount
 import com.omasyo.snac.core.data.models.Comment
 import com.omasyo.snac.core.data.models.Reply
@@ -63,6 +62,7 @@ import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.format.formatRelative
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
+import com.omasyo.snac.core.ui.models.snacMessage
 import com.omasyo.snac.core.ui.modifiers.Side
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.modifiers.TintIndication
@@ -78,7 +78,6 @@ import com.omasyo.snac.feature.media.impl.components.CommentStats
 import kotlinx.coroutines.flow.flowOf
 import kotlin.math.min
 import com.omasyo.snac.core.ui.R as UiR
-import com.omasyo.snac.core.ui.models.snacMessage
 
 private const val PREVIEW_REPLIES = 2
 private const val COLLAPSED_LINES = 3
@@ -257,7 +256,6 @@ private fun CommentHeader(
 
     Column(
         modifier = modifier
-            .zIndex(1f)
             .heightIn(max = MAX_HEADER_HEIGHT)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -314,25 +312,27 @@ private fun ReplyCard(
 
     Column(
         modifier = modifier.replyCardFrame(),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Avatar(reply.user.imageUrl)
-            Text(
-                text = reply.user.name,
-                style = SnacTypography.label,
-                maxLines = 1,
-                modifier = Modifier.weight(1f, false)
-            )
-            Text(
-                text = reply.createdAt.formatRelative(),
-                style = SnacTypography.caption,
-                color = SnacColors.muted
-            )
-            Spacer(Modifier.weight(1f))
+            Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.SpaceBetween) {
+                Text(
+                    text = reply.user.name,
+                    style = SnacTypography.label,
+                    maxLines = 1,
+                    modifier = Modifier.weight(1f, false)
+                )
+                Spacer(Modifier.width(4.dp))
+                Text(
+                    text = reply.createdAt.formatRelative(),
+                    style = SnacTypography.caption,
+                    color = SnacColors.muted
+                )
+            }
             ReviewBadges(isReview = reply.isReview, rating = reply.rating)
         }
         SpoilerText(
@@ -340,12 +340,14 @@ private fun ReplyCard(
             blurred = blurred,
             expanded = expanded,
             onToggleExpanded = onExpandThread ?: { expanded = !expanded },
-            modifier = Modifier.clickable(
-                indication = null,
-                interactionSource = null,
-                enabled = reply.isSpoiler,
-                onClick = onExpandThread ?: { blurred = !blurred },
-            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(
+                    indication = null,
+                    interactionSource = null,
+                    enabled = reply.isSpoiler,
+                    onClick = onExpandThread ?: { blurred = !blurred },
+                ),
         )
         CommentStat(
             icon = UiR.drawable.heart_bold,

@@ -188,7 +188,6 @@ fun ShowScreen(
                 onMediaClick = onMediaClick,
                 onSeeAllClick = onSeeAllRelatedClick,
                 items = relatedShows,
-                modifier = Modifier.padding(bottom = 16.dp),
             )
         }
     }
