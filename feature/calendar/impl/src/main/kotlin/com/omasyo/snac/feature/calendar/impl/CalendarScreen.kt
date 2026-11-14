@@ -19,10 +19,11 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,9 +33,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.node.Ref
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
+import com.omasyo.snac.core.model.media.CalendarDay
+import com.omasyo.snac.core.model.media.CalendarItem
+import com.omasyo.snac.core.model.media.Episode
+import com.omasyo.snac.core.model.media.EpisodeAiring
+import com.omasyo.snac.core.model.media.Movie
+import com.omasyo.snac.core.model.media.MovieRelease
+import com.omasyo.snac.core.model.media.Show
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
@@ -44,187 +58,53 @@ import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.time.temporal.TemporalAdjusters
 import java.util.Locale
-
-sealed interface CalendarUiItem {
-    data class Date(val date: LocalDate) : CalendarUiItem
-
-    data class Content(val text: String) : CalendarUiItem
-
-    companion object {
-
-        val MockData: List<CalendarUiItem> = listOf(
-            Date(LocalDate.of(2026, 10, 27)),
-            Content("Quarterly review prep"),
-            Content("Haircut at 6 PM"),
-
-            Date(LocalDate.of(2026, 10, 28)),
-            Content("Quarterly review"),
-            Content("Team dinner"),
-
-            Date(LocalDate.of(2026, 10, 29)),
-            Content("Follow-up notes from review"),
-
-            Date(LocalDate.of(2026, 11, 2)),
-            Content("Team standup"),
-            Content("Review Q4 roadmap draft"),
-            Content("Dentist appointment at 4:30 PM"),
-
-            Date(LocalDate.of(2026, 11, 3)),
-            Content("Lunch with Amaka"),
-            Content("Pay electricity bill"),
-
-            Date(LocalDate.of(2026, 11, 4)),
-            Content("Design sync with Tunde"),
-
-            Date(LocalDate.of(2026, 11, 5)),
-            Content("1:1 with manager"),
-            Content("Gym — leg day"),
-            Content("Read 30 pages"),
-
-            Date(LocalDate.of(2026, 11, 7)),
-            Content("Grocery run"),
-            Content("Call the landlord about the leaking tap"),
-
-            Date(LocalDate.of(2026, 11, 8)),
-            Content("Church"),
-            Content("Meal prep for the week"),
-
-            Date(LocalDate.of(2026, 11, 12)),
-            Content("Code freeze"),
-            Content("Fix release blockers"),
-
-            Date(LocalDate.of(2026, 11, 13)),
-            Content("Sprint demo"),
-            Content("Submit expense report"),
-            Content("Pick up dry cleaning"),
-            Content("Movie night"),
-
-            Date(LocalDate.of(2026, 11, 14)),
-            Content("Morning run, 5km"),
-            Content("Visit Chioma's new place"),
-
-            Date(LocalDate.of(2026, 11, 15)),
-            Content("Laundry"),
-
-            Date(LocalDate.of(2026, 11, 18)),
-            Content("Pack for Abuja trip"),
-            Content("Confirm hotel booking"),
-
-            Date(LocalDate.of(2026, 11, 19)),
-            Content("Print conference badge"),
-
-            Date(LocalDate.of(2026, 11, 20)),
-            Content("Flight to Abuja, 9:15 AM"),
-            Content("Check in at hotel"),
-            Content("Networking dinner"),
-
-            Date(LocalDate.of(2026, 11, 21)),
-            Content("Conference day 1"),
-            Content("Give talk at 2 PM"),
-
-            Date(LocalDate.of(2026, 11, 22)),
-            Content("Conference day 2"),
-            Content("Flight back to Lagos, 7:40 PM"),
-
-            Date(LocalDate.of(2026, 11, 25)),
-            Content("Write conference recap"),
-
-            Date(LocalDate.of(2026, 11, 28)),
-            Content("Mum's birthday 🎂"),
-            Content("Book restaurant for dinner"),
-
-            Date(LocalDate.of(2026, 11, 29)),
-            Content("Family lunch"),
-
-            Date(LocalDate.of(2026, 12, 3)),
-            Content("Car service"),
-            Content("Team retro"),
-
-            Date(LocalDate.of(2026, 12, 4)),
-            Content("Interview candidate — Android role"),
-
-            Date(LocalDate.of(2026, 12, 5)),
-            Content("Year-end planning workshop"),
-            Content("Renew car insurance"),
-            Content("Send holiday cards"),
-
-            Date(LocalDate.of(2026, 12, 11)),
-            Content("Office end-of-year party"),
-
-            Date(LocalDate.of(2026, 12, 18)),
-            Content("Last working day"),
-            Content("Set out-of-office reply"),
-
-            Date(LocalDate.of(2026, 12, 23)),
-            Content("Christmas shopping"),
-            Content("Wrap gifts"),
-
-            Date(LocalDate.of(2026, 12, 24)),
-            Content("Christmas Eve service"),
-
-            Date(LocalDate.of(2026, 12, 25)),
-            Content("Christmas lunch with family 🎄"),
-            Content("Call grandma"),
-
-            Date(LocalDate.of(2026, 12, 26)),
-            Content("Boxing Day — rest"),
-
-            Date(LocalDate.of(2026, 12, 31)),
-            Content("New Year's Eve party"),
-            Content("Write 2027 goals"),
-        )
-    }
-}
 
 @Composable
 internal fun CalendarScreen(
     modifier: Modifier = Modifier,
+    viewModel: CalendarViewModel = metroViewModel(),
 ) {
     CalendarScreen(
-        items = CalendarUiItem.MockData
+        items = viewModel.items.collectAsLazyPagingItems(),
+        onJumpToDate = viewModel::jumpToDate,
+        modifier = modifier,
     )
 }
 
 @Composable
 internal fun CalendarScreen(
-    items: List<CalendarUiItem>,
+    items: LazyPagingItems<CalendarUiItem>,
+    onJumpToDate: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-
     val coroutineScope = rememberCoroutineScope()
-
     val dateStripListState = rememberDateStripListState()
-
-    val listState = rememberLazyListState(30)
-
-    val sectionDates = remember(items) {
-        var current: LocalDate? = null
-        items.map { item ->
-            if (item is CalendarUiItem.Date) item.date.also { current = it } else current
-        }
-    }
+    val listState = rememberLazyListState()
 
     var tappedDate by remember { mutableStateOf<LocalDate?>(null) }
-
-    val selectedDate by remember(sectionDates) {
+    val selectedDate by remember(items) {
         derivedStateOf {
-            tappedDate ?: sectionDates.getOrNull(listState.firstVisibleItemIndex) ?: Today
+            val topItem = items.itemSnapshotList.getOrNull(listState.firstVisibleItemIndex)
+            tappedDate ?: topItem?.date ?: Today
         }
     }
-
     LaunchedEffect(listState) {
         listState.interactionSource.interactions
             .filterIsInstance<DragInteraction.Start>()
             .collect { tappedDate = null }
     }
-
+    
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -252,19 +132,15 @@ internal fun CalendarScreen(
             selectedDate = selectedDate,
             onDateTap = { date ->
                 tappedDate = date
-
-//                val dateIndex =
-//                    items.indexOfFirst { item -> item is CalendarUiItem.Date && item.date == date }
-//                if (dateIndex >= 0) {
-//                    coroutineScope.launch { listState.animateScrollToItem(dateIndex) }
-//                }
-
-                // Will this work with paging?
-                val dateIndex = items
-                    .indexOfFirst { item -> item is CalendarUiItem.Date && !item.date.isBefore(date) }
-
-                if (dateIndex >= 0) {
-                    coroutineScope.launch { listState.animateScrollToItem(dateIndex) }
+                val loadedIndex = items.itemSnapshotList.items.indexOfDate(date)
+                coroutineScope.launch {
+                    if (loadedIndex != null) {
+                        listState.animateScrollToItem(loadedIndex)
+                    } else {
+                        onJumpToDate(date)
+                        // TODO MAYBE don't scroll immediately
+                        listState.scrollToItem(0)
+                    }
                 }
             },
             listState = dateStripListState,
@@ -273,80 +149,131 @@ internal fun CalendarScreen(
                 .rotate(-1.5f),
         )
 
-        LazyColumn(
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 36.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            state = listState,
-            modifier = Modifier.bleedVertically(36.dp)
-        ) {
-            items(
-                items = items,
-//                key = TODO
-                contentType = {
-                    when (it) {
-                        is CalendarUiItem.Content -> "content"
-                        is CalendarUiItem.Date -> "date"
-                    }
-                }
-            ) {
+        CalendarList(
+            items = items,
+            listState = listState,
+        )
+    }
+}
+
+@Composable
+private fun CalendarList(
+    items: LazyPagingItems<CalendarUiItem>,
+    listState: LazyListState,
+    modifier: Modifier = Modifier,
+) {
+    LazyColumn(
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 36.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        state = listState,
+        modifier = modifier.bleedVertically(36.dp),
+    ) {
+        items(
+            count = items.itemCount,
+            key = items.itemKey(CalendarUiItem::key),
+            contentType = items.itemContentType {
                 when (it) {
-                    is CalendarUiItem.Content -> {
-                        Row(
-                            modifier = Modifier
-                                .height(IntrinsicSize.Min)
-                                .clickable(
-                                    indication = remember { SilhouettePressIndication() },
-                                    interactionSource = remember { MutableInteractionSource() },
-                                ) {}
-                                .border(2.dp, SnacColors.ink)
-                                .background(SnacColors.card)
-                                .padding(8.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        ) {
-                            Image(
-                                imageUrl = null,
-                                modifier = Modifier.aspectRatio(16f / 9f),
-                            )
-                            Column(
-                                modifier = Modifier.weight(1f),
-                            ) {
-                                Text(
-                                    text = "The Long Static",
-                                    style = SnacTypography.subtitle,
-                                )
-                                Text(
-                                    text = "S03E05 · Carrier Wave",
-                                    style = SnacTypography.caption,
-                                )
-                                Text(
-                                    text = "48 min",
-                                    style = SnacTypography.caption,
-                                    color = SnacColors.muted,
-                                )
-                            }
-                        }
-                    }
-
-                    is CalendarUiItem.Date -> {
-
-                        Text(
-                            text = it.date.formatted().uppercase(),
-                            style = SnacTypography.title,
-                            modifier = Modifier.silhouette(SnacColors.accent),
-                        )
-                    }
+                    is CalendarUiItem.Header -> "header"
+                    is CalendarUiItem.Entry -> "entry"
                 }
+            },
+        ) { index ->
+            when (val item = items[index]) {
+                is CalendarUiItem.Header -> DateHeader(item.date)
+                is CalendarUiItem.Entry -> CalendarCard(item.item)
+                null -> Unit
             }
-            item {
-                Spacer(
-                    Modifier
-                        .bottomBarPadding()
-                        .navigationBarsPadding()
-                )
+        }
+        item {
+            Spacer(
+                Modifier
+                    .bottomBarPadding()
+                    .navigationBarsPadding()
+            )
+        }
+    }
+}
+
+@Composable
+private fun CalendarCard(
+    item: CalendarItem,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .height(IntrinsicSize.Min)
+            .clickable(
+                indication = remember { SilhouettePressIndication() },
+                interactionSource = remember { MutableInteractionSource() },
+            ) {}
+            .border(2.dp, SnacColors.ink)
+            .background(SnacColors.card)
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Image(
+            imageUrl = item.media.imageUrl,
+            modifier = Modifier.aspectRatio(16f / 9f),
+        )
+        Column(
+            modifier = Modifier.weight(1f),
+        ) {
+            Text(
+                text = item.media.title,
+                style = SnacTypography.subtitle,
+            )
+            when (item) {
+                is EpisodeAiring -> {
+                    Text(
+                        text = item.episodeLabel(),
+                        style = SnacTypography.caption,
+                    )
+                    Text(
+                        text = item.firstAired.atZone(ZoneId.systemDefault())
+                            .format(DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)),
+                        style = SnacTypography.caption,
+                        color = SnacColors.muted,
+                    )
+                }
+
+                is MovieRelease -> {
+                    Text(
+                        text = "Movie",
+                        style = SnacTypography.caption,
+                        color = SnacColors.muted,
+                    )
+                    // Empty third line, so movie cards are as tall as episode cards.
+                    Text(
+                        text = "",
+                        style = SnacTypography.caption,
+                        color = SnacColors.muted,
+                    )
+                }
             }
         }
     }
 }
+
+@Composable
+private fun DateHeader(
+    date: LocalDate,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = date.formatted().uppercase(),
+        style = SnacTypography.title,
+        modifier = modifier.silhouette(SnacColors.accent),
+    )
+}
+
+private fun Episode.code() = "S%02dE%02d".format(season, number)
+
+private fun EpisodeAiring.episodeLabel(): String =
+    if (episodes.size > 1) {
+        "${episodes.first().code()}–${episodes.last().code()} · ${episodes.size} episodes"
+    } else {
+        listOfNotNull(episode.code(), episode.title).joinToString(" · ")
+    }
 
 private fun LocalDate.formatted(): String {
     val locale = Locale.getDefault()
@@ -366,9 +293,30 @@ private fun LocalDate.formatted(): String {
 @Preview
 @Composable
 private fun Preview() {
+    val items = remember {
+        val days = List(4) { dayOffset ->
+            val date = Today.plusDays(dayOffset.toLong())
+            CalendarDay(
+                date = date,
+                items = listOf(
+                    MovieRelease(Movie("movie-$dayOffset", "Frankenstein", 2025, null), date),
+                    EpisodeAiring(
+                        media = Show("show-$dayOffset", "The Long Static", 2024, null),
+                        episode = Episode(3, dayOffset + 1, "Carrier Wave"),
+                        episodes = emptyList(),
+                        firstAired = date.atTime(21, 0).atZone(ZoneId.systemDefault()).toInstant(),
+                        date = date,
+                    ),
+                ),
+            )
+        }
+        flowOf(PagingData.from(days).toUiItems())
+    }.collectAsLazyPagingItems()
+
     SnacTheme {
         CalendarScreen(
-            items = CalendarUiItem.MockData
+            items = items,
+            onJumpToDate = {},
         )
     }
 }

@@ -24,6 +24,7 @@ class CalendarNetworkSourceImpl(
         safeCall {
             client.get("calendars/all/media/${startDate.format(DateTimeFormatter.ISO_LOCAL_DATE)}/$days") {
                 parameter("group", "day")
+                parameter("genres", "action")
             }
         }
 
@@ -34,7 +35,7 @@ class CalendarNetworkSourceImpl(
         safeCall {
             client.get("calendars/releases/hot/${startDate.format(DateTimeFormatter.ISO_LOCAL_DATE)}/$days") {
                 parameter("group", "day")
-//                parameter("genres", ) //TODO
+                parameter("genres", "action")
             }
         }
 }

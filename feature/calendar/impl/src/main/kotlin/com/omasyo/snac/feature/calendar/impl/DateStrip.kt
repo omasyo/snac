@@ -136,6 +136,7 @@ private fun DateCard(
                 .background(backgroundColor)
                 .padding(12.dp),
         ) {
+            Spacer(Modifier.height(4.dp))
             Text(
                 text = date.dayOfWeek.name.take(3),
                 style = SnacTypography.overline,
@@ -146,7 +147,12 @@ private fun DateCard(
                     lineHeightStyle = CapHeightLineHeightStyle,
                 ),
             )
-            Spacer(Modifier.height(4.dp))
+
+            Text(
+                text = date.takeIf { it.monthValue != Today.monthValue }?.month?.name?.take(3)
+                    ?: "",
+                style = SnacTypography.overline,
+            )
         }
     }
 }
@@ -155,8 +161,8 @@ private fun DateCard(
 @Composable
 private fun Preview() {
     val lazyListState = rememberDateStripListState()
-    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
-    val targetDate = LocalDate.now().plusDays(20)
+    var selectedDate by remember { mutableStateOf(Today) }
+    val targetDate = LocalDate.now().plusDays(30)
     SnacTheme {
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),

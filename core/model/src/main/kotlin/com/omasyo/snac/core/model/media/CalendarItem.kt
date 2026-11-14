@@ -20,3 +20,8 @@ data class EpisodeAiring(
     val firstAired: Instant,
     override val date: LocalDate,
 ) : CalendarItem
+
+data class CalendarDay(
+    val date: LocalDate,
+    val items: List<CalendarItem>,
+)

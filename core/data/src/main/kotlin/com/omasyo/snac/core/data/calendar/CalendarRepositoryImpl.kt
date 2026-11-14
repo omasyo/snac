@@ -4,7 +4,7 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.omasyo.snac.core.data.paging.CalendarPagingSource
-import com.omasyo.snac.core.model.media.CalendarItem
+import com.omasyo.snac.core.model.media.CalendarDay
 import com.omasyo.snac.core.network.calendar.CalendarNetworkSource
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
@@ -17,7 +17,7 @@ import java.time.LocalDate
 class CalendarRepositoryImpl(
     private val calendarNetworkSource: CalendarNetworkSource,
 ) : CalendarRepository {
-    override fun getAllMedia(startDate: LocalDate): Flow<PagingData<CalendarItem>> =
+    override fun getAllMedia(startDate: LocalDate): Flow<PagingData<CalendarDay>> =
         Pager(initialKey = startDate, config = pagingConfig) {
             CalendarPagingSource(
                 windowDays = WINDOW_DAYS,
@@ -25,7 +25,7 @@ class CalendarRepositoryImpl(
             )
         }.flow
 
-    override fun getHotReleases(startDate: LocalDate): Flow<PagingData<CalendarItem>> =
+    override fun getHotReleases(startDate: LocalDate): Flow<PagingData<CalendarDay>> =
         Pager(initialKey = startDate, config = pagingConfig) {
             CalendarPagingSource(
                 windowDays = WINDOW_DAYS,
