@@ -4,7 +4,6 @@ import com.omasyo.snac.core.data.models.Comment
 import com.omasyo.snac.core.data.models.Reply
 import com.omasyo.snac.core.data.models.User
 import com.omasyo.snac.core.model.extra.CommentSort
-import com.omasyo.snac.core.network.comment.models.ReplyResponse
 import com.omasyo.snac.core.network.models.CommentResponse
 import com.omasyo.snac.core.network.models.UserResponse
 import java.time.LocalDateTime
@@ -39,7 +38,7 @@ private fun UserResponse.toUser() = User(
     imageUrl = images?.avatar?.full,
 )
 
-fun ReplyResponse.toReply() = Reply(
+fun CommentResponse.toReply() = Reply(
     id = id,
     comment = comment,
     isSpoiler = spoiler,

@@ -8,18 +8,18 @@ import com.omasyo.snac.core.data.models.ShowEnding
 import com.omasyo.snac.core.data.models.ShowStatus
 import com.omasyo.snac.core.model.media.AnticipatedItem
 import com.omasyo.snac.core.model.media.CollectedItem
+import com.omasyo.snac.core.model.media.Episode
 import com.omasyo.snac.core.model.media.FavoritedItem
 import com.omasyo.snac.core.model.media.PlayedItem
 import com.omasyo.snac.core.model.media.PopularItem
 import com.omasyo.snac.core.model.media.Show
 import com.omasyo.snac.core.model.media.WatchedItem
 import com.omasyo.snac.core.network.media.models.AnticipatedShowResponse
+import com.omasyo.snac.core.network.models.EpisodeResponse
 import com.omasyo.snac.core.network.models.ShowResponse
 import com.omasyo.snac.core.network.show.models.MostFavoritedShowResponse
 import com.omasyo.snac.core.network.show.models.MostShowStatsResponse
-import com.omasyo.snac.core.network.show.models.EpisodeDetailsResponse
 import com.omasyo.snac.core.network.show.models.SeasonResponse
-import com.omasyo.snac.core.network.show.models.ShowDetailsResponse
 import java.time.LocalDate
 import java.time.ZoneId
 import kotlin.time.Duration.Companion.minutes
@@ -28,7 +28,7 @@ fun ShowResponse.toShow() = Show(
     slug = ids.slug,
     title = title,
     year = year,
-    imageUrl = null,
+    imageUrl = images?.poster?.firstOrNull()?.toImageUrl(),
 )
 
 fun ShowResponse.toPopularItem() = PopularItem(
@@ -61,7 +61,7 @@ fun MostShowStatsResponse.toWatchedItem() = WatchedItem(
     watcherCount = watcherCount,
 )
 
-fun ShowDetailsResponse.toShowDetails() = ShowDetails(
+fun ShowResponse.toShowDetails() = ShowDetails(
     slug = ids.slug,
     title = title,
     year = year,
@@ -124,7 +124,13 @@ fun SeasonResponse.toSeason(): Season {
     )
 }
 
-fun EpisodeDetailsResponse.toEpisodeDetails() = EpisodeDetails(
+fun EpisodeResponse.toEpisode() = Episode(
+    season = season,
+    number = number,
+    title = title,
+)
+
+fun EpisodeResponse.toEpisodeDetails() = EpisodeDetails(
     season = season,
     number = number,
     title = title?.takeIf { it.isNotBlank() },

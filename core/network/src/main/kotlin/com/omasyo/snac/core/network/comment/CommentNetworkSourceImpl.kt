@@ -1,7 +1,7 @@
 package com.omasyo.snac.core.network.comment
 
 import com.omasyo.snac.core.common.SnacResult
-import com.omasyo.snac.core.network.comment.models.ReplyResponse
+import com.omasyo.snac.core.network.models.CommentResponse
 import com.omasyo.snac.core.network.safeCall
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
@@ -19,7 +19,7 @@ class CommentNetworkSourceImpl(
         id: Long,
         page: Int,
         limit: Int,
-    ): SnacResult<List<ReplyResponse>> = safeCall {
+    ): SnacResult<List<CommentResponse>> = safeCall {
         client.get("comments/$id/replies") {
             parameter("extended", "full")
             parameter("page", page)

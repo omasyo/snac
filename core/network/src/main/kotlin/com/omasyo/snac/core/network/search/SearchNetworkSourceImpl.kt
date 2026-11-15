@@ -24,6 +24,7 @@ class SearchNetworkSourceImpl(
     ): SnacResult<List<TrendingSearchResponse>> =
         safeCall {
             client.get("search/recent_by_id/global/movies,shows") {
+                parameter("extended", "full")
                 parameter("page", page)
                 parameter("limit", limit)
             }
@@ -36,6 +37,7 @@ class SearchNetworkSourceImpl(
     ): SnacResult<List<MovieSearchResponse>> =
         safeCall {
             client.get("search/movie") {
+                parameter("extended", "full")
                 parameter("query", query)
                 parameter("page", page)
                 parameter("limit", limit)
@@ -49,6 +51,7 @@ class SearchNetworkSourceImpl(
     ): SnacResult<List<ShowSearchResponse>> =
         safeCall {
             client.get("search/show") {
+                parameter("extended", "full")
                 parameter("query", query)
                 parameter("page", page)
                 parameter("limit", limit)
@@ -62,6 +65,7 @@ class SearchNetworkSourceImpl(
     ): SnacResult<List<PersonSearchResponse>> =
         safeCall {
             client.get("search/person") {
+                parameter("extended", "full")
                 parameter("query", query)
                 parameter("page", page)
                 parameter("limit", limit)

@@ -2,8 +2,8 @@ package com.omasyo.snac.core.network.user
 
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.network.NetworkSource
-import com.omasyo.snac.core.network.user.models.NetworkUser
+import com.omasyo.snac.core.network.user.models.ProfileResponse
 
 interface UserNetworkSource : NetworkSource {
-    suspend fun getMe(): SnacResult<NetworkUser>
+    suspend fun getMe(): SnacResult<ProfileResponse>
 }

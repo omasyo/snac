@@ -30,10 +30,15 @@ data class SeasonResponse(
     val firstAired: Instant?,
     @SerialName("network")
     val network: String?,
+    @SerialName("updated_at")
+    @Serializable(with = InstantSerializer::class)
+    val updatedAt: Instant?,
 ) {
     @Serializable
     data class Images(
         @SerialName("poster")
         val poster: List<String>,
+        @SerialName("thumb")
+        val thumb: List<String>,
     )
 }

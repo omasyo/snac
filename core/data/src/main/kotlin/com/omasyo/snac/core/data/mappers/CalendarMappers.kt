@@ -10,9 +10,14 @@ import com.omasyo.snac.core.network.calendar.models.CalendarMovieResponse
 import com.omasyo.snac.core.network.calendar.models.CalendarShowResponse
 import java.time.ZoneId
 
-fun CalendarMediaResponse.toCalendarItem(zone: ZoneId = ZoneId.systemDefault()): CalendarItem? =
+fun CalendarMediaResponse.toCalendarItem(zone: ZoneId = ZoneId.systemDefault()): CalendarItem =
     when (this) {
-        is CalendarMovieResponse -> released?.let { MovieRelease(media = movie.toMovie(), date = it) }
+        is CalendarMovieResponse -> MovieRelease(
+            media = movie.toMovie(),
+            date = released,
+        )
+
+
         is CalendarShowResponse -> EpisodeAiring(
             media = show.toShow(),
             episode = episode.toEpisode(),
@@ -22,7 +27,7 @@ fun CalendarMediaResponse.toCalendarItem(zone: ZoneId = ZoneId.systemDefault()):
         )
     }
 
-fun CalendarEpisodeResponse.toEpisode() = Episode(
+private fun CalendarEpisodeResponse.toEpisode() = Episode(
     season = season,
     number = number,
     title = title,

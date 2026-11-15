@@ -15,14 +15,13 @@ import com.omasyo.snac.core.network.models.MovieResponse
 import com.omasyo.snac.core.network.movie.models.BoxOfficeResponse
 import com.omasyo.snac.core.network.movie.models.MostFavoritedMovieResponse
 import com.omasyo.snac.core.network.movie.models.MostMovieStatsResponse
-import com.omasyo.snac.core.network.movie.models.MovieDetailsResponse
 import kotlin.time.Duration.Companion.minutes
 
 fun MovieResponse.toMovie() = Movie(
     slug = ids.slug,
     title = title,
     year = year,
-    imageUrl = null,
+    imageUrl = images?.poster?.firstOrNull()?.toImageUrl(),
 )
 
 fun MovieResponse.toPopularItem() = PopularItem(
@@ -60,7 +59,7 @@ fun MostMovieStatsResponse.toWatchedItem() = WatchedItem(
     watcherCount = watcherCount,
 )
 
-fun MovieDetailsResponse.toMovieDetails() = MovieDetails(
+fun MovieResponse.toMovieDetails() = MovieDetails(
     slug = ids.slug,
     title = title,
     year = year,

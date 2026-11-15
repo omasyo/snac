@@ -10,7 +10,6 @@ import com.omasyo.snac.core.network.models.PeopleResponse
 import com.omasyo.snac.core.network.models.Period
 import com.omasyo.snac.core.network.models.RatingsResponse
 import com.omasyo.snac.core.network.movie.models.BoxOfficeResponse
-import com.omasyo.snac.core.network.movie.models.MovieDetailsResponse
 import com.omasyo.snac.core.network.movie.models.MostFavoritedMovieResponse
 import com.omasyo.snac.core.network.movie.models.MostMovieStatsResponse
 import com.omasyo.snac.core.network.safeCall
@@ -31,15 +30,20 @@ class MovieNetworkSourceImpl(
         limit: Int
     ): SnacResult<List<AnticipatedMovieResponse>> = safeCall {
         client.get("movies/anticipated") {
+            parameter("extended", "full")
             parameter("page", page)
             parameter("limit", limit)
         }
     }
 
     override suspend fun getBoxOffice(): SnacResult<List<BoxOfficeResponse>> =
-        safeCall { client.get("movies/boxoffice") }
+        safeCall {
+            client.get("movies/boxoffice") {
+                parameter("extended", "full")
+            }
+        }
 
-    override suspend fun getDetails(slug: String): SnacResult<MovieDetailsResponse> = safeCall {
+    override suspend fun getDetails(slug: String): SnacResult<MovieResponse> = safeCall {
         client.get("movies/$slug") {
             parameter("extended", "full")
         }
@@ -63,6 +67,7 @@ class MovieNetworkSourceImpl(
         limit: Int,
     ): SnacResult<List<MovieResponse>> = safeCall {
         client.get("movies/$slug/related") {
+            parameter("extended", "full")
             parameter("page", page)
             parameter("limit", limit)
         }
@@ -87,6 +92,7 @@ class MovieNetworkSourceImpl(
         limit: Int
     ): SnacResult<List<MostMovieStatsResponse>> = safeCall {
         client.get("movies/collected/${period.slug}") {
+            parameter("extended", "full")
             parameter("page", page)
             parameter("limit", limit)
         }
@@ -98,6 +104,7 @@ class MovieNetworkSourceImpl(
         limit: Int
     ): SnacResult<List<MostFavoritedMovieResponse>> = safeCall {
         client.get("movies/favorited/${period.slug}") {
+            parameter("extended", "full")
             parameter("page", page)
             parameter("limit", limit)
         }
@@ -109,6 +116,7 @@ class MovieNetworkSourceImpl(
         limit: Int
     ): SnacResult<List<MostMovieStatsResponse>> = safeCall {
         client.get("movies/played/${period.slug}") {
+            parameter("extended", "full")
             parameter("page", page)
             parameter("limit", limit)
         }
@@ -120,6 +128,7 @@ class MovieNetworkSourceImpl(
         limit: Int
     ): SnacResult<List<MostMovieStatsResponse>> = safeCall {
         client.get("movies/watched/${period.slug}") {
+            parameter("extended", "full")
             parameter("page", page)
             parameter("limit", limit)
         }
@@ -130,6 +139,7 @@ class MovieNetworkSourceImpl(
         limit: Int
     ): SnacResult<List<MovieResponse>> = safeCall {
         client.get("movies/popular") {
+            parameter("extended", "full")
             parameter("page", page)
             parameter("limit", limit)
         }
@@ -141,6 +151,7 @@ class MovieNetworkSourceImpl(
     ): SnacResult<List<TrendingMovieResponse>> =
         safeCall {
             client.get("movies/trending") {
+                parameter("extended", "full")
                 parameter("page", page)
                 parameter("limit", limit)
             }

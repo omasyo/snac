@@ -1,5 +1,6 @@
 package com.omasyo.snac.core.network.calendar.models
 
+import com.omasyo.snac.core.network.models.EpisodeResponse
 import com.omasyo.snac.core.network.models.MovieResponse
 import com.omasyo.snac.core.network.models.ShowResponse
 import com.omasyo.snac.core.network.serializers.InstantSerializer
@@ -13,9 +14,7 @@ import java.time.Instant
 import java.time.LocalDate
 
 @Serializable(with = CalendarMediaSerializer::class)
-sealed interface CalendarMediaResponse {
-    val released: LocalDate?
-}
+sealed interface CalendarMediaResponse
 
 @Serializable
 data class CalendarMovieResponse(
@@ -23,7 +22,7 @@ data class CalendarMovieResponse(
     val movie: MovieResponse,
     @SerialName("released")
     @Serializable(with = LocalDateSerializer::class)
-    override val released: LocalDate?,
+    val released: LocalDate,
 ) : CalendarMediaResponse
 
 @Serializable
@@ -35,32 +34,23 @@ data class CalendarShowResponse(
     @SerialName("first_aired")
     @Serializable(with = InstantSerializer::class)
     val firstAired: Instant,
-    @SerialName("released")
-    @Serializable(with = LocalDateSerializer::class)
-    override val released: LocalDate?,
 ) : CalendarMediaResponse
 
 @Serializable
 data class CalendarEpisodeResponse(
     @SerialName("ids")
-    val ids: Ids,
-    @SerialName("title")
-    val title: String?,
-    @SerialName("number")
-    val number: Int,
+    val ids: EpisodeResponse.Ids,
     @SerialName("season")
     val season: Int,
+    @SerialName("number")
+    val number: Int,
+    @SerialName("title")
+    val title: String?,
     @SerialName("episode_type")
-    val episodeType: String? = null,
+    val episodeType: String?,
     @SerialName("episodes")
-    val episodes: List<CalendarEpisodeResponse>? = null,
-) {
-    @Serializable
-    data class Ids(
-        @SerialName("trakt")
-        val trakt: Int,
-    )
-}
+    val episodes: List<EpisodeResponse>?,
+)
 
 object CalendarMediaSerializer : JsonContentPolymorphicSerializer<CalendarMediaResponse>(
     CalendarMediaResponse::class

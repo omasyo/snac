@@ -15,6 +15,8 @@ data class CommentResponse(
     val spoiler: Boolean,
     @SerialName("review")
     val review: Boolean,
+    @SerialName("parent_id")
+    val parentId: Long,
     @SerialName("created_at")
     @Serializable(with = InstantSerializer::class)
     val createdAt: Instant,

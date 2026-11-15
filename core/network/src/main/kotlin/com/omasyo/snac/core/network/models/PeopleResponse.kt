@@ -15,9 +15,7 @@ data class PeopleResponse(
         @SerialName("characters")
         val characters: List<String>,
         @SerialName("person")
-        val person: Person,
-        @SerialName("images")
-        val images: Images?,
+        val person: PersonResponse,
     )
 
     @Serializable
@@ -28,22 +26,6 @@ data class PeopleResponse(
         @SerialName("episode_count")
         val episodeCount: Int?,
         @SerialName("person")
-        val person: Person,
-        @SerialName("images")
-        val images: Images?,
-    )
-
-    @Serializable
-    data class Person(
-        @SerialName("ids")
-        val ids: Ids,
-        @SerialName("name")
-        val name: String,
-    )
-
-    @Serializable
-    data class Images(
-        @SerialName("headshot")
-        val headshot: List<String>,
+        val person: PersonResponse,
     )
 }

@@ -22,6 +22,7 @@ class MediaNetworkSourceImpl(
     ): SnacResult<List<AnticipatedMediaResponse>> =
         safeCall {
             client.get("media/anticipated") {
+                parameter("extended", "full")
                 parameter("page", page)
                 parameter("limit", limit)
             }
@@ -30,6 +31,7 @@ class MediaNetworkSourceImpl(
     override suspend fun getTopTrending(): SnacResult<List<TrendingMediaResponse>> =
         safeCall {
             client.get("media/trending") {
+                parameter("extended", "full")
                 parameter("limit", 1)
             }
         }

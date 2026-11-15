@@ -23,6 +23,7 @@ class CalendarNetworkSourceImpl(
     ): SnacResult<List<CalendarMediaResponse>> =
         safeCall {
             client.get("calendars/all/media/${startDate.format(DateTimeFormatter.ISO_LOCAL_DATE)}/$days") {
+                parameter("extended", "full")
                 parameter("group", "day")
                 parameter("genres", "action")
             }
@@ -34,6 +35,7 @@ class CalendarNetworkSourceImpl(
     ): SnacResult<List<CalendarMediaResponse>> =
         safeCall {
             client.get("calendars/releases/hot/${startDate.format(DateTimeFormatter.ISO_LOCAL_DATE)}/$days") {
+                parameter("extended", "full")
                 parameter("group", "day")
                 parameter("genres", "action") // TODO
             }

@@ -5,16 +5,15 @@ import com.omasyo.snac.core.network.media.models.AnticipatedShowResponse
 import com.omasyo.snac.core.network.media.models.TrendingShowResponse
 import com.omasyo.snac.core.network.models.CommentResponse
 import com.omasyo.snac.core.network.models.CommentSort
+import com.omasyo.snac.core.network.models.EpisodeResponse
 import com.omasyo.snac.core.network.models.PeopleResponse
 import com.omasyo.snac.core.network.models.Period
 import com.omasyo.snac.core.network.models.RatingsResponse
 import com.omasyo.snac.core.network.models.ShowResponse
 import com.omasyo.snac.core.network.safeCall
 import com.omasyo.snac.core.network.show.models.MostFavoritedShowResponse
-import com.omasyo.snac.core.network.show.models.EpisodeDetailsResponse
 import com.omasyo.snac.core.network.show.models.MostShowStatsResponse
 import com.omasyo.snac.core.network.show.models.SeasonResponse
-import com.omasyo.snac.core.network.show.models.ShowDetailsResponse
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
@@ -32,12 +31,13 @@ class ShowNetworkSourceImpl(
         limit: Int
     ): SnacResult<List<AnticipatedShowResponse>> = safeCall {
         client.get("shows/anticipated") {
+            parameter("extended", "full")
             parameter("page", page)
             parameter("limit", limit)
         }
     }
 
-    override suspend fun getDetails(slug: String): SnacResult<ShowDetailsResponse> = safeCall {
+    override suspend fun getDetails(slug: String): SnacResult<ShowResponse> = safeCall {
         client.get("shows/$slug") {
             parameter("extended", "full")
         }
@@ -59,7 +59,7 @@ class ShowNetworkSourceImpl(
     override suspend fun getEpisodes(
         slug: String,
         season: Int,
-    ): SnacResult<List<EpisodeDetailsResponse>> = safeCall {
+    ): SnacResult<List<EpisodeResponse>> = safeCall {
         client.get("shows/$slug/seasons/$season") {
             parameter("extended", "full")
         }
@@ -69,7 +69,7 @@ class ShowNetworkSourceImpl(
         slug: String,
         season: Int,
         episode: Int,
-    ): SnacResult<EpisodeDetailsResponse> = safeCall {
+    ): SnacResult<EpisodeResponse> = safeCall {
         client.get("shows/$slug/seasons/$season/episodes/$episode") {
             parameter("extended", "full")
         }
@@ -160,6 +160,7 @@ class ShowNetworkSourceImpl(
         limit: Int,
     ): SnacResult<List<ShowResponse>> = safeCall {
         client.get("shows/$slug/related") {
+            parameter("extended", "full")
             parameter("page", page)
             parameter("limit", limit)
         }
@@ -184,6 +185,7 @@ class ShowNetworkSourceImpl(
         limit: Int
     ): SnacResult<List<MostShowStatsResponse>> = safeCall {
         client.get("shows/collected/${period.slug}") {
+            parameter("extended", "full")
             parameter("page", page)
             parameter("limit", limit)
         }
@@ -195,6 +197,7 @@ class ShowNetworkSourceImpl(
         limit: Int
     ): SnacResult<List<MostFavoritedShowResponse>> = safeCall {
         client.get("shows/favorited/${period.slug}") {
+            parameter("extended", "full")
             parameter("page", page)
             parameter("limit", limit)
         }
@@ -206,6 +209,7 @@ class ShowNetworkSourceImpl(
         limit: Int
     ): SnacResult<List<MostShowStatsResponse>> = safeCall {
         client.get("shows/played/${period.slug}") {
+            parameter("extended", "full")
             parameter("page", page)
             parameter("limit", limit)
         }
@@ -217,6 +221,7 @@ class ShowNetworkSourceImpl(
         limit: Int
     ): SnacResult<List<MostShowStatsResponse>> = safeCall {
         client.get("shows/watched/${period.slug}") {
+            parameter("extended", "full")
             parameter("page", page)
             parameter("limit", limit)
         }
@@ -227,6 +232,7 @@ class ShowNetworkSourceImpl(
         limit: Int
     ): SnacResult<List<ShowResponse>> = safeCall {
         client.get("shows/popular") {
+            parameter("extended", "full")
             parameter("page", page)
             parameter("limit", limit)
         }
@@ -238,6 +244,7 @@ class ShowNetworkSourceImpl(
     ): SnacResult<List<TrendingShowResponse>> =
         safeCall {
             client.get("shows/trending") {
+                parameter("extended", "full")
                 parameter("page", page)
                 parameter("limit", limit)
             }

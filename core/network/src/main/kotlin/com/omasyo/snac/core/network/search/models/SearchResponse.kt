@@ -1,8 +1,8 @@
 package com.omasyo.snac.core.network.search.models
 
 import com.omasyo.snac.core.network.models.MovieResponse
+import com.omasyo.snac.core.network.models.PersonResponse
 import com.omasyo.snac.core.network.models.ShowResponse
-import com.omasyo.snac.core.network.person.models.PersonDetailsResponse
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -27,5 +27,5 @@ data class PersonSearchResponse(
     @SerialName("score")
     val score: Double,
     @SerialName("person")
-    val person: PersonDetailsResponse,
+    val person: PersonResponse,
 )

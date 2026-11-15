@@ -1,13 +1,14 @@
-package com.omasyo.snac.core.network.person.models
+package com.omasyo.snac.core.network.models
 
-import com.omasyo.snac.core.network.models.Ids
+import com.omasyo.snac.core.network.serializers.InstantSerializer
 import com.omasyo.snac.core.network.serializers.LocalDateSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.time.Instant
 import java.time.LocalDate
 
 @Serializable
-data class PersonDetailsResponse(
+data class PersonResponse(
     @SerialName("ids")
     val ids: Ids,
     @SerialName("name")
@@ -28,6 +29,13 @@ data class PersonDetailsResponse(
     val birthplace: String?,
     @SerialName("known_for_department")
     val knownForDepartment: String?,
+    @SerialName("homepage")
+    val homepage: String?,
+    @SerialName("social_ids")
+    val socialIds: SocialIdsResponse?,
+    @SerialName("updated_at")
+    @Serializable(with = InstantSerializer::class)
+    val updatedAt: Instant?,
 ) {
     @Serializable
     data class Images(

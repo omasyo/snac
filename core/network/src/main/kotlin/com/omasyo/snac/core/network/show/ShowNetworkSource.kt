@@ -6,28 +6,27 @@ import com.omasyo.snac.core.network.media.models.AnticipatedShowResponse
 import com.omasyo.snac.core.network.media.models.TrendingShowResponse
 import com.omasyo.snac.core.network.models.CommentResponse
 import com.omasyo.snac.core.network.models.CommentSort
+import com.omasyo.snac.core.network.models.EpisodeResponse
 import com.omasyo.snac.core.network.models.PeopleResponse
 import com.omasyo.snac.core.network.models.Period
 import com.omasyo.snac.core.network.models.RatingsResponse
 import com.omasyo.snac.core.network.models.ShowResponse
 import com.omasyo.snac.core.network.show.models.MostFavoritedShowResponse
-import com.omasyo.snac.core.network.show.models.ShowDetailsResponse
-import com.omasyo.snac.core.network.show.models.EpisodeDetailsResponse
 import com.omasyo.snac.core.network.show.models.MostShowStatsResponse
 import com.omasyo.snac.core.network.show.models.SeasonResponse
 
 interface ShowNetworkSource : NetworkSource {
     suspend fun getAnticipated(page: Int, limit: Int): SnacResult<List<AnticipatedShowResponse>>
 
-    suspend fun getDetails(slug: String): SnacResult<ShowDetailsResponse>
+    suspend fun getDetails(slug: String): SnacResult<ShowResponse>
 
     suspend fun getSeasons(slug: String): SnacResult<List<SeasonResponse>>
 
     suspend fun getSeason(slug: String, season: Int): SnacResult<SeasonResponse>
 
-    suspend fun getEpisodes(slug: String, season: Int): SnacResult<List<EpisodeDetailsResponse>>
+    suspend fun getEpisodes(slug: String, season: Int): SnacResult<List<EpisodeResponse>>
 
-    suspend fun getEpisode(slug: String, season: Int, episode: Int): SnacResult<EpisodeDetailsResponse>
+    suspend fun getEpisode(slug: String, season: Int, episode: Int): SnacResult<EpisodeResponse>
 
     suspend fun getSeasonRatings(slug: String, season: Int): SnacResult<RatingsResponse>
 
