@@ -74,15 +74,20 @@ import kotlin.time.Duration.Companion.seconds
 
 @Composable
 fun SearchScreen(
+    onMediaClick: (Media) -> Unit,
+    onPersonClick: (Person) -> Unit,
+    onSeeAllMoviesClick: () -> Unit,
+    onSeeAllShowsClick: () -> Unit,
+    onSeeAllPeopleClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = metroViewModel(),
 ) {
     SearchScreen(
-        onMediaClick = {},
-        onPersonClick = {},
-        onSeeAllMoviesClick = {},
-        onSeeAllShowsClick = {},
-        onSeeAllPeopleClick = {},
+        onMediaClick = onMediaClick,
+        onPersonClick = onPersonClick,
+        onSeeAllMoviesClick = onSeeAllMoviesClick,
+        onSeeAllShowsClick = onSeeAllShowsClick,
+        onSeeAllPeopleClick = onSeeAllPeopleClick,
         searchState = viewModel.searchState,
         query = viewModel.query.collectAsStateWithLifecycle().value,
         trendingSearches = viewModel.trendingSearches.collectAsLazyPagingItems(),

@@ -96,7 +96,7 @@ fun AppNavHost(
                             homeEntry(navigator)
                             mediaEntry(navigator)
                             personEntry(navigator)
-                            searchEntry()
+                            searchEntry(navigator)
                             settingsEntry(navigator)
                         },
                     ),

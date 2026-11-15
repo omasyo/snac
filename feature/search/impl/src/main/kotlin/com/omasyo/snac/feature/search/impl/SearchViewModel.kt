@@ -22,8 +22,8 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -54,9 +54,8 @@ class SearchViewModel(
     private fun <T : Any> searchResults(
         search: (String) -> Flow<PagingData<T>>,
     ): Flow<PagingData<T>> = query
-        .flatMapLatest { query ->
-            if (query.isBlank()) flowOf(PagingData.empty()) else search(query)
-        }
+        .filter(String::isNotBlank)
+        .flatMapLatest(search)
         .cachedIn(viewModelScope)
 
 }

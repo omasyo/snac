@@ -41,10 +41,11 @@ fun SearchResultScreen(
     contentPadding: PaddingValues = PaddingValues.Zero,
 ) {
     Box(modifier) {
+        val hasNoResults = movies.hasNoResults() && shows.hasNoResults() && people.hasNoResults()
         when {
-            query.isBlank() -> SearchPromptPlaceholder()
+            query.isBlank() && hasNoResults -> SearchPromptPlaceholder()
 
-            movies.hasNoResults() && shows.hasNoResults() && people.hasNoResults() ->
+            hasNoResults ->
                 NoResultsPlaceholder(query)
 
             else -> {
