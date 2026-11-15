@@ -18,11 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
+import com.omasyo.snac.core.navigation.Navigator
+import com.omasyo.snac.core.navigation.rememberNavigationState
+import com.omasyo.snac.core.navigation.toDecoratedEntries
 import com.omasyo.snac.core.ui.components.BottomBar
 import com.omasyo.snac.core.ui.navigation.LocalNavSharedTransitionScope
-import com.omasyo.snac.core.ui.navigation.Navigator
-import com.omasyo.snac.core.ui.navigation.rememberNavigationState
-import com.omasyo.snac.core.ui.navigation.toDecoratedEntries
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
 import com.omasyo.snac.feature.calendar.impl.navigation.calendarEntry
 import com.omasyo.snac.feature.charts.impl.navigation.chartsEntry
@@ -41,7 +41,7 @@ fun AppNavHost(
 
     val navigationState = rememberNavigationState(
         startRoute = HomeNavKey,
-        topLevelRoutes = TOP_LEVEL_NAV_ITEMS.keys
+        topLevelRoutes = TOP_LEVEL_NAV_ITEMS
     )
 
     val navigator = remember { Navigator(navigationState) }
@@ -53,13 +53,10 @@ fun AppNavHost(
         bottomBar = {
             BottomBar(
                 currentDestination = destination,
-                onCurrentDestinationChange = {
-//                    backStack.clear()
-                    navigator.navigate(it)
-                },
-                expanded = navigationState.currentRoute in TOP_LEVEL_NAV_ITEMS.keys,
-                destinations = TOP_LEVEL_NAV_ITEMS.keys.toList(),
-                label = { TOP_LEVEL_NAV_ITEMS.getValue(it).label },
+                onCurrentDestinationChange = { navigator.navigate(it) },
+                expanded = navigationState.currentRoute in TOP_LEVEL_NAV_ITEMS,
+                destinations = TOP_LEVEL_NAV_ITEMS,
+                label = { it.label },
                 modifier = Modifier
                     .padding(vertical = 8.dp)
             )

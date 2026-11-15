@@ -21,6 +21,7 @@ class FeatureImplConventionPlugin : Plugin<Project> {
                 "implementation"(project(":core:common"))
                 "implementation"(project(":core:data"))
                 "implementation"(project(":core:model"))
+                "implementation"(project(":core:navigation"))
                 "implementation"(project(":core:ui"))
 
                 "implementation"(libs.findLibrary("kotlinx.serialization.core").get())

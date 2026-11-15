@@ -1,7 +1,9 @@
 package com.omasyo.snac.feature.charts.api.navigation
 
-import androidx.navigation3.runtime.NavKey
+import com.omasyo.snac.core.navigation.TopLevelNavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object ChartsNavKey : NavKey
+data object ChartsNavKey : TopLevelNavKey {
+    override val label: String = "Charts"
+}

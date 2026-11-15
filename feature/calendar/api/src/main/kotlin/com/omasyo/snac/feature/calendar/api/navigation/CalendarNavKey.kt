@@ -1,7 +1,9 @@
 package com.omasyo.snac.feature.calendar.api.navigation
 
-import androidx.navigation3.runtime.NavKey
+import com.omasyo.snac.core.navigation.TopLevelNavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object CalendarNavKey : NavKey
+data object CalendarNavKey : TopLevelNavKey {
+    override val label: String = "Calendar"
+}

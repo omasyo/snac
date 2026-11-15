@@ -6,7 +6,7 @@ import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.model.media.Show
-import com.omasyo.snac.core.ui.navigation.Navigator
+import com.omasyo.snac.core.navigation.Navigator
 import com.omasyo.snac.feature.media.api.navigation.CommentThreadNavKey
 import com.omasyo.snac.feature.media.api.navigation.EpisodeNavKey
 import com.omasyo.snac.feature.media.api.navigation.EpisodePeopleNavKey

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.omasyo.snac.core.ui.navigation
+package com.omasyo.snac.core.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -47,7 +47,7 @@ import androidx.navigation3.runtime.serialization.NavKeySerializer
  * @return A [MutableState] whose value is saved and restored automatically.
  */
 @Composable
-fun rememberNavKey(initialKey: NavKey): MutableState<NavKey> {
+fun <T : NavKey> rememberNavKey(initialKey: T): MutableState<T> {
     return rememberSerializable(stateSerializer = NavKeySerializer()) {
         mutableStateOf(initialKey)
     }

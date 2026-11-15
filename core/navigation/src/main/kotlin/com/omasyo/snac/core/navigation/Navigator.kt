@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.omasyo.snac.core.ui.navigation
+package com.omasyo.snac.core.navigation
 
 import androidx.navigation3.runtime.NavKey
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -23,12 +23,12 @@ import kotlinx.coroutines.flow.asSharedFlow
 /**
  * Handles navigation events (forward and back) by updating the navigation state.
  */
-class Navigator(val state: NavigationState){
-    private val _reselectEvents = MutableSharedFlow<NavKey>(extraBufferCapacity = 1)
+class Navigator(val state: NavigationState) {
+    private val _reselectEvents = MutableSharedFlow<TopLevelNavKey>(extraBufferCapacity = 1)
     val reselectEvents = _reselectEvents.asSharedFlow()
 
-    fun navigate(route: NavKey){
-        if (route in state.backStacks.keys){
+    fun navigate(route: NavKey) {
+        if (route is TopLevelNavKey && route in state.backStacks) {
             // This is a top level route, just switch to it
             state.topLevelRoute = route
         } else {
@@ -36,17 +36,17 @@ class Navigator(val state: NavigationState){
         }
     }
 
-    fun onReselect(route: NavKey) {
+    fun onReselect(route: TopLevelNavKey) {
         _reselectEvents.tryEmit(route)
     }
 
-    fun goBack(){
-        val currentStack = state.backStacks[state.topLevelRoute] ?:
-        error("Stack for ${state.topLevelRoute} not found")
+    fun goBack() {
+        val currentStack = state.backStacks[state.topLevelRoute]
+            ?: error("Stack for ${state.topLevelRoute} not found")
         val currentRoute = currentStack.last()
 
         // If we're at the base of the current route, go back to the start route stack.
-        if (currentRoute == state.topLevelRoute){
+        if (currentRoute == state.topLevelRoute) {
             state.topLevelRoute = state.startRoute
         } else {
             currentStack.removeLastOrNull()

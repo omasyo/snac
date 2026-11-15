@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.omasyo.snac.core.ui.navigation
+package com.omasyo.snac.core.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -37,8 +37,8 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
  */
 @Composable
 fun rememberNavigationState(
-    startRoute: NavKey,
-    topLevelRoutes: Set<NavKey>
+    startRoute: TopLevelNavKey,
+    topLevelRoutes: List<TopLevelNavKey>
 ): NavigationState {
 
     val topLevelRoute = rememberNavKey(startRoute)
@@ -64,15 +64,15 @@ fun rememberNavigationState(
  * @param backStacks - the back stacks for each top level route.
  */
 class NavigationState(
-    val startRoute: NavKey,
-    topLevelRoute: MutableState<NavKey>,
-    val backStacks: Map<NavKey, NavBackStack<NavKey>>
+    val startRoute: TopLevelNavKey,
+    topLevelRoute: MutableState<TopLevelNavKey>,
+    val backStacks: Map<TopLevelNavKey, NavBackStack<NavKey>>
 ) {
 
     /**
      * The top level route.
      */
-    var topLevelRoute: NavKey by topLevelRoute
+    var topLevelRoute: TopLevelNavKey by topLevelRoute
 
     /**
      * The route at the top of the current top level route's back stack.
@@ -91,7 +91,7 @@ class NavigationState(
      *
      * @return the current top level routes that are in use.
      */
-    val stacksInUse: List<NavKey>
+    val stacksInUse: List<TopLevelNavKey>
         get() =
             if (topLevelRoute == startRoute) {
                 listOf(startRoute)

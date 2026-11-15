@@ -1,7 +1,9 @@
 package com.omasyo.snac.feature.home.api.navigation
 
-import androidx.navigation3.runtime.NavKey
+import com.omasyo.snac.core.navigation.TopLevelNavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object HomeNavKey : NavKey
+data object HomeNavKey : TopLevelNavKey {
+    override val label: String = "Home"
+}
