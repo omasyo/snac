@@ -5,6 +5,7 @@ import androidx.navigation3.runtime.NavKey
 import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.model.media.Show
 import com.omasyo.snac.core.navigation.Navigator
+import com.omasyo.snac.core.navigation.topLevelEntry
 import com.omasyo.snac.feature.media.api.navigation.MovieNavKey
 import com.omasyo.snac.feature.media.api.navigation.ShowNavKey
 import com.omasyo.snac.feature.person.api.navigation.PersonNavKey
@@ -12,7 +13,7 @@ import com.omasyo.snac.feature.search.api.navigation.SearchNavKey
 import com.omasyo.snac.feature.search.impl.SearchScreen
 
 fun EntryProviderScope<NavKey>.searchEntry(navigator: Navigator) {
-    entry<SearchNavKey> {
+    topLevelEntry<SearchNavKey> {
         SearchScreen(
             onMediaClick = {
                 when (it) {
@@ -21,8 +22,8 @@ fun EntryProviderScope<NavKey>.searchEntry(navigator: Navigator) {
                 }
             },
             onPersonClick = { navigator.navigate(PersonNavKey(it.slug)) },
-            onSeeAllMoviesClick = {  },
-            onSeeAllShowsClick = {  },
+            onSeeAllMoviesClick = { },
+            onSeeAllShowsClick = { },
             onSeeAllPeopleClick = {},
         )
     }

@@ -1,8 +1,10 @@
 package com.omasyo.snac
 
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.SharedTransitionLayout
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -15,12 +17,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.scene.Scene
 import androidx.navigation3.ui.NavDisplay
 import com.omasyo.snac.core.navigation.Navigator
+import com.omasyo.snac.core.navigation.TopLevelNavKey
 import com.omasyo.snac.core.navigation.rememberNavigationState
 import com.omasyo.snac.core.navigation.toDecoratedEntries
+import com.omasyo.snac.core.navigation.topLevelNavKey
 import com.omasyo.snac.core.ui.components.BottomBar
 import com.omasyo.snac.core.ui.navigation.LocalNavSharedTransitionScope
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
@@ -69,16 +76,17 @@ fun AppNavHost(
                     modifier = modifier,
                     onBack = { navigator.goBack() },
                     transitionSpec = {
-                        slideIntoContainer(
+                        topLevelSwitchTransform() ?: (slideIntoContainer(
                             AnimatedContentTransitionScope.SlideDirection.Left,
                             spring(stiffness = Spring.StiffnessMediumLow)
-                        ) togetherWith fadeOut() + scaleOut(targetScale = 0.9f)
+                        ) togetherWith fadeOut() + scaleOut(targetScale = 0.9f))
                     },
                     popTransitionSpec = {
-                        fadeIn() + scaleIn(initialScale = 0.9f) togetherWith slideOutOfContainer(
-                            AnimatedContentTransitionScope.SlideDirection.Right,
-                            spring(stiffness = Spring.StiffnessMediumLow)
-                        )
+                        topLevelSwitchTransform()
+                            ?: (fadeIn() + scaleIn(initialScale = 0.9f) togetherWith slideOutOfContainer(
+                                AnimatedContentTransitionScope.SlideDirection.Right,
+                                spring(stiffness = Spring.StiffnessMediumLow)
+                            ))
                     },
                     predictivePopTransitionSpec = { //TODO
                         fadeIn() + scaleIn(initialScale = 0.9f) togetherWith slideOutOfContainer(
@@ -100,8 +108,29 @@ fun AppNavHost(
                 )
             }
         }
-
     }
-
-
 }
+
+private fun AnimatedContentTransitionScope<Scene<NavKey>>.topLevelSwitchTransform(): ContentTransform? {
+    val initialIndex = TOP_LEVEL_NAV_ITEMS.indexOf(initialState.topLevelNavKey ?: return null)
+    val targetIndex = TOP_LEVEL_NAV_ITEMS.indexOf(targetState.topLevelNavKey ?: return null)
+    if (initialIndex == targetIndex) return null
+
+    val towards =
+        if (targetIndex > initialIndex) AnimatedContentTransitionScope.SlideDirection.Left
+        else AnimatedContentTransitionScope.SlideDirection.Right
+    val animationSpec = spring(
+        stiffness = Spring.StiffnessMediumLow,
+        visibilityThreshold = IntOffset.VisibilityThreshold
+    )
+    return slideIntoContainer(towards, animationSpec) togetherWith slideOutOfContainer(
+        towards,
+        animationSpec
+    )
+}
+
+/**
+ * The top level destination a scene belongs to: the last top level entry in its back stack.
+ */
+private val Scene<NavKey>.topLevelNavKey: TopLevelNavKey? //TODO maybe use what we have in NavigationState instead
+    get() = (previousEntries + entries).asReversed().firstNotNullOfOrNull { it.topLevelNavKey }

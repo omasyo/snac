@@ -5,6 +5,7 @@ import androidx.navigation3.runtime.NavKey
 import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.model.media.Show
 import com.omasyo.snac.core.navigation.Navigator
+import com.omasyo.snac.core.navigation.topLevelEntry
 import com.omasyo.snac.feature.auth.api.rememberAuthenticator
 import com.omasyo.snac.feature.home.api.navigation.HomeNavKey
 import com.omasyo.snac.feature.home.impl.HomeScreen
@@ -13,7 +14,7 @@ import com.omasyo.snac.feature.media.api.navigation.ShowNavKey
 import com.omasyo.snac.feature.settings.api.navigation.SettingsNavKey
 
 fun EntryProviderScope<NavKey>.homeEntry(navigator: Navigator) {
-    entry<HomeNavKey> {
+    topLevelEntry<HomeNavKey> {
         val authenticator = rememberAuthenticator()
 
         HomeScreen(
