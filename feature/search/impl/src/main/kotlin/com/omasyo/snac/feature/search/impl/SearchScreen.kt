@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -138,6 +139,7 @@ fun SearchScreen(
                     movies = movies,
                     shows = shows,
                     people = people,
+                    contentPadding = innerPadding,
                 )
             } else {
                 BentoGrid(
@@ -212,7 +214,8 @@ private fun SearchHeader(
                     .fillMaxWidth()
             )
             Row(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically,
 
@@ -232,6 +235,24 @@ private fun SearchHeader(
                         .focusRequester(focusRequester)
                         .onFocusChanged { onFocusChange(it.isFocused) },
                 )
+                if (searchState.text.isNotEmpty()) {
+                    val tintColor = SnacColors.film
+                    Icon(
+                        icon = R.drawable.x_bold,
+                        contentDescription = null,
+                        tint = SnacColors.onFilm,
+                        modifier = Modifier.clickable(
+                            interactionSource = null,
+                            indication = TintIndication(
+                                contentOnly = true,
+                                focusOpacity = 0.3f,
+                                pressOpacity = 0.7f,
+                            ) { tintColor },
+                            onClick = { searchState.clearText() },
+                        )
+
+                    )
+                }
             }
         }
 
@@ -316,7 +337,7 @@ private fun Preview() {
             onSeeAllShowsClick = {},
             onSeeAllPeopleClick = {},
             searchState = rememberTextFieldState(),
-            query = "",
+            query = "Help",
             trendingSearches = trendingSearches,
             movies = movies,
             shows = shows,

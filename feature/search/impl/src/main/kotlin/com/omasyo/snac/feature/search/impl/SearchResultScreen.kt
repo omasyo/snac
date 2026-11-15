@@ -11,7 +11,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
@@ -43,18 +42,10 @@ fun SearchResultScreen(
 ) {
     Box(modifier) {
         when {
-            query.isBlank() -> SearchStateMessage(
-                stamp = stringResource(R.string.search_prompt_stamp),
-                title = stringResource(R.string.search_prompt_title),
-                body = stringResource(R.string.search_prompt_body),
-            )
+            query.isBlank() -> SearchPromptPlaceholder()
 
             movies.hasNoResults() && shows.hasNoResults() && people.hasNoResults() ->
-                SearchStateMessage(
-                    stamp = stringResource(R.string.search_no_results_stamp),
-                    title = stringResource(R.string.search_no_results_title),
-                    body = stringResource(R.string.search_no_results_body, query),
-                )
+                NoResultsPlaceholder(query)
 
             else -> {
                 Column(
