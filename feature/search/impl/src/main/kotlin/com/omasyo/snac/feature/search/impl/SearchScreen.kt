@@ -89,6 +89,7 @@ fun SearchScreen(
         onSeeAllMoviesClick = {},
         onSeeAllShowsClick = {},
         onSeeAllPeopleClick = {},
+        searchState = rememberTextFieldState(),
         trendingSearches = viewModel.trendingSearches.collectAsLazyPagingItems(),
         movies = movies,
         shows = shows,
@@ -104,6 +105,7 @@ fun SearchScreen(
     onSeeAllMoviesClick: () -> Unit,
     onSeeAllShowsClick: () -> Unit,
     onSeeAllPeopleClick: () -> Unit,
+    searchState: TextFieldState,
     trendingSearches: LazyPagingItems<TrendingSearchItem>,
     movies: LazyPagingItems<Movie>,
     shows: LazyPagingItems<Show>,
@@ -120,7 +122,7 @@ fun SearchScreen(
             .background(SnacColors.page),
         header = {
             SearchHeader(
-                textFieldState = rememberTextFieldState(),
+                searchState = searchState,
                 isFocused = isFocused,
                 onFocusChange = { isFocused = it },
                 modifier = Modifier
@@ -172,7 +174,7 @@ fun SearchScreen(
 
 @Composable
 private fun SearchHeader(
-    textFieldState: TextFieldState,
+    searchState: TextFieldState,
     isFocused: Boolean,
     onFocusChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
@@ -228,7 +230,7 @@ private fun SearchHeader(
                     tint = SnacColors.onFilm,
                 )
                 TextField(
-                    state = textFieldState,
+                    state = searchState,
                     placeholder = "Films, series, people, lists",
                     textStyle = SnacTypography.body.copy(color = SnacColors.onFilm),
                     interactionSource = interactionSource,
@@ -320,6 +322,7 @@ private fun Preview() {
             onSeeAllMoviesClick = {},
             onSeeAllShowsClick = {},
             onSeeAllPeopleClick = {},
+            searchState = rememberTextFieldState(),
             trendingSearches = trendingSearches,
             movies = movies,
             shows = shows,
@@ -390,6 +393,7 @@ private fun LoadingToErrorPreview() {
             onSeeAllMoviesClick = {},
             onSeeAllShowsClick = {},
             onSeeAllPeopleClick = {},
+            searchState = rememberTextFieldState(),
             trendingSearches = trendingSearches,
             movies = moviesFlow.collectAsLazyPagingItems(),
             shows = showsFlow.collectAsLazyPagingItems(),
