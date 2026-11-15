@@ -2,8 +2,12 @@ package com.omasyo.snac.feature.search.impl
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -19,9 +23,7 @@ import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.model.media.Show
-import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.theme.SnacTheme
-import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
 import kotlinx.coroutines.flow.flowOf
 
@@ -37,52 +39,66 @@ fun SearchResultScreen(
     shows: LazyPagingItems<Show>,
     people: LazyPagingItems<Person>,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues.Zero,
 ) {
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(24.dp),
-    ) {
+    Box(modifier) {
         when {
-            query.isBlank() -> SearchMessage(stringResource(R.string.search_prompt))
+            query.isBlank() -> SearchStateMessage(
+                stamp = stringResource(R.string.search_prompt_stamp),
+                title = stringResource(R.string.search_prompt_title),
+                body = stringResource(R.string.search_prompt_body),
+            )
 
             movies.hasNoResults() && shows.hasNoResults() && people.hasNoResults() ->
-                SearchMessage(stringResource(R.string.search_no_results, query))
+                SearchStateMessage(
+                    stamp = stringResource(R.string.search_no_results_stamp),
+                    title = stringResource(R.string.search_no_results_title),
+                    body = stringResource(R.string.search_no_results_body, query),
+                )
 
             else -> {
-                if (!movies.hasNoResults()) {
-                    SearchResultSection(
-                        title = "Movie",
-                        onSeeAllClick = onSeeAllMoviesClick,
-                        items = movies,
-                    ) {
-                        MediaResultCard(
-                            media = it,
-                            onClick = { onMediaClick(it) },
-                        )
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(24.dp),
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .padding(contentPadding),
+                ) {
+
+                    if (!movies.hasNoResults()) {
+                        SearchResultSection(
+                            title = "Movie",
+                            onSeeAllClick = onSeeAllMoviesClick,
+                            items = movies,
+                        ) {
+                            MediaResultCard(
+                                media = it,
+                                onClick = { onMediaClick(it) },
+                            )
+                        }
                     }
-                }
-                if (!shows.hasNoResults()) {
-                    SearchResultSection(
-                        title = "Show",
-                        onSeeAllClick = onSeeAllShowsClick,
-                        items = shows,
-                    ) {
-                        MediaResultCard(
-                            media = it,
-                            onClick = { onMediaClick(it) },
-                        )
+                    if (!shows.hasNoResults()) {
+                        SearchResultSection(
+                            title = "Show",
+                            onSeeAllClick = onSeeAllShowsClick,
+                            items = shows,
+                        ) {
+                            MediaResultCard(
+                                media = it,
+                                onClick = { onMediaClick(it) },
+                            )
+                        }
                     }
-                }
-                if (!people.hasNoResults()) {
-                    SearchResultSection(
-                        title = "People",
-                        onSeeAllClick = onSeeAllPeopleClick,
-                        items = people,
-                    ) {
-                        PersonResultCard(
-                            person = it,
-                            onClick = { onPersonClick(it) },
-                        )
+                    if (!people.hasNoResults()) {
+                        SearchResultSection(
+                            title = "People",
+                            onSeeAllClick = onSeeAllPeopleClick,
+                            items = people,
+                        ) {
+                            PersonResultCard(
+                                person = it,
+                                onClick = { onPersonClick(it) },
+                            )
+                        }
                     }
                 }
             }
@@ -93,20 +109,7 @@ fun SearchResultScreen(
 private fun LazyPagingItems<*>.hasNoResults(): Boolean =
     loadState.refresh is LoadState.NotLoading && itemCount == 0
 
-@Composable
-private fun SearchMessage(
-    text: String,
-    modifier: Modifier = Modifier,
-) {
-    Text(
-        text = text,
-        style = SnacTypography.hand,
-        color = SnacColors.muted,
-        modifier = modifier.padding(horizontal = 16.dp),
-    )
-}
-
-@Preview(device = "spec:width=1080px,height=3000px,dpi=440")
+@Preview
 @Composable
 private fun Preview() {
     val movies =

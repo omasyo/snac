@@ -20,10 +20,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -140,9 +138,6 @@ fun SearchScreen(
                     movies = movies,
                     shows = shows,
                     people = people,
-                    modifier = Modifier
-                        .verticalScroll(rememberScrollState())
-                        .padding(innerPadding)
                 )
             } else {
                 BentoGrid(

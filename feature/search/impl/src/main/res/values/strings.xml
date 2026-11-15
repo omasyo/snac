@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="search_prompt">Search for films, series and people</string>
-    <string name="search_no_results">Nothing found for “%1$s”. Try another title or name</string>
+    <string name="search_prompt_stamp">Take one</string>
+    <string name="search_prompt_title">Find your next watch</string>
+    <string name="search_prompt_body">Search for films, series and people.</string>
+    <string name="search_no_results_stamp">No match</string>
+    <string name="search_no_results_title">Nothing found</string>
+    <string name="search_no_results_body">No films, series or people match “%1$s”.</string>
 </resources>
