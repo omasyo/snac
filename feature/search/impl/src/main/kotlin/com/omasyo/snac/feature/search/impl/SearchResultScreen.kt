@@ -7,8 +7,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.paging.LoadState
 import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -17,7 +19,9 @@ import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.model.media.Show
+import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.theme.SnacTheme
+import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
 import kotlinx.coroutines.flow.flowOf
 
@@ -28,6 +32,7 @@ fun SearchResultScreen(
     onSeeAllMoviesClick: () -> Unit,
     onSeeAllShowsClick: () -> Unit,
     onSeeAllPeopleClick: () -> Unit,
+    query: String,
     movies: LazyPagingItems<Movie>,
     shows: LazyPagingItems<Show>,
     people: LazyPagingItems<Person>,
@@ -37,37 +42,68 @@ fun SearchResultScreen(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
-        SearchResultSection(
-            title = "Movie",
-            onSeeAllClick = onSeeAllMoviesClick,
-            items = movies,
-        ) {
-            MediaResultCard(
-                media = it,
-                onClick = { onMediaClick(it) },
-            )
-        }
-        SearchResultSection(
-            title = "Show",
-            onSeeAllClick = onSeeAllShowsClick,
-            items = shows,
-        ) {
-            MediaResultCard(
-                media = it,
-                onClick = { onMediaClick(it) },
-            )
-        }
-        SearchResultSection(
-            title = "People",
-            onSeeAllClick = onSeeAllPeopleClick,
-            items = people,
-        ) {
-            PersonResultCard(
-                person = it,
-                onClick = { onPersonClick(it) },
-            )
+        when {
+            query.isBlank() -> SearchMessage(stringResource(R.string.search_prompt))
+
+            movies.hasNoResults() && shows.hasNoResults() && people.hasNoResults() ->
+                SearchMessage(stringResource(R.string.search_no_results, query))
+
+            else -> {
+                if (!movies.hasNoResults()) {
+                    SearchResultSection(
+                        title = "Movie",
+                        onSeeAllClick = onSeeAllMoviesClick,
+                        items = movies,
+                    ) {
+                        MediaResultCard(
+                            media = it,
+                            onClick = { onMediaClick(it) },
+                        )
+                    }
+                }
+                if (!shows.hasNoResults()) {
+                    SearchResultSection(
+                        title = "Show",
+                        onSeeAllClick = onSeeAllShowsClick,
+                        items = shows,
+                    ) {
+                        MediaResultCard(
+                            media = it,
+                            onClick = { onMediaClick(it) },
+                        )
+                    }
+                }
+                if (!people.hasNoResults()) {
+                    SearchResultSection(
+                        title = "People",
+                        onSeeAllClick = onSeeAllPeopleClick,
+                        items = people,
+                    ) {
+                        PersonResultCard(
+                            person = it,
+                            onClick = { onPersonClick(it) },
+                        )
+                    }
+                }
+            }
         }
     }
+}
+
+private fun LazyPagingItems<*>.hasNoResults(): Boolean =
+    loadState.refresh is LoadState.NotLoading && itemCount == 0
+
+@Composable
+private fun SearchMessage(
+    text: String,
+    modifier: Modifier = Modifier,
+) {
+    Text(
+        text = text,
+        style = SnacTypography.hand,
+        color = SnacColors.muted,
+        modifier = modifier.padding(horizontal = 16.dp),
+    )
 }
 
 @Preview(device = "spec:width=1080px,height=3000px,dpi=440")
@@ -86,6 +122,7 @@ private fun Preview() {
             onSeeAllMoviesClick = {},
             onSeeAllShowsClick = {},
             onSeeAllPeopleClick = {},
+            query = "dave",
             movies = movies,
             shows = shows,
             people = people,

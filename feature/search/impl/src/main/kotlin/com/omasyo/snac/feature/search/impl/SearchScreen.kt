@@ -41,6 +41,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
@@ -77,23 +78,18 @@ fun SearchScreen(
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = metroViewModel(),
 ) {
-    val movies =
-        remember { flowOf(PagingData.from(Movie.PreviewSample)) }.collectAsLazyPagingItems()
-    val shows = remember { flowOf(PagingData.from(Show.PreviewSample)) }.collectAsLazyPagingItems()
-    val people =
-        remember { flowOf(PagingData.from(Cast.PreviewSample.map { it.person })) }.collectAsLazyPagingItems()
-
     SearchScreen(
         onMediaClick = {},
         onPersonClick = {},
         onSeeAllMoviesClick = {},
         onSeeAllShowsClick = {},
         onSeeAllPeopleClick = {},
-        searchState = rememberTextFieldState(),
+        searchState = viewModel.searchState,
+        query = viewModel.query.collectAsStateWithLifecycle().value,
         trendingSearches = viewModel.trendingSearches.collectAsLazyPagingItems(),
-        movies = movies,
-        shows = shows,
-        people = people,
+        movies = viewModel.movies.collectAsLazyPagingItems(),
+        shows = viewModel.shows.collectAsLazyPagingItems(),
+        people = viewModel.people.collectAsLazyPagingItems(),
         modifier = modifier
     )
 }
@@ -106,6 +102,7 @@ fun SearchScreen(
     onSeeAllShowsClick: () -> Unit,
     onSeeAllPeopleClick: () -> Unit,
     searchState: TextFieldState,
+    query: String,
     trendingSearches: LazyPagingItems<TrendingSearchItem>,
     movies: LazyPagingItems<Movie>,
     shows: LazyPagingItems<Show>,
@@ -139,6 +136,7 @@ fun SearchScreen(
                     onSeeAllMoviesClick = onSeeAllMoviesClick,
                     onSeeAllShowsClick = onSeeAllShowsClick,
                     onSeeAllPeopleClick = onSeeAllPeopleClick,
+                    query = query,
                     movies = movies,
                     shows = shows,
                     people = people,
@@ -323,6 +321,7 @@ private fun Preview() {
             onSeeAllShowsClick = {},
             onSeeAllPeopleClick = {},
             searchState = rememberTextFieldState(),
+            query = "",
             trendingSearches = trendingSearches,
             movies = movies,
             shows = shows,
@@ -394,6 +393,7 @@ private fun LoadingToErrorPreview() {
             onSeeAllShowsClick = {},
             onSeeAllPeopleClick = {},
             searchState = rememberTextFieldState(),
+            query = "",
             trendingSearches = trendingSearches,
             movies = moviesFlow.collectAsLazyPagingItems(),
             shows = showsFlow.collectAsLazyPagingItems(),

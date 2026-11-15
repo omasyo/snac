@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="search_prompt">Search for films, series and people</string>
+    <string name="search_no_results">Nothing found for “%1$s”. Try another title or name</string>
+</resources>
