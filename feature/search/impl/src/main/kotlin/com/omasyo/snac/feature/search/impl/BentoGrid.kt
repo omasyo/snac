@@ -35,7 +35,6 @@ import kotlinx.coroutines.flow.flowOf
 
 private const val ROWS_PER_BLOCK = 3
 
-/** Enough cells for two full bento blocks while the first page loads. */
 private const val PLACEHOLDER_ITEM_COUNT = ROWS_PER_BLOCK * 3 * 2
 
 private sealed interface RowSpec {
@@ -132,7 +131,6 @@ fun <T : Any> BentoGrid(
     }
 }
 
-/** Lays out [itemCount] placeholder cells in the same bento rows as real items. */
 @Composable
 private fun PlaceholderRows(itemCount: Int, placeholder: @Composable () -> Unit) {
     val cell: @Composable (Int, Modifier) -> Unit = { _, cellModifier ->
@@ -148,7 +146,6 @@ private fun PlaceholderRows(itemCount: Int, placeholder: @Composable () -> Unit)
     }
 }
 
-/** Stands in for an image cell, using the same gradient as an image that hasn't loaded. */
 @Composable
 fun BentoPlaceholderCell(modifier: Modifier = Modifier) {
     Box(
