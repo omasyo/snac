@@ -1,11 +1,18 @@
 package com.omasyo.snac.core.data.mappers
 
 import com.omasyo.snac.core.data.models.CreditRole
+import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.data.models.PersonCredit
 import com.omasyo.snac.core.data.models.PersonDetails
 import com.omasyo.snac.core.network.person.models.PersonDetailsResponse
 import com.omasyo.snac.core.network.person.models.PersonMovieCreditsResponse
 import com.omasyo.snac.core.network.person.models.PersonShowCreditsResponse
+
+fun PersonDetailsResponse.toPerson() = Person(
+    slug = ids.slug,
+    name = name,
+    imageUrl = images?.headshot?.firstOrNull()?.toImageUrl(),
+)
 
 fun PersonDetailsResponse.toPersonDetails() = PersonDetails(
     slug = ids.slug,

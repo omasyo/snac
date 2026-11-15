@@ -2,6 +2,9 @@ package com.omasyo.snac.core.network.search
 
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.network.safeCall
+import com.omasyo.snac.core.network.search.models.MovieSearchResponse
+import com.omasyo.snac.core.network.search.models.PersonSearchResponse
+import com.omasyo.snac.core.network.search.models.ShowSearchResponse
 import com.omasyo.snac.core.network.search.models.TrendingSearchResponse
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
@@ -21,6 +24,45 @@ class SearchNetworkSourceImpl(
     ): SnacResult<List<TrendingSearchResponse>> =
         safeCall {
             client.get("search/recent_by_id/global/movies,shows") {
+                parameter("page", page)
+                parameter("limit", limit)
+            }
+        }
+
+    override suspend fun searchMovies(
+        query: String,
+        page: Int,
+        limit: Int
+    ): SnacResult<List<MovieSearchResponse>> =
+        safeCall {
+            client.get("search/movie") {
+                parameter("query", query)
+                parameter("page", page)
+                parameter("limit", limit)
+            }
+        }
+
+    override suspend fun searchShows(
+        query: String,
+        page: Int,
+        limit: Int
+    ): SnacResult<List<ShowSearchResponse>> =
+        safeCall {
+            client.get("search/show") {
+                parameter("query", query)
+                parameter("page", page)
+                parameter("limit", limit)
+            }
+        }
+
+    override suspend fun searchPeople(
+        query: String,
+        page: Int,
+        limit: Int
+    ): SnacResult<List<PersonSearchResponse>> =
+        safeCall {
+            client.get("search/person") {
+                parameter("query", query)
                 parameter("page", page)
                 parameter("limit", limit)
             }

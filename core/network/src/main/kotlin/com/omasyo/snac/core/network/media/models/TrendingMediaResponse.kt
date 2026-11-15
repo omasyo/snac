@@ -31,7 +31,7 @@ data class TrendingShowResponse(
 ) : TrendingMediaResponse
 
 
- object TrendingMediaSerializer : JsonContentPolymorphicSerializer<TrendingMediaResponse>(
+object TrendingMediaSerializer : JsonContentPolymorphicSerializer<TrendingMediaResponse>(
     TrendingMediaResponse::class
 ) {
 
