@@ -1,5 +1,6 @@
 package com.omasyo.snac.feature.search.impl.navigation
 
+import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -21,6 +22,7 @@ import com.omasyo.snac.feature.search.impl.SearchScreen
 import com.omasyo.snac.feature.search.impl.SearchViewModel
 import com.omasyo.snac.feature.search.impl.components.MediaResultCard
 import com.omasyo.snac.feature.search.impl.components.PersonResultCard
+import com.omasyo.snac.feature.search.impl.components.searchResultSharedBounds
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 private const val SEARCH_CONTENT_KEY = "SearchNavKey"
@@ -53,7 +55,11 @@ fun EntryProviderScope<NavKey>.searchEntry(navigator: Navigator) {
             onBackClick = onBackClick,
             items = viewModel.movies.collectAsLazyPagingItems(),
         ) {
-            MediaResultCard(media = it, onClick = { onMediaClick(it) })
+            MediaResultCard(
+                media = it,
+                onClick = { onMediaClick(it) },
+                modifier = Modifier.searchResultSharedBounds(it.slug),
+            )
         }
     }
 
@@ -64,7 +70,11 @@ fun EntryProviderScope<NavKey>.searchEntry(navigator: Navigator) {
             onBackClick = onBackClick,
             items = viewModel.shows.collectAsLazyPagingItems(),
         ) {
-            MediaResultCard(media = it, onClick = { onMediaClick(it) })
+            MediaResultCard(
+                media = it,
+                onClick = { onMediaClick(it) },
+                modifier = Modifier.searchResultSharedBounds(it.slug),
+            )
         }
     }
 
@@ -78,6 +88,7 @@ fun EntryProviderScope<NavKey>.searchEntry(navigator: Navigator) {
             PersonResultCard(
                 person = it,
                 onClick = { navigator.navigate(PersonNavKey(it.slug)) },
+                modifier = Modifier.searchResultSharedBounds(it.slug),
             )
         }
     }

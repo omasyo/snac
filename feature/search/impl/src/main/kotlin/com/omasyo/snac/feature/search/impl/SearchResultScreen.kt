@@ -28,6 +28,7 @@ import com.omasyo.snac.feature.search.impl.components.MediaResultCard
 import com.omasyo.snac.feature.search.impl.components.NoResultsPlaceholder
 import com.omasyo.snac.feature.search.impl.components.PersonResultCard
 import com.omasyo.snac.feature.search.impl.components.SearchPromptPlaceholder
+import com.omasyo.snac.feature.search.impl.components.searchResultSharedBounds
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
@@ -69,6 +70,7 @@ fun SearchResultScreen(
                             MediaResultCard(
                                 media = it,
                                 onClick = { onMediaClick(it) },
+                                modifier = Modifier.searchResultSharedBounds(it.slug),
                             )
                         }
                     }
@@ -81,6 +83,7 @@ fun SearchResultScreen(
                             MediaResultCard(
                                 media = it,
                                 onClick = { onMediaClick(it) },
+                                modifier = Modifier.searchResultSharedBounds(it.slug),
                             )
                         }
                     }
@@ -93,6 +96,7 @@ fun SearchResultScreen(
                             PersonResultCard(
                                 person = it,
                                 onClick = { onPersonClick(it) },
+                                modifier = Modifier.searchResultSharedBounds(it.slug),
                             )
                         }
                     }
