@@ -43,7 +43,7 @@ fun SearchResultScreen(
     Box(modifier) {
         val hasNoResults = movies.hasNoResults() && shows.hasNoResults() && people.hasNoResults()
         when {
-            query.isBlank() && hasNoResults -> SearchPromptPlaceholder()
+            query.isBlank() -> SearchPromptPlaceholder()
 
             hasNoResults ->
                 NoResultsPlaceholder(query)

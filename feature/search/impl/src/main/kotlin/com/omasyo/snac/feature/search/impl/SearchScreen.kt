@@ -12,14 +12,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.clearText
 import androidx.compose.foundation.text.input.rememberTextFieldState
@@ -37,6 +35,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -89,6 +89,7 @@ fun SearchScreen(
         onSeeAllShowsClick = onSeeAllShowsClick,
         onSeeAllPeopleClick = onSeeAllPeopleClick,
         searchState = viewModel.searchState,
+        onSearch = viewModel::search,
         query = viewModel.query.collectAsStateWithLifecycle().value,
         trendingSearches = viewModel.trendingSearches.collectAsLazyPagingItems(),
         movies = viewModel.movies.collectAsLazyPagingItems(),
@@ -106,6 +107,7 @@ fun SearchScreen(
     onSeeAllShowsClick: () -> Unit,
     onSeeAllPeopleClick: () -> Unit,
     searchState: TextFieldState,
+    onSearch: () -> Unit,
     query: String,
     trendingSearches: LazyPagingItems<TrendingSearchItem>,
     movies: LazyPagingItems<Movie>,
@@ -126,6 +128,7 @@ fun SearchScreen(
                 searchState = searchState,
                 isFocused = isFocused,
                 onFocusChange = { isFocused = it },
+                onSearch = onSearch,
                 modifier = Modifier
                     .statusBarsPadding()
                     .padding(16.dp),
@@ -177,6 +180,7 @@ private fun SearchHeader(
     searchState: TextFieldState,
     isFocused: Boolean,
     onFocusChange: (Boolean) -> Unit,
+    onSearch: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
@@ -235,6 +239,11 @@ private fun SearchHeader(
                     placeholder = "Films, series, people, lists",
                     textStyle = SnacTypography.body.copy(color = SnacColors.onFilm),
                     interactionSource = interactionSource,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Search,
+                    ),
+                    onKeyboardAction = { onSearch() },
                     modifier = Modifier
                         .weight(1f)
                         .focusRequester(focusRequester)
@@ -302,7 +311,6 @@ private fun SearchScreenLayout(
         val gridPlaceable =
             subcompose("grid") {
                 val bottomBarPadding = LocalBottomBarPadding.current
-                val windowPaddingValues = WindowInsets.systemBars.asPaddingValues()
                 content(
                     PaddingValues(
                         top = headerHeight,
@@ -342,6 +350,7 @@ private fun Preview() {
             onSeeAllShowsClick = {},
             onSeeAllPeopleClick = {},
             searchState = rememberTextFieldState(),
+            onSearch = {},
             query = "Help",
             trendingSearches = trendingSearches,
             movies = movies,
@@ -414,6 +423,7 @@ private fun LoadingToErrorPreview() {
             onSeeAllShowsClick = {},
             onSeeAllPeopleClick = {},
             searchState = rememberTextFieldState(),
+            onSearch = {},
             query = "",
             trendingSearches = trendingSearches,
             movies = moviesFlow.collectAsLazyPagingItems(),
