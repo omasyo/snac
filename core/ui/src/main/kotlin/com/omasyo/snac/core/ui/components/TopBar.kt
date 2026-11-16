@@ -22,6 +22,20 @@ fun TopBar(
     title: String,
     modifier: Modifier = Modifier,
 ) {
+    TopBar(modifier) {
+        Text(
+            text = title,
+            style = SnacTypography.title,
+            maxLines = 1,
+        )
+    }
+}
+
+@Composable
+fun TopBar(
+    modifier: Modifier = Modifier,
+    title: @Composable () -> Unit,
+) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -34,10 +48,6 @@ fun TopBar(
     ) {
         // Slot the floating back button settles into.
         Spacer(Modifier.size(48.dp))
-        Text(
-            text = title,
-            style = SnacTypography.title,
-            maxLines = 1,
-        )
+        title()
     }
 }

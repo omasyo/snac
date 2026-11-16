@@ -1,4 +1,4 @@
-package com.omasyo.snac.feature.search.impl
+package com.omasyo.snac.feature.search.impl.components
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.FastOutLinearInEasing
@@ -32,6 +32,7 @@ import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
+import com.omasyo.snac.feature.search.impl.R
 import kotlinx.coroutines.launch
 
 @Composable

@@ -46,7 +46,7 @@ import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
 import com.omasyo.snac.feature.media.impl.R
-import com.omasyo.snac.feature.media.impl.components.SectionHeader
+import com.omasyo.snac.core.ui.components.SectionHeader
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds

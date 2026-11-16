@@ -1,4 +1,4 @@
-package com.omasyo.snac.feature.search.impl
+package com.omasyo.snac.feature.search.impl.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

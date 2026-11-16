@@ -24,6 +24,10 @@ import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.model.media.Show
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
+import com.omasyo.snac.feature.search.impl.components.MediaResultCard
+import com.omasyo.snac.feature.search.impl.components.NoResultsPlaceholder
+import com.omasyo.snac.feature.search.impl.components.PersonResultCard
+import com.omasyo.snac.feature.search.impl.components.SearchPromptPlaceholder
 import kotlinx.coroutines.flow.flowOf
 
 @Composable
