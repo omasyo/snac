@@ -35,9 +35,9 @@ import kotlinx.coroutines.flow.flowOf
 fun SearchResultScreen(
     onMediaClick: (Media) -> Unit,
     onPersonClick: (Person) -> Unit,
-    onSeeAllMoviesClick: () -> Unit,
-    onSeeAllShowsClick: () -> Unit,
-    onSeeAllPeopleClick: () -> Unit,
+    onSeeAllMoviesClick: (startIndex: Int) -> Unit,
+    onSeeAllShowsClick: (startIndex: Int) -> Unit,
+    onSeeAllPeopleClick: (startIndex: Int) -> Unit,
     query: String,
     movies: LazyPagingItems<Movie>,
     shows: LazyPagingItems<Show>,

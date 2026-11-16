@@ -9,7 +9,9 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,7 +44,7 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 internal fun <T : Any> SearchResultSection(
     title: String,
-    onSeeAllClick: () -> Unit,
+    onSeeAllClick: (startIndex: Int) -> Unit,
     items: LazyPagingItems<T>,
     modifier: Modifier = Modifier,
     key: ((index: Int) -> Any)? = null,
@@ -52,9 +54,11 @@ internal fun <T : Any> SearchResultSection(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
+        val listState = rememberLazyListState()
+
         SectionHeader(
             title = title.uppercase(),
-            onSeeAllClick = onSeeAllClick,
+            onSeeAllClick = { onSeeAllClick(listState.mostlyVisibleItemIndex()) },
             modifier = Modifier.padding(horizontal = 16.dp),
         )
 
@@ -81,6 +85,7 @@ internal fun <T : Any> SearchResultSection(
             is LoadState.Loading if items.itemCount == 0 -> placeholder(true)
             else -> {
                 LazyRow(
+                    state = listState,
                     contentPadding = PaddingValues(horizontal = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
@@ -115,6 +120,13 @@ internal fun <T : Any> SearchResultSection(
             }
         }
     }
+}
+
+private fun LazyListState.mostlyVisibleItemIndex(): Int {
+    val first = layoutInfo.visibleItemsInfo.firstOrNull() ?: return 0
+    val index =
+        if (firstVisibleItemScrollOffset > first.size / 2) first.index + 1 else first.index
+    return index
 }
 
 @Composable

@@ -77,9 +77,9 @@ import kotlin.time.Duration.Companion.seconds
 fun SearchScreen(
     onMediaClick: (Media) -> Unit,
     onPersonClick: (Person) -> Unit,
-    onSeeAllMoviesClick: () -> Unit,
-    onSeeAllShowsClick: () -> Unit,
-    onSeeAllPeopleClick: () -> Unit,
+    onSeeAllMoviesClick: (startIndex: Int) -> Unit,
+    onSeeAllShowsClick: (startIndex: Int) -> Unit,
+    onSeeAllPeopleClick: (startIndex: Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SearchViewModel = metroViewModel(),
 ) {
@@ -104,9 +104,9 @@ fun SearchScreen(
 fun SearchScreen(
     onMediaClick: (Media) -> Unit,
     onPersonClick: (Person) -> Unit,
-    onSeeAllMoviesClick: () -> Unit,
-    onSeeAllShowsClick: () -> Unit,
-    onSeeAllPeopleClick: () -> Unit,
+    onSeeAllMoviesClick: (startIndex: Int) -> Unit,
+    onSeeAllShowsClick: (startIndex: Int) -> Unit,
+    onSeeAllPeopleClick: (startIndex: Int) -> Unit,
     searchState: TextFieldState,
     onSearch: () -> Unit,
     query: String,

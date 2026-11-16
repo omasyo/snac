@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -45,6 +46,7 @@ internal fun <T : Any> SearchResultSectionScreen(
     onBackClick: () -> Unit,
     items: LazyPagingItems<T>,
     modifier: Modifier = Modifier,
+    initialIndex: Int,
     key: ((index: Int) -> Any)? = null,
     content: @Composable (T) -> Unit,
 ) {
@@ -67,6 +69,7 @@ internal fun <T : Any> SearchResultSectionScreen(
         }
 
         LazyVerticalGrid(
+            state = rememberLazyGridState(initialFirstVisibleItemIndex = initialIndex),
             columns = GridCells.Adaptive(96.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -120,6 +123,7 @@ private fun Preview() {
                 title = "Movie",
                 onBackClick = {},
                 items = items,
+                initialIndex = 0,
             ) {
                 MediaResultCard(
                     media = it,
@@ -158,6 +162,7 @@ private fun LoadingToErrorPreview() {
                 title = "Movie",
                 onBackClick = {},
                 items = items,
+                initialIndex = 0,
             ) {
                 MediaResultCard(
                     media = it,

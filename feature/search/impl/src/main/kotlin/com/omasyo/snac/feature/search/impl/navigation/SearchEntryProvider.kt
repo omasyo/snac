@@ -42,17 +42,18 @@ fun EntryProviderScope<NavKey>.searchEntry(navigator: Navigator) {
         SearchScreen(
             onMediaClick = onMediaClick,
             onPersonClick = { navigator.navigate(PersonNavKey(it.slug)) },
-            onSeeAllMoviesClick = { navigator.navigate(SearchMoviesNavKey) },
-            onSeeAllShowsClick = { navigator.navigate(SearchShowsNavKey) },
-            onSeeAllPeopleClick = { navigator.navigate(SearchPeopleNavKey) },
+            onSeeAllMoviesClick = { navigator.navigate(SearchMoviesNavKey(it)) },
+            onSeeAllShowsClick = { navigator.navigate(SearchShowsNavKey(it)) },
+            onSeeAllPeopleClick = { navigator.navigate(SearchPeopleNavKey(it)) },
         )
     }
 
-    entry<SearchMoviesNavKey>(metadata = searchParentMetadata) {
+    entry<SearchMoviesNavKey>(metadata = searchParentMetadata) { key ->
         val viewModel: SearchViewModel = metroViewModel(LocalSharedViewModelStoreOwner.current)
         SearchResultSectionScreen(
             title = "Movies",
             onBackClick = onBackClick,
+            initialIndex = key.initialIndex,
             items = viewModel.movies.collectAsLazyPagingItems(),
         ) {
             MediaResultCard(
@@ -63,11 +64,12 @@ fun EntryProviderScope<NavKey>.searchEntry(navigator: Navigator) {
         }
     }
 
-    entry<SearchShowsNavKey>(metadata = searchParentMetadata) {
+    entry<SearchShowsNavKey>(metadata = searchParentMetadata) { key ->
         val viewModel: SearchViewModel = metroViewModel(LocalSharedViewModelStoreOwner.current)
         SearchResultSectionScreen(
             title = "Shows",
             onBackClick = onBackClick,
+            initialIndex = key.initialIndex,
             items = viewModel.shows.collectAsLazyPagingItems(),
         ) {
             MediaResultCard(
@@ -78,11 +80,12 @@ fun EntryProviderScope<NavKey>.searchEntry(navigator: Navigator) {
         }
     }
 
-    entry<SearchPeopleNavKey>(metadata = searchParentMetadata) {
+    entry<SearchPeopleNavKey>(metadata = searchParentMetadata) { key ->
         val viewModel: SearchViewModel = metroViewModel(LocalSharedViewModelStoreOwner.current)
         SearchResultSectionScreen(
             title = "People",
             onBackClick = onBackClick,
+            initialIndex = key.initialIndex,
             items = viewModel.people.collectAsLazyPagingItems(),
         ) {
             PersonResultCard(
