@@ -1,20 +1,15 @@
 package com.omasyo.snac.feature.search.impl
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,8 +23,8 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.model.media.Movie
+import com.omasyo.snac.core.ui.components.BackButton
 import com.omasyo.snac.core.ui.components.Button
-import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.TopBar
 import com.omasyo.snac.core.ui.models.message
@@ -47,13 +42,21 @@ import kotlin.time.Duration.Companion.seconds
 @Composable
 internal fun <T : Any> SearchResultSectionScreen(
     title: String,
+    onBackClick: () -> Unit,
     items: LazyPagingItems<T>,
     modifier: Modifier = Modifier,
     key: ((index: Int) -> Any)? = null,
     content: @Composable (T) -> Unit,
 ) {
     Column(modifier) {
-        TopBar(Modifier.zIndex(1f)) {
+        TopBar(
+            modifier = Modifier.zIndex(1f),
+            navigationIcon = {
+                BackButton(
+                    onClick = onBackClick,
+                )
+            }
+        ) {
             Text(
                 text = title,
                 style = SnacTypography.title,
@@ -115,6 +118,7 @@ private fun Preview() {
         Box(Modifier.background(SnacColors.page)) {
             SearchResultSectionScreen(
                 title = "Movie",
+                onBackClick = {},
                 items = items,
             ) {
                 MediaResultCard(
@@ -152,6 +156,7 @@ private fun LoadingToErrorPreview() {
         Box(Modifier.background(SnacColors.page)) {
             SearchResultSectionScreen(
                 title = "Movie",
+                onBackClick = {},
                 items = items,
             ) {
                 MediaResultCard(

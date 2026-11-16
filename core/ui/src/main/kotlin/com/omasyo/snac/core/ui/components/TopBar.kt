@@ -21,8 +21,9 @@ import com.omasyo.snac.core.ui.theme.colors.SnacColors
 fun TopBar(
     title: String,
     modifier: Modifier = Modifier,
+    navigationIcon: @Composable () -> Unit = { Spacer(Modifier.size(48.dp)) },
 ) {
-    TopBar(modifier) {
+    TopBar(modifier, navigationIcon) {
         Text(
             text = title,
             style = SnacTypography.title,
@@ -34,6 +35,7 @@ fun TopBar(
 @Composable
 fun TopBar(
     modifier: Modifier = Modifier,
+    navigationIcon: @Composable () -> Unit = { Spacer(Modifier.size(48.dp)) },
     title: @Composable () -> Unit,
 ) {
     Row(
@@ -47,7 +49,7 @@ fun TopBar(
             .padding(16.dp),
     ) {
         // Slot the floating back button settles into.
-        Spacer(Modifier.size(48.dp))
+        navigationIcon()
         title()
     }
 }

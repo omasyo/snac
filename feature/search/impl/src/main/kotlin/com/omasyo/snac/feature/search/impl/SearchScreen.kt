@@ -26,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -115,7 +116,7 @@ fun SearchScreen(
     people: LazyPagingItems<Person>,
     modifier: Modifier = Modifier,
 ) {
-    var isFocused by remember { mutableStateOf(false) }
+    var isFocused by rememberSaveable { mutableStateOf(false) }
 
     BackHandler(isFocused) { isFocused = false }
 
@@ -247,7 +248,7 @@ private fun SearchHeader(
                     modifier = Modifier
                         .weight(1f)
                         .focusRequester(focusRequester)
-                        .onFocusChanged { onFocusChange(it.isFocused) },
+                        .onFocusChanged { if (it.isFocused) onFocusChange(true) },
                 )
                 if (searchState.text.isNotEmpty()) {
                     val tintColor = SnacColors.film
@@ -284,9 +285,7 @@ private fun SearchHeader(
                             focusOpacity = 0.2f,
                             pressOpacity = 0.5f
                         ) { tintColor },
-                        onClick = {
-                            focusManager.clearFocus()
-                        },
+                        onClick = { onFocusChange(false) },
                     )
                     .padding(12.dp),
             )
