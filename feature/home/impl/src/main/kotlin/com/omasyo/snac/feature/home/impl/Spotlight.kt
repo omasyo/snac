@@ -52,7 +52,7 @@ internal fun TrendingSpotlight(
                         onClick(state.content.media)
                     }
                 },
-                indication = remember { TintIndication { indicationColor } },
+                indication = remember { TintIndication(true) { indicationColor } },
                 interactionSource = null,
                 enabled = state is UiState.Success,
             )

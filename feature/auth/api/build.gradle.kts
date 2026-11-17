@@ -10,4 +10,6 @@ android {
 
 dependencies {
     compileOnly(libs.metrox.android)
+    
+    implementation(projects.core.ui)
 }

@@ -1,12 +1,6 @@
 package com.omasyo.snac.feature.media.impl.show
 
 import androidx.compose.foundation.background
-import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
-import com.omasyo.snac.core.ui.components.imageGradient
-import androidx.compose.runtime.remember
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.indication
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,17 +32,16 @@ import androidx.compose.ui.unit.lerp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.data.models.Cast
+import com.omasyo.snac.core.data.models.Comment
 import com.omasyo.snac.core.data.models.EpisodeDetails
 import com.omasyo.snac.core.data.models.EpisodeType
 import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.data.models.ShowDetails
-import com.omasyo.snac.core.data.models.Comment
 import com.omasyo.snac.core.ui.components.BackButton
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.HeroLayout
 import com.omasyo.snac.core.ui.components.Image
-import com.omasyo.snac.core.ui.components.SignInPrompt
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.TopBar
 import com.omasyo.snac.core.ui.components.heroScrollable
@@ -68,6 +61,7 @@ import com.omasyo.snac.core.ui.theme.CapHeightLineHeightStyle
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
+import com.omasyo.snac.feature.auth.api.components.SignInPrompt
 import com.omasyo.snac.feature.media.impl.R
 import com.omasyo.snac.feature.media.impl.common.CastSection
 import com.omasyo.snac.feature.media.impl.common.MediaHeroContent
@@ -185,7 +179,6 @@ fun EpisodeScreen(
                 SignInPrompt(
                     title = "Track this episode",
                     message = "Sign in to check in, rate it, mark it seen, and add it to your watchlist, favorites or lists.",
-                    onSignInClick = {},
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
                 RatingsSection(

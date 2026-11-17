@@ -16,6 +16,7 @@ import com.omasyo.snac.core.ui.theme.colors.colorScheme
 import com.omasyo.snac.core.ui.theme.colors.colors
 import com.omasyo.snac.core.ui.theme.isDark
 import com.omasyo.snac.feature.auth.api.ProvideSignInState
+import com.omasyo.snac.feature.auth.api.rememberAuthenticator
 import com.omasyo.snac.feature.auth.impl.AuthActivityBinder
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
@@ -43,6 +44,9 @@ class MainActivity(
                 val themeSettings by viewModel.themeSettings.collectAsStateWithLifecycle()
                 val darkTheme = themeSettings.mode.isDark()
 
+                val authenticator = rememberAuthenticator()
+                val isSignedIn by authenticator.isSignedIn.collectAsStateWithLifecycle()
+
                 LaunchedEffect(darkTheme) {
                     enableEdgeToEdge(
                         statusBarStyle = SystemBarStyle.auto(
@@ -58,7 +62,7 @@ class MainActivity(
                     )
                 }
 
-                ProvideSignInState {
+                ProvideSignInState(isSignedIn) {
                     SnacTheme(themeSettings.theme.colorScheme.colors(darkTheme)) {
                         AppNavHost()
                     }

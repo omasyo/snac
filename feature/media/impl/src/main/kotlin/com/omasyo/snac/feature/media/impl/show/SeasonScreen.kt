@@ -23,7 +23,6 @@ import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.data.models.Ratings
 import com.omasyo.snac.core.data.models.Season
 import com.omasyo.snac.core.data.models.ShowDetails
-import com.omasyo.snac.core.ui.components.SignInPrompt
 import com.omasyo.snac.core.ui.components.heroScrollable
 import com.omasyo.snac.core.ui.format.formatDayMonth
 import com.omasyo.snac.core.ui.format.formatRuntime
@@ -32,6 +31,7 @@ import com.omasyo.snac.core.ui.models.map
 import com.omasyo.snac.core.ui.models.mapOrNull
 import com.omasyo.snac.core.ui.models.transpose
 import com.omasyo.snac.core.ui.theme.SnacTheme
+import com.omasyo.snac.feature.auth.api.components.SignInPrompt
 import com.omasyo.snac.feature.media.impl.R
 import com.omasyo.snac.feature.media.impl.common.CastSection
 import com.omasyo.snac.feature.media.impl.common.MediaDetailsLayout
@@ -153,7 +153,6 @@ fun SeasonScreen(
             SignInPrompt(
                 title = "Track this season",
                 message = "Sign in to check in, rate it, mark it seen, and add it to your watchlist, favorites or lists.",
-                onSignInClick = {},
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             RatingsSection(

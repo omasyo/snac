@@ -24,7 +24,6 @@ import com.omasyo.snac.core.model.settings.ThemeMode
 import com.omasyo.snac.core.model.settings.ThemeSettings
 import com.omasyo.snac.core.ui.components.BackButton
 import com.omasyo.snac.core.ui.components.Button
-import com.omasyo.snac.core.ui.components.SignInPrompt
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
 import com.omasyo.snac.core.ui.modifiers.silhouette
@@ -32,18 +31,17 @@ import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.CuttingRoom
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
+import com.omasyo.snac.feature.auth.api.components.SignInPrompt
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
 fun SettingsScreen(
     onBackClick: () -> Unit,
-    onSignInClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = metroViewModel(),
 ) {
     SettingsScreen(
         onBackClick = onBackClick,
-        onSignInClick = onSignInClick,
         onSignOutClick = viewModel::signOut,
         profileState = viewModel.profileState.collectAsStateWithLifecycle().value,
         themeSettings = viewModel.themeSettings.collectAsStateWithLifecycle().value,
@@ -56,7 +54,6 @@ fun SettingsScreen(
 @Composable
 fun SettingsScreen(
     onBackClick: () -> Unit,
-    onSignInClick: () -> Unit,
     onSignOutClick: () -> Unit,
     profileState: ProfileState,
     themeSettings: ThemeSettings,
@@ -94,7 +91,6 @@ fun SettingsScreen(
             ProfileState.SignedOut -> SignInPrompt(
                 title = stringResource(R.string.sign_in_title),
                 message = stringResource(R.string.sign_in_message),
-                onSignInClick = onSignInClick,
                 modifier = Modifier.fillMaxWidth(),
             )
 
@@ -151,7 +147,6 @@ private fun Preview() {
     SnacTheme {
         SettingsScreen(
             onBackClick = {},
-            onSignInClick = {},
             onSignOutClick = {},
             profileState = ProfileState.SignedOut,
             themeSettings = ThemeSettings(mode = ThemeMode.Light),
@@ -167,7 +162,6 @@ private fun DarkPreview() {
     SnacTheme(CuttingRoom.dark) {
         SettingsScreen(
             onBackClick = {},
-            onSignInClick = {},
             onSignOutClick = {},
             profileState = ProfileState.SignedOut,
             themeSettings = ThemeSettings(mode = ThemeMode.Dark),

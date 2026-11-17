@@ -7,6 +7,7 @@ android {
 }
 
 dependencies {
+    implementation(projects.feature.auth.api)
     implementation(projects.feature.media.api)
     implementation(projects.feature.person.api)
 }

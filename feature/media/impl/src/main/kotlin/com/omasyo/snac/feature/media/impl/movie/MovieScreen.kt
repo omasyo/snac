@@ -28,7 +28,6 @@ import com.omasyo.snac.core.data.models.ReleaseStatus
 import com.omasyo.snac.core.data.models.Comment
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.Movie
-import com.omasyo.snac.core.ui.components.SignInPrompt
 import com.omasyo.snac.core.ui.components.heroScrollable
 import com.omasyo.snac.core.ui.format.formatDayMonth
 import com.omasyo.snac.core.ui.format.formatRuntime
@@ -38,6 +37,7 @@ import com.omasyo.snac.core.ui.models.mapOrNull
 import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.models.transpose
 import com.omasyo.snac.core.ui.theme.SnacTheme
+import com.omasyo.snac.feature.auth.api.components.SignInPrompt
 import com.omasyo.snac.feature.media.impl.R
 import com.omasyo.snac.feature.media.impl.common.CastSection
 import com.omasyo.snac.feature.media.impl.common.MediaDetailsLayout
@@ -156,7 +156,6 @@ fun MovieScreen(
             SignInPrompt(
                 title = "Track this film",
                 message = "Sign in to check in, rate it, mark it seen, and add it to your watchlist, favorites or lists.",
-                onSignInClick = {},
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             RatingsSection(

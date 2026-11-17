@@ -1,18 +1,24 @@
 package com.omasyo.snac.feature.home.impl
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,17 +29,21 @@ import com.omasyo.snac.core.model.media.BoxOfficeItem
 import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.TrendingItem
 import com.omasyo.snac.core.ui.components.Button
+import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.RootScaffoldLayout
-import com.omasyo.snac.core.ui.components.SignInPrompt
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.transpose
+import com.omasyo.snac.core.ui.modifiers.TintIndication
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.CuttingRoom
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
+import com.omasyo.snac.feature.auth.api.ProvideSignInState
+import com.omasyo.snac.feature.auth.api.components.SignInGate
+import com.omasyo.snac.feature.auth.api.components.SignInPrompt
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
@@ -97,14 +107,28 @@ internal fun HomeScreen(
                         .rotate(-3f)
                         .silhouette(SnacColors.signalShadow),
                 )
-//            Button(
-//                text = "SIGN IN",
-//                onClick = onSignInClick,
-//            )
-                Button(
-                    text = "SETTINGS",
-                    onClick = onSettingsClick,
-                )
+                SignInGate(
+                    signedOutContent = {
+                        Button(
+                            text = "SETTINGS",
+                            onClick = onSettingsClick,
+                        )
+                    }
+                ) {
+                    val indicationColor = SnacColors.accent
+                    Image(
+                        imageUrl = null,//TODO
+                        modifier = Modifier
+                            .clickable(
+                                indication = TintIndication(true) { indicationColor },
+                                interactionSource = remember { MutableInteractionSource() },
+                                onClick = onSettingsClick,
+                            )
+                            .size(48.dp)
+//                            .border(2.dp, SnacColors.outline, CircleShape)
+                            .clip(CircleShape),
+                    )
+                }
             }
             topTrendingMedia.transpose()?.let {
                 TrendingSpotlight(
@@ -115,7 +139,6 @@ internal fun HomeScreen(
             SignInPrompt(
                 title = "Track what you watch",
                 message = "Sign in to get Up Next, check-ins, paused playback and recommendations from your Trakt account.",
-                onSignInClick = {},
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             TrendingSection(
@@ -140,20 +163,22 @@ internal fun HomeScreen(
     }
 }
 
-@Preview(device = "spec:width=1080px,height=12340px,dpi=440")
+@Preview
 @Composable
 private fun Preview() {
-    SnacTheme(CuttingRoom.dark) {
-        HomeScreen(
-            onSignInClick = {},
-            onSettingsClick = {},
-            onMediaClick = {},
-            onAllChartsClick = {},
-            topTrendingMedia = UiState.Success(TrendingItem.MoviePreviewSample.first()),
-            trendingMovies = UiState.Success(TrendingItem.MoviePreviewSample),
-            trendingShows = UiState.Success(TrendingItem.ShowPreviewSample),
-            boxOffice = UiState.Success(BoxOfficeItem.PreviewSample),
-            anticipated = UiState.Error(SnacResult.Error.Unexpected) {},
-        )
+    ProvideSignInState(true) {
+        SnacTheme(CuttingRoom.light) {
+            HomeScreen(
+                onSignInClick = {},
+                onSettingsClick = {},
+                onMediaClick = {},
+                onAllChartsClick = {},
+                topTrendingMedia = UiState.Success(TrendingItem.MoviePreviewSample.first()),
+                trendingMovies = UiState.Success(TrendingItem.MoviePreviewSample),
+                trendingShows = UiState.Success(TrendingItem.ShowPreviewSample),
+                boxOffice = UiState.Success(BoxOfficeItem.PreviewSample),
+                anticipated = UiState.Error(SnacResult.Error.Unexpected) {},
+            )
+        }
     }
 }
