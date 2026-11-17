@@ -9,14 +9,13 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.colors.colorScheme
 import com.omasyo.snac.core.ui.theme.colors.colors
 import com.omasyo.snac.core.ui.theme.isDark
+import com.omasyo.snac.feature.auth.api.ProvideSignInState
 import com.omasyo.snac.feature.auth.impl.AuthActivityBinder
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
@@ -59,8 +58,10 @@ class MainActivity(
                     )
                 }
 
-                SnacTheme(themeSettings.theme.colorScheme.colors(darkTheme)) {
-                    AppNavHost()
+                ProvideSignInState {
+                    SnacTheme(themeSettings.theme.colorScheme.colors(darkTheme)) {
+                        AppNavHost()
+                    }
                 }
             }
         }

@@ -19,10 +19,14 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class)
@@ -34,6 +38,12 @@ class AuthManager(
 
     private val _state = MutableStateFlow<AuthState>(AuthState.Idle)
     override val state: StateFlow<AuthState> = _state.asStateFlow()
+
+    override val isSignedIn: StateFlow<Boolean> = authRepository.isSignedIn.stateIn(
+        scope = scope,
+        started = SharingStarted.Eagerly,
+        initialValue = runBlocking { authRepository.isSignedIn.first() },
+    )
 
     private val _authorizationUrls = Channel<String>(Channel.BUFFERED)
 
