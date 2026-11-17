@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -29,13 +30,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.paging.LoadState
 import androidx.paging.LoadStates
 import androidx.paging.PagingData
@@ -45,15 +49,19 @@ import androidx.paging.compose.itemContentType
 import androidx.paging.compose.itemKey
 import com.omasyo.snac.core.common.SnacException
 import com.omasyo.snac.core.common.SnacResult
+import com.omasyo.snac.core.data.genre.MovieGenres
 import com.omasyo.snac.core.model.media.CalendarDay
 import com.omasyo.snac.core.model.media.CalendarItem
+import com.omasyo.snac.core.model.media.CalendarMediaType
 import com.omasyo.snac.core.model.media.Episode
 import com.omasyo.snac.core.model.media.EpisodeAiring
+import com.omasyo.snac.core.model.media.Genre
 import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.model.media.MovieRelease
 import com.omasyo.snac.core.model.media.Show
 import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.ErrorBox
+import com.omasyo.snac.core.ui.components.IconButton
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
@@ -64,6 +72,7 @@ import com.omasyo.snac.core.ui.models.snacMessage
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.modifiers.bleedVertically
 import com.omasyo.snac.core.ui.modifiers.silhouette
+import com.omasyo.snac.core.ui.theme.CapHeightLineHeightStyle
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
@@ -77,6 +86,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAdjusters
 import java.util.Locale
+import com.omasyo.snac.core.ui.R as UiR
 
 @Composable
 internal fun CalendarScreen(
@@ -90,6 +100,11 @@ internal fun CalendarScreen(
         onEpisodeClick = onEpisodeClick,
         items = viewModel.items.collectAsLazyPagingItems(),
         onJumpToDate = viewModel::jumpToDate,
+        mediaType = viewModel.mediaType.collectAsStateWithLifecycle().value,
+        onMediaTypeChange = viewModel::changeMediaType,
+        genre = viewModel.genre.collectAsStateWithLifecycle().value,
+        genres = viewModel.genres.collectAsStateWithLifecycle().value,
+        onGenreChange = viewModel::changeGenre,
         modifier = modifier,
     )
 }
@@ -100,6 +115,11 @@ internal fun CalendarScreen(
     onEpisodeClick: (EpisodeAiring) -> Unit,
     items: LazyPagingItems<CalendarUiItem>,
     onJumpToDate: (LocalDate) -> Unit,
+    mediaType: CalendarMediaType,
+    onMediaTypeChange: (CalendarMediaType, visibleDate: LocalDate) -> Unit,
+    genre: Genre,
+    genres: List<Genre>,
+    onGenreChange: (Genre, visibleDate: LocalDate) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -119,6 +139,15 @@ internal fun CalendarScreen(
             .collect { tappedDate = null }
     }
 
+    var filtersOpen by rememberSaveable { mutableStateOf(false) }
+
+    fun restartFromSelectedDate(restart: (LocalDate) -> Unit) {
+        val date = selectedDate
+        tappedDate = date
+        restart(date)
+        coroutineScope.launch { listState.scrollToItem(0) }
+    }
+
     KeepPlaceWhenEarlierDaysLoad(listState, items)
 
     Column(
@@ -135,15 +164,31 @@ internal fun CalendarScreen(
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth(),
         ) {
-            Text(
-                text = "Calendar".uppercase(),
-                style = SnacTypography.headline,
-                modifier = Modifier
-                    .rotate(-3f)
-                    .silhouette(SnacColors.signalShadow),
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(
+                    text = genre.name.uppercase(),
+                    style = SnacTypography.subtitle.copy(lineHeightStyle = CapHeightLineHeightStyle),
+                    color = SnacColors.accent,
+                    modifier = Modifier
+                        .rotate(-3f)
+                        .silhouette(),
+                )
+                Text(
+                    text = "Calendar".uppercase(),
+                    style = SnacTypography.headline.copy(lineHeightStyle = CapHeightLineHeightStyle),
+                    modifier = Modifier
+                        .rotate(-3f)
+                        .silhouette(SnacColors.signalShadow),
+                )
+            }
+            IconButton(
+                icon = UiR.drawable.funnel_simple_bold,
+                contentDescription = stringResource(R.string.filters),
+                onClick = { filtersOpen = true },
+                modifier = Modifier.size(40.dp),
             )
         }
-
+        Spacer(Modifier.height(8.dp))
         DateStrip(
             selectedDate = selectedDate,
             onDateTap = { date ->
@@ -173,6 +218,21 @@ internal fun CalendarScreen(
             listState = listState,
         )
     }
+
+    CalendarFilterSheet(
+        visible = filtersOpen,
+        onDismiss = { filtersOpen = false },
+        mediaType = mediaType,
+        onMediaTypeChange = { type ->
+            restartFromSelectedDate { onMediaTypeChange(type, it) }
+        },
+        genre = genre,
+        genres = genres,
+        onGenreChange = { newGenre ->
+            restartFromSelectedDate { onGenreChange(newGenre, it) }
+            filtersOpen = false
+        },
+    )
 }
 
 @Composable
@@ -438,6 +498,11 @@ private fun Preview() {
             onEpisodeClick = {},
             items = items,
             onJumpToDate = {},
+            mediaType = CalendarMediaType.All,
+            onMediaTypeChange = { _, _ -> },
+            genre = PreviewGenre,
+            genres = MovieGenres,
+            onGenreChange = { _, _ -> },
         )
     }
 }
@@ -455,6 +520,11 @@ private fun LoadingPreview() {
             onEpisodeClick = {},
             items = items,
             onJumpToDate = {},
+            mediaType = CalendarMediaType.All,
+            onMediaTypeChange = { _, _ -> },
+            genre = PreviewGenre,
+            genres = MovieGenres,
+            onGenreChange = { _, _ -> },
         )
     }
 }
@@ -475,6 +545,13 @@ private fun ErrorPreview() {
             onEpisodeClick = {},
             items = items,
             onJumpToDate = {},
+            mediaType = CalendarMediaType.All,
+            onMediaTypeChange = { _, _ -> },
+            genre = PreviewGenre,
+            genres = MovieGenres,
+            onGenreChange = { _, _ -> },
         )
     }
 }
+
+private val PreviewGenre = Genre("Action", "action")

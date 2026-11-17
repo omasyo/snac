@@ -19,25 +19,29 @@ class CalendarNetworkSourceImpl(
 ) : CalendarNetworkSource {
     override suspend fun getAllMedia(
         startDate: LocalDate,
-        days: Int
+        days: Int,
+        type: String?,
+        genre: String,
     ): SnacResult<List<CalendarMediaResponse>> =
         safeCall {
             client.get("calendars/all/media/${startDate.format(DateTimeFormatter.ISO_LOCAL_DATE)}/$days") {
                 parameter("extended", "full")
                 parameter("group", "day")
-                parameter("genres", "action")
+                parameter("genres", genre)
+                type?.let { parameter("type", type) }
             }
         }
 
     override suspend fun getHotReleases(
         startDate: LocalDate,
-        days: Int
+        days: Int,
+        genre: String,
     ): SnacResult<List<CalendarMediaResponse>> =
         safeCall {
             client.get("calendars/releases/hot/${startDate.format(DateTimeFormatter.ISO_LOCAL_DATE)}/$days") {
                 parameter("extended", "full")
                 parameter("group", "day")
-                parameter("genres", "action") // TODO
+                parameter("genres", genre)
             }
         }
 }

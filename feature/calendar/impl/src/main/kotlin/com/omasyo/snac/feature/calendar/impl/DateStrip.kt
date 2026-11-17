@@ -134,9 +134,9 @@ private fun DateCard(
                     onClick = onClick,
                 )
                 .background(backgroundColor)
-                .padding(12.dp),
+                .padding(horizontal =  12.dp, vertical = 8.dp),
         ) {
-            Spacer(Modifier.height(4.dp))
+            Spacer(Modifier.height(2.dp))
             Text(
                 text = date.dayOfWeek.name.take(3),
                 style = SnacTypography.overline,

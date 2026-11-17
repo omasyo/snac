@@ -5,6 +5,8 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.omasyo.snac.core.data.paging.CalendarPagingSource
 import com.omasyo.snac.core.model.media.CalendarDay
+import com.omasyo.snac.core.model.media.CalendarMediaType
+import com.omasyo.snac.core.model.media.Genre
 import com.omasyo.snac.core.network.calendar.CalendarNetworkSource
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
@@ -17,20 +19,22 @@ import java.time.LocalDate
 class CalendarRepositoryImpl(
     private val calendarNetworkSource: CalendarNetworkSource,
 ) : CalendarRepository {
-    override fun getAllMedia(startDate: LocalDate): Flow<PagingData<CalendarDay>> =
+    override fun getAllMedia(
+        startDate: LocalDate,
+        type: CalendarMediaType,
+        genre: Genre,
+    ): Flow<PagingData<CalendarDay>> =
         Pager(initialKey = startDate, config = pagingConfig) {
-            CalendarPagingSource(
-                windowDays = WINDOW_DAYS,
-                provider = calendarNetworkSource::getAllMedia,
-            )
+            CalendarPagingSource(windowDays = WINDOW_DAYS) { start, days ->
+                calendarNetworkSource.getAllMedia(start, days, type.queryValue, genre.slug)
+            }
         }.flow
 
-    override fun getHotReleases(startDate: LocalDate): Flow<PagingData<CalendarDay>> =
+    override fun getHotReleases(startDate: LocalDate, genre: Genre): Flow<PagingData<CalendarDay>> =
         Pager(initialKey = startDate, config = pagingConfig) {
-            CalendarPagingSource(
-                windowDays = WINDOW_DAYS,
-                provider = calendarNetworkSource::getHotReleases,
-            )
+            CalendarPagingSource(windowDays = WINDOW_DAYS) { start, days ->
+                calendarNetworkSource.getHotReleases(start, days, genre.slug)
+            }
         }.flow
 
     private companion object {
@@ -42,3 +46,10 @@ class CalendarRepositoryImpl(
         )
     }
 }
+
+private val CalendarMediaType.queryValue: String?
+    get() = when (this) {
+        CalendarMediaType.All -> null
+        CalendarMediaType.Shows -> "show"
+        CalendarMediaType.Movies -> "movie"
+    }
