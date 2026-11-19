@@ -26,16 +26,23 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.model.media.AnticipatedItem
 import com.omasyo.snac.core.model.media.BoxOfficeItem
+import com.omasyo.snac.core.model.media.Episode
 import com.omasyo.snac.core.model.media.Media
+import com.omasyo.snac.core.model.media.PlaybackItem
+import com.omasyo.snac.core.model.media.Recommendation
+import com.omasyo.snac.core.model.media.Show
 import com.omasyo.snac.core.model.media.TrendingItem
+import com.omasyo.snac.core.model.media.UpNextItem
 import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.RootScaffoldLayout
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
 import com.omasyo.snac.core.ui.models.UiState
+import com.omasyo.snac.core.ui.models.map
 import com.omasyo.snac.core.ui.models.transpose
 import com.omasyo.snac.core.ui.modifiers.TintIndication
+import com.omasyo.snac.core.ui.modifiers.bleedHorizontally
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
@@ -48,38 +55,46 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
 internal fun HomeScreen(
-    onSignInClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onMediaClick: (Media) -> Unit,
+    onEpisodeClick: (Show, Episode) -> Unit,
     onAllChartsClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = metroViewModel(),
 ) {
     HomeScreen(
-        onSignInClick = onSignInClick,
         onSettingsClick = onSettingsClick,
         onMediaClick = onMediaClick,
+        onEpisodeClick = onEpisodeClick,
         onAllChartsClick = onAllChartsClick,
         topTrendingMedia = viewModel.topTrendingMedia.collectAsStateWithLifecycle().value,
         trendingMovies = viewModel.trendingMovies.collectAsStateWithLifecycle().value,
         trendingShows = viewModel.trendingShows.collectAsStateWithLifecycle().value,
         boxOffice = viewModel.boxOffice.collectAsStateWithLifecycle().value,
         anticipated = viewModel.anticipated.collectAsStateWithLifecycle().value,
+        upNext = viewModel.upNext.collectAsStateWithLifecycle().value,
+        playback = viewModel.playback.collectAsStateWithLifecycle().value,
+        recommendedMovies = viewModel.recommendedMovies.collectAsStateWithLifecycle().value,
+        recommendedShows = viewModel.recommendedShows.collectAsStateWithLifecycle().value,
         modifier = modifier,
     )
 }
 
 @Composable
 internal fun HomeScreen(
-    onSignInClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onMediaClick: (Media) -> Unit,
+    onEpisodeClick: (Show, Episode) -> Unit,
     onAllChartsClick: () -> Unit,
     topTrendingMedia: UiState<TrendingItem?>,
     trendingMovies: UiState<List<TrendingItem>>,
     trendingShows: UiState<List<TrendingItem>>,
     boxOffice: UiState<List<BoxOfficeItem>>,
     anticipated: UiState<List<AnticipatedItem>>,
+    upNext: UiState<List<UpNextItem>>,
+    playback: UiState<List<PlaybackItem>>,
+    recommendedMovies: UiState<List<Recommendation>>,
+    recommendedShows: UiState<List<Recommendation>>,
     modifier: Modifier = Modifier,
 ) {
     RootScaffoldLayout(modifier) {
@@ -139,8 +154,27 @@ internal fun HomeScreen(
             SignInPrompt(
                 title = "Track what you watch",
                 message = "Sign in to get Up Next, check-ins, paused playback and recommendations from your Trakt account.",
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
+                modifier = Modifier.padding(horizontal = 16.dp),
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(24.dp),
+                    modifier = Modifier.bleedHorizontally(16.dp),
+                ) {
+                    upNext.map { it.takeIf { items -> items.isNotEmpty() } }.transpose()?.let {
+                        UpNextSection(
+                            onEpisodeClick = onEpisodeClick,
+                            state = it,
+                        )
+                    }
+                    playback.map { it.takeIf { items -> items.isNotEmpty() } }.transpose()?.let {
+                        ContinueWatchingSection(
+                            onMediaClick = onMediaClick,
+                            onEpisodeClick = onEpisodeClick,
+                            state = it,
+                        )
+                    }
+                }
+            }
             TrendingSection(
                 onMediaClick = onMediaClick,
                 moviesState = trendingMovies,
@@ -149,6 +183,13 @@ internal fun HomeScreen(
                     .rotate(-1.5f),
             )
 
+            SignInGate {
+                RecommendationsSection(
+                    onMediaClick = onMediaClick,
+                    moviesState = recommendedMovies,
+                    showsState = recommendedShows,
+                )
+            }
             BoxOfficeSection(
                 onMovieClick = onMediaClick,
                 state = boxOffice,
@@ -169,15 +210,19 @@ private fun Preview() {
     ProvideSignInState(true) {
         SnacTheme(CuttingRoom.light) {
             HomeScreen(
-                onSignInClick = {},
                 onSettingsClick = {},
                 onMediaClick = {},
+                onEpisodeClick = { _, _ -> },
                 onAllChartsClick = {},
                 topTrendingMedia = UiState.Success(TrendingItem.MoviePreviewSample.first()),
                 trendingMovies = UiState.Success(TrendingItem.MoviePreviewSample),
                 trendingShows = UiState.Success(TrendingItem.ShowPreviewSample),
                 boxOffice = UiState.Success(BoxOfficeItem.PreviewSample),
                 anticipated = UiState.Error(SnacResult.Error.Unexpected) {},
+                upNext = UiState.Success(UpNextItem.PreviewSample),
+                playback = UiState.Success(PlaybackItem.PreviewSample),
+                recommendedMovies = UiState.Success(Recommendation.MoviePreviewSample),
+                recommendedShows = UiState.Success(Recommendation.ShowPreviewSample),
             )
         }
     }

@@ -8,6 +8,7 @@ import com.omasyo.snac.core.navigation.Navigator
 import com.omasyo.snac.feature.auth.api.rememberAuthenticator
 import com.omasyo.snac.feature.home.api.navigation.HomeNavKey
 import com.omasyo.snac.feature.home.impl.HomeScreen
+import com.omasyo.snac.feature.media.api.navigation.EpisodeNavKey
 import com.omasyo.snac.feature.media.api.navigation.MovieNavKey
 import com.omasyo.snac.feature.media.api.navigation.ShowNavKey
 import com.omasyo.snac.feature.settings.api.navigation.SettingsNavKey
@@ -17,13 +18,15 @@ fun EntryProviderScope<NavKey>.homeEntry(navigator: Navigator) {
         val authenticator = rememberAuthenticator()
 
         HomeScreen(
-            onSignInClick = { authenticator.signIn() },
             onSettingsClick = { navigator.navigate(SettingsNavKey) },
             onMediaClick = {
                 when (it) {
                     is Movie -> navigator.navigate(MovieNavKey(it.slug))
                     is Show -> navigator.navigate(ShowNavKey(it.slug))
                 }
+            },
+            onEpisodeClick = { show, episode ->
+                navigator.navigate(EpisodeNavKey(show.slug, episode.season, episode.number))
             },
             onAllChartsClick = {},
         )

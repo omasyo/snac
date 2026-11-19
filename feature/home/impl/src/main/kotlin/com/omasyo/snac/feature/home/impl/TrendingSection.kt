@@ -51,7 +51,6 @@ import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.LocalSilhouetteColor
 import com.omasyo.snac.core.ui.modifiers.Orientation
 import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
-import com.omasyo.snac.core.ui.modifiers.TintIndication
 import com.omasyo.snac.core.ui.modifiers.bleedHorizontally
 import com.omasyo.snac.core.ui.modifiers.film
 import com.omasyo.snac.core.ui.modifiers.silhouette
@@ -62,10 +61,6 @@ import kotlinx.coroutines.delay
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.seconds
 
-internal enum class TrendingTab(val label: String) {
-    Movie("Movie"), Show("Show")
-}
-
 @Composable
 internal fun TrendingSection(
     onMediaClick: (Media) -> Unit,
@@ -73,7 +68,7 @@ internal fun TrendingSection(
     showsState: UiState<List<TrendingItem>>,
     modifier: Modifier = Modifier,
 ) {
-    var selectedTab by rememberSaveable { mutableStateOf(TrendingTab.Movie) }
+    var selectedTab by rememberSaveable { mutableStateOf(MediaTab.Movie) }
     val stateHolder = rememberSaveableStateHolder()
 
     CompositionLocalProvider(LocalSilhouetteColor provides SnacColors.signalShadow) {
@@ -102,7 +97,11 @@ internal fun TrendingSection(
                 )
                 MediaToggle(
                     selectedTab = selectedTab,
-                    onTabClick = { selectedTab = it }
+                    onTabClick = { selectedTab = it },
+                    color = SnacColors.onFilm,
+                    backgroundColor = Color.Transparent,
+                    selectedColor = SnacColors.accent,
+                    selectedContentColor = SnacColors.onAccent,
                 )
             }
 
@@ -118,8 +117,8 @@ internal fun TrendingSection(
             ) { tab ->
 
                 val items = when (tab) {
-                    TrendingTab.Movie -> moviesState
-                    TrendingTab.Show -> showsState
+                    MediaTab.Movie -> moviesState
+                    MediaTab.Show -> showsState
                 }
 
 
@@ -146,33 +145,6 @@ internal fun TrendingSection(
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun MediaToggle(
-    selectedTab: TrendingTab,
-    onTabClick: (TrendingTab) -> Unit,
-) {
-    Row(
-        modifier = Modifier.border(2.dp, SnacColors.onFilm)
-    ) {
-        for (tab in TrendingTab.entries) {
-            val selected = tab == selectedTab
-            val indicationColor = SnacColors.accent
-            Text(
-                text = tab.label,
-                color = if (selected) SnacColors.onAccent else SnacColors.onFilm,
-                modifier = Modifier
-                    .background(if (selected) SnacColors.accent else Color.Transparent)
-                    .clickable(
-                        interactionSource = null,
-                        indication = TintIndication { indicationColor },
-                        onClick = { onTabClick(tab) }
-                    )
-                    .padding(horizontal = 12.dp, vertical = 8.dp)
-            )
         }
     }
 }

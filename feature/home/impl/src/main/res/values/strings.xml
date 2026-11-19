@@ -12,4 +12,15 @@
         <item quantity="one">%1$s watching</item>
         <item quantity="other">%1$s watching</item>
     </plurals>
+    <plurals name="up_next_shows">
+        <item quantity="one">%1$d show</item>
+        <item quantity="other">%1$d shows</item>
+    </plurals>
+    <plurals name="paused_count">
+        <item quantity="one">%1$d paused</item>
+        <item quantity="other">%1$d paused</item>
+    </plurals>
+    <string name="time_left">%1$s left</string>
+    <string name="paused_ago">paused %1$s</string>
+    <string name="recommendations_empty">Nothing to suggest yet. Watch and rate a few more.</string>
 </resources>

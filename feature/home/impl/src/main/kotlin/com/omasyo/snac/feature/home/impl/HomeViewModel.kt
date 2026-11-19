@@ -2,12 +2,19 @@ package com.omasyo.snac.feature.home.impl
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.omasyo.snac.core.data.auth.AuthRepository
 import com.omasyo.snac.core.data.media.MediaRepository
 import com.omasyo.snac.core.data.movie.MovieRepository
+import com.omasyo.snac.core.data.recommendation.RecommendationRepository
 import com.omasyo.snac.core.data.show.ShowRepository
+import com.omasyo.snac.core.data.sync.SyncRepository
 import com.omasyo.snac.core.model.media.AnticipatedItem
 import com.omasyo.snac.core.model.media.BoxOfficeItem
+import com.omasyo.snac.core.model.media.PlaybackItem
+import com.omasyo.snac.core.model.media.Recommendation
 import com.omasyo.snac.core.model.media.TrendingItem
+import com.omasyo.snac.core.model.media.UpNextItem
+import com.omasyo.snac.core.ui.models.GatedRefreshWrapper
 import com.omasyo.snac.core.ui.models.RefreshWrapper
 import com.omasyo.snac.core.ui.models.UiState
 import dev.zacsweers.metro.AppScope
@@ -20,9 +27,12 @@ import kotlinx.coroutines.flow.StateFlow
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
 class HomeViewModel(
+    authRepository: AuthRepository,
     private val mediaRepository: MediaRepository,
     private val movieRepository: MovieRepository,
     private val showRepository: ShowRepository,
+    private val syncRepository: SyncRepository,
+    private val recommendationRepository: RecommendationRepository,
 ) : ViewModel() {
     val topTrendingMedia: StateFlow<UiState<TrendingItem?>> =
         RefreshWrapper(viewModelScope) { mediaRepository.getTopTrending() }.response
@@ -38,4 +48,24 @@ class HomeViewModel(
 
     val anticipated: StateFlow<UiState<List<AnticipatedItem>>> =
         RefreshWrapper(viewModelScope) { mediaRepository.getAnticipated() }.response
+
+    val upNext: StateFlow<UiState<List<UpNextItem>>> =
+        GatedRefreshWrapper(viewModelScope, authRepository.isSignedIn) {
+            syncRepository.getUpNext()
+        }.response
+
+    val playback: StateFlow<UiState<List<PlaybackItem>>> =
+        GatedRefreshWrapper(viewModelScope, authRepository.isSignedIn) {
+            syncRepository.getPlayback()
+        }.response
+
+    val recommendedMovies: StateFlow<UiState<List<Recommendation>>> =
+        GatedRefreshWrapper(viewModelScope, authRepository.isSignedIn) {
+            recommendationRepository.getMovies()
+        }.response
+
+    val recommendedShows: StateFlow<UiState<List<Recommendation>>> =
+        GatedRefreshWrapper(viewModelScope, authRepository.isSignedIn) {
+            recommendationRepository.getShows()
+        }.response
 }

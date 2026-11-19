@@ -31,7 +31,7 @@ fun SignInPrompt(
     modifier: Modifier = Modifier,
     signedInContent: @Composable () -> Unit = {}, //TODO remove this default
 ) {
-    val authenticator = rememberAuthenticator()
+//    val authenticator = rememberAuthenticator()
     SignInGate(
         modifier = modifier,
         signedOutContent = {
@@ -64,7 +64,7 @@ fun SignInPrompt(
 
                     Button(
                         text = "SIGN IN WITH TRAKT",
-                        onClick = { authenticator.signIn() },
+                        onClick = { /*authenticator.signIn()*/ },
                     )
                 }
             }
