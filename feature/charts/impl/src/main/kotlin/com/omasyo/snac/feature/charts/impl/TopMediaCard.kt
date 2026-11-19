@@ -6,7 +6,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,30 +42,19 @@ internal fun TopMediaCard(
     modifier: Modifier = Modifier,
 ) {
     val indicationColor = SnacColors.signalShadow
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.Bottom,
-        modifier = modifier
-            .clickable(
-                indication = SilhouettePressIndication({ indicationColor }, DpOffset(6.dp, 6.dp)),
-                interactionSource = remember { MutableInteractionSource() },
-                onClick = onClick,
+    TopMediaCardLayout(
+        modifier = modifier.clickable(
+            interactionSource = remember { MutableInteractionSource() },
+            indication = SilhouettePressIndication({ indicationColor }, DpOffset(6.dp, 6.dp)),
+            onClick = onClick,
+        ),
+        poster = {
+            Image(
+                imageUrl = item.media.imageUrl,
+                modifier = Modifier.matchParentSize(),
             )
-            .fillMaxWidth()
-            .background(SnacColors.film)
-            .padding(16.dp)
-    ) {
-        Image(
-            imageUrl = item.media.imageUrl,
-            modifier = Modifier
-                .rotate(-3f)
-                .silhouette(SnacColors.accentShadow)
-                .border(4.dp, SnacColors.chip)
-                .size(128.dp, 192.dp),
-        )
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
+        },
+        details = {
             Text(
                 text = item.media.title,
                 style = SnacTypography.title,
@@ -79,32 +70,22 @@ internal fun TopMediaCard(
                 style = SnacTypography.hand,
                 color = SnacColors.accent,
             )
-        }
-    }
+        },
+    )
 }
 
 @Composable
 internal fun TopMediaCardPlaceholder(modifier: Modifier = Modifier) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.Bottom,
-        modifier = modifier
-            .silhouette(SnacColors.signalShadow)
-            .fillMaxWidth()
-            .background(SnacColors.film)
-            .padding(16.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .rotate(-3f)
-                .silhouette(SnacColors.accentShadow)
-                .border(4.dp, SnacColors.chip)
-                .background(imageGradient())
-                .size(128.dp, 192.dp),
-        )
-        Column(
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
+    TopMediaCardLayout(
+        modifier = modifier.silhouette(SnacColors.signalShadow),
+        poster = {
+            Box(
+                Modifier
+                    .matchParentSize()
+                    .background(imageGradient())
+            )
+        },
+        details = {
             Box(
                 Modifier
                     .padding(vertical = 4.dp)
@@ -125,7 +106,36 @@ internal fun TopMediaCardPlaceholder(modifier: Modifier = Modifier) {
                     .height(16.dp)
                     .background(SnacColors.placeholder)
             )
-        }
+        },
+    )
+}
+
+@Composable
+private fun TopMediaCardLayout(
+    poster: @Composable BoxScope.() -> Unit,
+    details: @Composable ColumnScope.() -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.Bottom,
+        modifier = modifier
+            .fillMaxWidth()
+            .background(SnacColors.film)
+            .padding(16.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .rotate(-3f)
+                .silhouette(SnacColors.accentShadow)
+                .border(4.dp, SnacColors.chip)
+                .size(128.dp, 192.dp),
+            content = poster,
+        )
+        Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            content = details,
+        )
     }
 }
 

@@ -1,14 +1,9 @@
 package com.omasyo.snac.feature.calendar.impl
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -47,30 +42,33 @@ private fun DateHeaderPlaceholder(modifier: Modifier = Modifier) {
 
 @Composable
 internal fun CalendarCardPlaceholder(modifier: Modifier = Modifier) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = modifier
-            .height(IntrinsicSize.Min)
-            .border(2.dp, SnacColors.ink)
-            .background(SnacColors.card)
-            .padding(8.dp),
-    ) {
-        Box(
-            Modifier
-                .aspectRatio(16f / 9f)
-                .background(imageGradient())
-        )
-        Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = Modifier
-                .weight(1f)
-                .padding(vertical = 4.dp),
-        ) {
-            Bar(Modifier.size(140.dp, 18.dp))
-            Bar(Modifier.size(100.dp, 12.dp))
-            Bar(Modifier.size(56.dp, 12.dp))
-        }
-    }
+    CalendarCardLayout(
+        modifier = modifier,
+        image = {
+            Box(
+                Modifier
+                    .matchParentSize()
+                    .background(imageGradient())
+            )
+        },
+        details = {
+            Bar(
+                Modifier
+                    .padding(vertical = 2.dp)
+                    .size(140.dp, 18.dp)
+            )
+            Bar(
+                Modifier
+                    .padding(vertical = 2.dp)
+                    .size(100.dp, 12.dp)
+            )
+            Bar(
+                Modifier
+                    .padding(vertical = 2.dp)
+                    .size(56.dp, 12.dp)
+            )
+        },
+    )
 }
 
 @Composable

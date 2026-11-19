@@ -2,9 +2,9 @@ package com.omasyo.snac.core.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -34,47 +34,27 @@ fun InfoClapper(
     modifier: Modifier = Modifier,
     maxItemsInEachRow: Int = 4,
 ) {
-    Column(
-        modifier = modifier
-            .silhouette(SnacColors.signalShadow, offset = DpOffset(6.dp, 6.dp))
-            .border(4.dp, SnacColors.outline)
-            .background(SnacColors.film)
-    ) {
-        ClapperboardStripes(
-            modifier = Modifier
-                .height(20.dp)
-                .fillMaxWidth()
+    InfoClapperLayout(
+        items = info,
+        maxItemsInEachRow = maxItemsInEachRow,
+        modifier = modifier,
+    ) { (label, value, detail) ->
+        Text(
+            text = label,
+            style = SnacTypography.overline,
+            color = SnacColors.mutedOnFilm,
         )
-        info.chunked(maxItemsInEachRow).forEach { row ->
-            Row(Modifier.height(IntrinsicSize.Min)) {
-                row.forEach { (label, value, detail) ->
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .fillMaxHeight()
-                            .border(0.5.dp, SnacColors.filmLine)
-                            .padding(8.dp),
-                    ) {
-                        Text(
-                            text = label,
-                            style = SnacTypography.overline,
-                            color = SnacColors.mutedOnFilm,
-                        )
-                        Text(
-                            text = value,
-                            style = SnacTypography.subtitle,
-                            color = SnacColors.onFilm,
-                        )
-                        if (detail != null) {
-                            Text(
-                                text = detail,
-                                style = SnacTypography.caption,
-                                color = SnacColors.mutedOnFilm,
-                            )
-                        }
-                    }
-                }
-            }
+        Text(
+            text = value,
+            style = SnacTypography.subtitle,
+            color = SnacColors.onFilm,
+        )
+        detail?.let {
+            Text(
+                text = it,
+                style = SnacTypography.caption,
+                color = SnacColors.mutedOnFilm,
+            )
         }
     }
 }
@@ -85,6 +65,42 @@ fun InfoClapperPlaceholder(
     itemCount: Int = 8,
     maxItemsInEachRow: Int = 4,
     showDetail: Boolean = false,
+) {
+    InfoClapperLayout(
+        items = List(itemCount) { it },
+        maxItemsInEachRow = maxItemsInEachRow,
+        modifier = modifier,
+    ) {
+        Box(
+            Modifier
+                .padding(vertical = 8.dp)
+                .width(40.dp)
+                .height(10.dp)
+                .background(SnacColors.placeholder)
+        )
+        Box(
+            Modifier
+                .width(64.dp)
+                .height(16.dp)
+                .background(SnacColors.placeholder)
+        )
+        if (showDetail) {
+            Box(
+                Modifier
+                    .width(32.dp)
+                    .height(12.dp)
+                    .background(SnacColors.placeholder)
+            )
+        }
+    }
+}
+
+@Composable
+private fun <T> InfoClapperLayout(
+    items: List<T>,
+    maxItemsInEachRow: Int,
+    modifier: Modifier = Modifier,
+    cell: @Composable ColumnScope.(T) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -97,38 +113,17 @@ fun InfoClapperPlaceholder(
                 .height(20.dp)
                 .fillMaxWidth()
         )
-        List(itemCount) { it }.chunked(maxItemsInEachRow).forEach { row ->
+        items.chunked(maxItemsInEachRow).forEach { row ->
             Row(Modifier.height(IntrinsicSize.Min)) {
-                row.forEach {
+                row.forEach { item ->
                     Column(
-                        verticalArrangement = Arrangement.spacedBy(4.dp),
                         modifier = Modifier
                             .weight(1f)
                             .fillMaxHeight()
                             .border(0.5.dp, SnacColors.filmLine)
                             .padding(8.dp),
                     ) {
-                        Box(
-                            Modifier
-                                .padding(vertical = 8.dp)
-                                .width(40.dp)
-                                .height(10.dp)
-                                .background(SnacColors.placeholder)
-                        )
-                        Box(
-                            Modifier
-                                .width(64.dp)
-                                .height(16.dp)
-                                .background(SnacColors.placeholder)
-                        )
-                        if (showDetail) {
-                            Box(
-                                Modifier
-                                    .width(32.dp)
-                                    .height(12.dp)
-                                    .background(SnacColors.placeholder)
-                            )
-                        }
+                        cell(item)
                     }
                 }
             }

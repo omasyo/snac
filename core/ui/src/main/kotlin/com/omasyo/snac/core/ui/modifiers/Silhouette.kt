@@ -5,6 +5,7 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.IndicationNodeFactory
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
@@ -67,6 +68,14 @@ fun Modifier.silhouette(
     offset: DpOffset = SilhouetteDefaults.Offset,
     overflow: Dp = SilhouetteDefaults.Overflow,
 ): Modifier = this then SilhouetteElement(color, offset, overflow)
+
+fun Modifier.pressSilhouette(
+    interactionSource: InteractionSource?,
+    color: Color = Color.Unspecified,
+    offset: DpOffset = SilhouetteDefaults.Offset,
+): Modifier =
+    if (interactionSource == null) silhouette(color, offset)
+    else indication(interactionSource, SilhouettePressIndication({ color }, offset))
 
 private data class SilhouetteElement(
     val color: Color,

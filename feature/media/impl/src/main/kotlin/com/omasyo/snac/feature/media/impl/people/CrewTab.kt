@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -132,14 +133,10 @@ private fun CrewCard(
     lastIndex: Int,
     modifier: Modifier = Modifier,
 ) {
-    val borderColor = SnacColors.outline
-    val dashColor = SnacColors.rule
-
     val indicationColor = SnacColors.muted
-
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically,
+    CrewCardLayout(
+        index = index,
+        lastIndex = lastIndex,
         modifier = modifier
             .padding(bottom = if (index != lastIndex) 0.dp else 24.dp)
             .silhouette()
@@ -147,10 +144,7 @@ private fun CrewCard(
                 onClick = onClick,
                 indication = remember { TintIndication { indicationColor } },
                 interactionSource = null,
-            )
-            .crewCardFrame(index, lastIndex, borderColor, dashColor)
-            .background(SnacColors.card)
-            .padding(12.dp),
+            ),
     ) {
         Image(
             imageUrl = crew.person.imageUrl,
@@ -178,6 +172,27 @@ private fun CrewCard(
     }
 }
 
+@Composable
+private fun CrewCardLayout(
+    index: Int,
+    lastIndex: Int,
+    modifier: Modifier = Modifier,
+    content: @Composable RowScope.() -> Unit,
+) {
+    val borderColor = SnacColors.outline
+    val dashColor = SnacColors.rule
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+            .crewCardFrame(index, lastIndex, borderColor, dashColor)
+            .background(SnacColors.card)
+            .padding(12.dp),
+        content = content,
+    )
+}
+
 
 @Composable
 private fun Placeholder(
@@ -186,8 +201,6 @@ private fun Placeholder(
     contentPadding: PaddingValues,
     modifier: Modifier,
 ) {
-    val borderColor = SnacColors.outline
-    val dashColor = SnacColors.rule
     LazyColumn(
         state = listState,
         contentPadding = contentPadding,
@@ -206,15 +219,12 @@ private fun Placeholder(
             }
             items(groupSize, contentType = { "crew" }) { index ->
                 val lastIndex = groupSize - 1
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
+                CrewCardLayout(
+                    index = index,
+                    lastIndex = lastIndex,
                     modifier = Modifier
                         .padding(bottom = if (index != lastIndex) 0.dp else 24.dp)
-                        .crewCardFrame(index, lastIndex, borderColor, dashColor)
-                        .background(SnacColors.card)
-                        .fillMaxWidth()
-                        .padding(12.dp),
+                        .fillMaxWidth(),
                 ) {
                     Box(
                         Modifier

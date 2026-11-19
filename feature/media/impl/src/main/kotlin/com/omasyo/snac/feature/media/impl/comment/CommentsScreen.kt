@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -213,21 +214,15 @@ private fun Hero(
 
 @Composable
 private fun HeroPlaceholder(modifier: Modifier = Modifier) {
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.Bottom,
-        modifier = modifier
-            .rotate(-4f)
-            .padding(horizontal = 32.dp, vertical = 32.dp),
-    ) {
-        Box(
-            modifier = Modifier
-                .silhouette(SnacColors.signalShadow)
-                .border(4.dp, SnacColors.chip)
-                .size(74.dp, 108.dp)
-                .background(imageGradient())
-        )
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    CommentsHeroLayout(
+        poster = {
+            Box(
+                Modifier
+                    .matchParentSize()
+                    .background(imageGradient())
+            )
+        },
+        details = {
             Box(
                 Modifier
                     .size(72.dp, 14.dp)
@@ -243,8 +238,9 @@ private fun HeroPlaceholder(modifier: Modifier = Modifier) {
                     .size(120.dp, 12.dp)
                     .background(SnacColors.faint)
             )
-        }
-    }
+        },
+        modifier = modifier.rotate(-4f),
+    )
 }
 
 @Composable
@@ -265,27 +261,16 @@ private fun BoxScope.HeroLoaded(hero: HeroContent) {
                 drawRect(brush)
             },
     )
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.Bottom,
-        modifier = Modifier
-            .rotate(if (hero.secondaryPosterUrl != null) -4f else 0f)
-            .padding(horizontal = 32.dp, vertical = 32.dp)
-            .align(Alignment.BottomStart),
-    ) {
-        if (hero.secondaryPosterUrl != null) {
-            Image(
-                imageUrl = hero.posterUrl,
-                modifier = Modifier
-                    .silhouette(SnacColors.signalShadow)
-                    .border(4.dp, SnacColors.chip)
-                    .size(74.dp, 108.dp),
-            )
-        }
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
+    CommentsHeroLayout(
+        poster = if (hero.secondaryPosterUrl != null) {
+            {
+                Image(
+                    imageUrl = hero.posterUrl,
+                    modifier = Modifier.matchParentSize(),
+                )
+            }
+        } else null,
+        details = {
             Text(
                 text = "Comments",
                 style = SnacTypography.overline,
@@ -308,7 +293,38 @@ private fun BoxScope.HeroLoaded(hero: HeroContent) {
                 style = SnacTypography.caption,
                 color = SnacColors.mutedOnFilm
             )
+        },
+        modifier = Modifier
+            .rotate(if (hero.secondaryPosterUrl != null) -4f else 0f)
+            .align(Alignment.BottomStart),
+    )
+}
+
+@Composable
+private fun CommentsHeroLayout(
+    poster: (@Composable BoxScope.() -> Unit)?,
+    details: @Composable ColumnScope.() -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.Bottom,
+        modifier = modifier.padding(horizontal = 32.dp, vertical = 32.dp),
+    ) {
+        if (poster != null) {
+            Box(
+                modifier = Modifier
+                    .silhouette(SnacColors.signalShadow)
+                    .border(4.dp, SnacColors.chip)
+                    .size(74.dp, 108.dp),
+                content = poster,
+            )
         }
+        Column(
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            content = details,
+        )
     }
 }
 

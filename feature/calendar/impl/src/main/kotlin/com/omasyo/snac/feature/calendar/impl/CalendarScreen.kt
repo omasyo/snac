@@ -7,7 +7,9 @@ import androidx.compose.foundation.interaction.DragInteraction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -69,8 +71,8 @@ import com.omasyo.snac.core.ui.format.formatEpisodeCode
 import com.omasyo.snac.core.ui.format.formatLocalTime
 import com.omasyo.snac.core.ui.format.metaLine
 import com.omasyo.snac.core.ui.models.snacMessage
-import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.modifiers.bleedVertically
+import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.CapHeightLineHeightStyle
 import com.omasyo.snac.core.ui.theme.SnacTheme
@@ -363,26 +365,19 @@ private fun CalendarCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Row(
-        modifier = modifier
-            .height(IntrinsicSize.Min)
-            .clickable(
-                indication = remember { SilhouettePressIndication() },
-                interactionSource = remember { MutableInteractionSource() },
-                onClick = onClick,
+    CalendarCardLayout(
+        modifier = modifier.clickable(
+            interactionSource = remember { MutableInteractionSource() },
+            indication = remember { SilhouettePressIndication() },
+            onClick = onClick,
+        ),
+        image = {
+            Image(
+                imageUrl = imageUrl,
+                modifier = Modifier.matchParentSize(),
             )
-            .border(2.dp, SnacColors.ink)
-            .background(SnacColors.card)
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Image(
-            imageUrl = imageUrl,
-            modifier = Modifier.aspectRatio(16f / 9f),
-        )
-        Column(
-            modifier = Modifier.weight(1f),
-        ) {
+        },
+        details = {
             Text(
                 text = title,
                 maxLines = 1,
@@ -399,7 +394,32 @@ private fun CalendarCard(
                 style = SnacTypography.caption,
                 color = SnacColors.muted,
             )
-        }
+        },
+    )
+}
+
+@Composable
+internal fun CalendarCardLayout(
+    image: @Composable BoxScope.() -> Unit,
+    details: @Composable ColumnScope.() -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .height(IntrinsicSize.Min)
+            .border(2.dp, SnacColors.ink)
+            .background(SnacColors.card)
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Box(
+            modifier = Modifier.aspectRatio(16f / 9f),
+            content = image,
+        )
+        Column(
+            modifier = Modifier.weight(1f),
+            content = details,
+        )
     }
 }
 

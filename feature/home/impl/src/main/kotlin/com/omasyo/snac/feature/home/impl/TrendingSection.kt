@@ -7,15 +7,16 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -50,9 +51,9 @@ import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.LocalSilhouetteColor
 import com.omasyo.snac.core.ui.modifiers.Orientation
-import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.modifiers.bleedHorizontally
 import com.omasyo.snac.core.ui.modifiers.film
+import com.omasyo.snac.core.ui.modifiers.pressSilhouette
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
@@ -178,32 +179,34 @@ private fun PlaceholderRow(scrollable: Boolean) {
         repeat(10) {
             val rotation = remember(it) { Random(it + 80).nextInt(-2, 3).toFloat() }
 
-            Column(
+            TrendingCardLayout(
+                interactionSource = null,
                 modifier = Modifier
                     .padding(16.dp)
                     .rotate(rotation),
-            ) {
-                Box(
-                    modifier = Modifier
-                        .border(4.dp, SnacColors.chip)
-                        .background(imageGradient())
-                        .size(120.dp, 180.dp),
-                )
-
-                Box(
-                    Modifier
-                        .padding(vertical = 8.dp)
-                        .width(96.dp)
-                        .height(16.dp)
-                        .background(SnacColors.placeholder)
-                )
-                Box(
-                    Modifier
-                        .width(104.dp)
-                        .height(12.dp)
-                        .background(SnacColors.placeholder)
-                )
-            }
+                poster = {
+                    Box(
+                        Modifier
+                            .matchParentSize()
+                            .background(imageGradient())
+                    )
+                },
+                details = {
+                    Box(
+                        Modifier
+                            .padding(vertical = 8.dp)
+                            .width(96.dp)
+                            .height(16.dp)
+                            .background(SnacColors.placeholder)
+                    )
+                    Box(
+                        Modifier
+                            .width(104.dp)
+                            .height(12.dp)
+                            .background(SnacColors.placeholder)
+                    )
+                },
+            )
         }
     }
 }
@@ -217,39 +220,57 @@ private fun TrendingCard(
     modifier: Modifier = Modifier,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    Column(
-        modifier = modifier
-            .width(120.dp)
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                onClick = onClick,
+    TrendingCardLayout(
+        interactionSource = interactionSource,
+        modifier = modifier.clickable(
+            interactionSource = interactionSource,
+            indication = null,
+            onClick = onClick,
+        ),
+        poster = {
+            Image(
+                imageUrl = imageUrl,
+                modifier = Modifier.matchParentSize(),
             )
-    ) {
-        Image(
-            imageUrl = imageUrl,
+        },
+        details = {
+            Text(
+                text = title,
+                style = SnacTypography.subtitle,
+                color = SnacColors.onFilm,
+                maxLines = 1,
+
+                )
+            Text(
+                text = pluralStringResource(
+                    R.plurals.watching,
+                    watchingCount,
+                    watchingCount.formatCount(),
+                ),
+                style = SnacTypography.hand,
+                color = SnacColors.accent,
+            )
+        },
+    )
+}
+
+@Composable
+private fun TrendingCardLayout(
+    interactionSource: InteractionSource?,
+    poster: @Composable BoxScope.() -> Unit,
+    details: @Composable ColumnScope.() -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier.width(120.dp)) {
+        Box(
             modifier = Modifier
-                .indication(interactionSource, SilhouettePressIndication())
+                .pressSilhouette(interactionSource)
                 .border(4.dp, SnacColors.chip)
                 .height(180.dp)
                 .fillMaxWidth(),
+            content = poster,
         )
-        Text(
-            text = title,
-            style = SnacTypography.subtitle,
-            color = SnacColors.onFilm,
-            maxLines = 1,
-
-            )
-        Text(
-            text = pluralStringResource(
-                R.plurals.watching,
-                watchingCount,
-                watchingCount.formatCount(),
-            ),
-            style = SnacTypography.hand,
-            color = SnacColors.accent,
-        )
+        details()
     }
 }
 

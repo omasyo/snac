@@ -34,14 +34,13 @@ import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.data.models.Season
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
+import com.omasyo.snac.core.ui.components.PosterCardLayout
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.imageGradient
 import com.omasyo.snac.core.ui.format.metaLine
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
-import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.modifiers.TintIndication
-import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
@@ -109,49 +108,48 @@ private fun SeasonCard(
     val rotation =
         remember(season) { Random(season.number).nextInt(-3, 3).toFloat() }
 
-    Column(
+    PosterCardLayout(
+        interactionSource = interactionSource,
+        poster = {
+            Image(
+                imageUrl = season.posterUrl,
+                modifier = Modifier.size(100.dp, 160.dp),
+            )
+        },
+        details = {
+            val tintColor = SnacColors.page
+            Text(
+                text = season.title,
+                style = SnacTypography.tag,
+                modifier = Modifier
+                    .indication(
+                        interactionSource, TintIndication(
+                            contentOnly = true,
+                            focusOpacity = 0.2f,
+                            pressOpacity = 0.5f,
+                        ) { tintColor })
+            )
+            Text(
+                text = season.caption(),
+                style = SnacTypography.hand,
+                color = SnacColors.signal,
+                modifier = Modifier
+                    .indication(
+                        interactionSource, TintIndication(
+                            contentOnly = true,
+                            focusOpacity = 0.2f,
+                            pressOpacity = 0.5f,
+                        ) { tintColor })
+            )
+        },
         modifier = modifier
             .rotate(rotation)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
                 onClick = onClick,
-            )
-    ) {
-        Image(
-            imageUrl = season.posterUrl,
-            modifier = Modifier
-                .indication(interactionSource, SilhouettePressIndication())
-                .border(2.dp, SnacColors.outline)
-                .background(SnacColors.card)
-                .padding(6.dp)
-                .size(100.dp, 160.dp),
-        )
-        val tintColor = SnacColors.page
-        Text(
-            text = season.title,
-            style = SnacTypography.tag,
-            modifier = Modifier
-                .indication(
-                    interactionSource, TintIndication(
-                        contentOnly = true,
-                        focusOpacity = 0.2f,
-                        pressOpacity = 0.5f,
-                    ) { tintColor })
-        )
-        Text(
-            text = season.caption(),
-            style = SnacTypography.hand,
-            color = SnacColors.signal,
-            modifier = Modifier
-                .indication(
-                    interactionSource, TintIndication(
-                        contentOnly = true,
-                        focusOpacity = 0.2f,
-                        pressOpacity = 0.5f,
-                    ) { tintColor })
-        )
-    }
+            ),
+    )
 }
 
 @Composable
@@ -176,32 +174,34 @@ private fun Placeholder(scrollable: Boolean) {
         repeat(5) {
             val rotation = remember(it) { Random(it + 80).nextInt(-3, 3).toFloat() }
 
-            Column(Modifier.rotate(rotation)) {
-                Box(
-                    modifier = Modifier
-                        .silhouette()
-                        .border(2.dp, SnacColors.outline)
-                        .background(SnacColors.card)
-                        .padding(6.dp)
-                        .size(100.dp, 160.dp)
-                        .border(2.dp, SnacColors.outline)
-                        .background(imageGradient())
-                )
-                Box(
-                    Modifier
-                        .padding(top = 8.dp)
-                        .width(72.dp)
-                        .height(14.dp)
-                        .background(SnacColors.placeholder)
-                )
-                Box(
-                    Modifier
-                        .padding(vertical = 4.dp)
-                        .width(56.dp)
-                        .height(12.dp)
-                        .background(SnacColors.placeholder)
-                )
-            }
+            PosterCardLayout(
+                interactionSource = null,
+                poster = {
+                    Box(
+                        modifier = Modifier
+                            .size(100.dp, 160.dp)
+                            .border(2.dp, SnacColors.outline)
+                            .background(imageGradient())
+                    )
+                },
+                details = {
+                    Box(
+                        Modifier
+                            .padding(top = 8.dp)
+                            .width(72.dp)
+                            .height(14.dp)
+                            .background(SnacColors.placeholder)
+                    )
+                    Box(
+                        Modifier
+                            .padding(vertical = 4.dp)
+                            .width(56.dp)
+                            .height(12.dp)
+                            .background(SnacColors.placeholder)
+                    )
+                },
+                modifier = Modifier.rotate(rotation),
+            )
         }
     }
 }

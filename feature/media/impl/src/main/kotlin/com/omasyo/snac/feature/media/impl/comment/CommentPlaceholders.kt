@@ -70,17 +70,8 @@ internal fun ReplyCardPlaceholder(modifier: Modifier = Modifier) {
 
 @Composable
 private fun CommentHeaderPlaceholder(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .border(2.dp, SnacColors.outline)
-            .background(SnacColors.card)
-            .padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+    CommentHeaderLayout(
+        author = {
             AvatarPlaceholder()
             Column(
                 modifier = Modifier.weight(1f),
@@ -90,23 +81,28 @@ private fun CommentHeaderPlaceholder(modifier: Modifier = Modifier) {
                 Bar(Modifier.size(40.dp, 8.dp))
             }
             Bar(Modifier.size(12.dp, 16.dp))
-        }
-        repeat(2) { TextLine(Modifier.fillMaxWidth()) }
-        Bar(
-            Modifier
-                .padding(top = 2.dp, bottom = 12.dp)
-                .size(160.dp, 12.dp)
-        )
-        Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-            repeat(2) {
-                Bar(
-                    Modifier
-                        .padding(vertical = 8.dp)
-                        .size(40.dp, 10.dp)
-                )
+        },
+        body = {
+            repeat(2) { TextLine(Modifier.fillMaxWidth()) }
+            Bar(
+                Modifier
+                    .padding(top = 2.dp, bottom = 12.dp)
+                    .size(160.dp, 12.dp)
+            )
+        },
+        stats = {
+            Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                repeat(2) {
+                    Bar(
+                        Modifier
+                            .padding(vertical = 8.dp)
+                            .size(40.dp, 10.dp)
+                    )
+                }
             }
-        }
-    }
+        },
+        modifier = modifier,
+    )
 }
 
 @Composable

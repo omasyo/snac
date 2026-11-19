@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -64,9 +65,9 @@ import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.models.snacMessage
 import com.omasyo.snac.core.ui.modifiers.Side
-import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.modifiers.TintIndication
 import com.omasyo.snac.core.ui.modifiers.film
+import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.navigation.navSharedElement
 import com.omasyo.snac.core.ui.theme.SnacTheme
@@ -254,23 +255,8 @@ private fun CommentHeader(
 
     val dashColor = SnacColors.rule
 
-    Column(
-        modifier = modifier
-            .heightIn(max = MAX_HEADER_HEIGHT)
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = SilhouettePressIndication(offset = DpOffset(4.dp, 4.dp)),
-                onClick = onExpandThread ?: { if (comment.isSpoiler) blurred = !blurred },
-            )
-            .border(2.dp, SnacColors.outline)
-            .background(SnacColors.card)
-            .padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+    CommentHeaderLayout(
+        author = {
             Avatar(comment.user.imageUrl)
             Column(modifier = Modifier.weight(1f)) {
                 Text(
@@ -284,20 +270,53 @@ private fun CommentHeader(
                 )
             }
             ReviewBadges(isReview = comment.isReview, rating = comment.rating)
-        }
-        SpoilerText(
-            text = comment.comment,
-            blurred = blurred,
-            expanded = expanded,
-            onToggleExpanded = onExpandThread ?: { expanded = !expanded },
-            modifier = Modifier
-                .weight(1f, false)
-                .then(if (onExpandThread == null) Modifier.verticalScroll(scrollState) else Modifier)
-                .padding(bottom = 4.dp)
-                .drawBehind { drawDashedBottomRule(dashColor) }
-                .padding(bottom = 8.dp),
+        },
+        body = {
+            SpoilerText(
+                text = comment.comment,
+                blurred = blurred,
+                expanded = expanded,
+                onToggleExpanded = onExpandThread ?: { expanded = !expanded },
+                modifier = Modifier
+                    .weight(1f, false)
+                    .then(if (onExpandThread == null) Modifier.verticalScroll(scrollState) else Modifier)
+                    .padding(bottom = 4.dp)
+                    .drawBehind { drawDashedBottomRule(dashColor) }
+                    .padding(bottom = 8.dp),
+            )
+        },
+        stats = { CommentStats(comment) },
+        modifier = modifier
+            .heightIn(max = MAX_HEADER_HEIGHT)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = SilhouettePressIndication(offset = DpOffset(4.dp, 4.dp)),
+                onClick = onExpandThread ?: { if (comment.isSpoiler) blurred = !blurred },
+            ),
+    )
+}
+
+@Composable
+internal fun CommentHeaderLayout(
+    author: @Composable RowScope.() -> Unit,
+    body: @Composable ColumnScope.() -> Unit,
+    stats: @Composable ColumnScope.() -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .border(2.dp, SnacColors.outline)
+            .background(SnacColors.card)
+            .padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            content = author,
         )
-        CommentStats(comment)
+        body()
+        stats()
     }
 }
 

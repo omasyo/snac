@@ -3,8 +3,12 @@ package com.omasyo.snac.feature.person.impl
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -126,6 +130,32 @@ private fun Polaroid(
     caption: String?,
     modifier: Modifier = Modifier,
 ) {
+    PolaroidLayout(
+        modifier = modifier,
+        photo = {
+            Image(
+                imageUrl = imageUrl,
+                modifier = Modifier.matchParentSize(),
+            )
+        },
+        caption = {
+            if (caption != null) {
+                Text(
+                    text = caption,
+                    style = SnacTypography.hand,
+                    color = SnacColors.ink,
+                )
+            }
+        },
+    )
+}
+
+@Composable
+private fun PolaroidLayout(
+    photo: @Composable BoxScope.() -> Unit,
+    caption: @Composable ColumnScope.() -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Box(modifier.rotate(-4f)) {
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -137,17 +167,11 @@ private fun Polaroid(
                 .padding(8.dp)
                 .width(PhotoWidth),
         ) {
-            Image(
-                imageUrl = imageUrl,
+            Box(
                 modifier = Modifier.size(PhotoWidth, PhotoHeight),
+                content = photo,
             )
-            if (caption != null) {
-                Text(
-                    text = caption,
-                    style = SnacTypography.hand,
-                    color = SnacColors.ink,
-                )
-            }
+            caption()
         }
         Tape(Modifier.align(Alignment.TopCenter))
     }
@@ -167,19 +191,18 @@ private fun Tape(modifier: Modifier = Modifier) {
 private fun HeroPlaceholder() {
     HeroLayout(
         polaroid = {
-            Box(Modifier.rotate(-4f)) {
-                Box(
-                    Modifier
-                        .padding(top = 12.dp)
-                        .silhouette(SnacColors.signalShadow, offset = DpOffset(6.dp, 6.dp))
-                        .background(SnacColors.card)
-                        .padding(8.dp)
-                        .padding(bottom = 26.dp)
-                        .size(PhotoWidth, PhotoHeight)
-                        .background(imageGradient())
-                )
-                Tape(Modifier.align(Alignment.TopCenter))
-            }
+            PolaroidLayout(
+                photo = {
+                    Box(
+                        Modifier
+                            .matchParentSize()
+                            .background(imageGradient())
+                    )
+                },
+                caption = {
+                    Spacer(Modifier.height(18.dp))
+                },
+            )
         },
         name = {
             Box(

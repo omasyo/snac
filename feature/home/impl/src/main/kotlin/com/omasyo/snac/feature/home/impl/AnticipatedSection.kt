@@ -5,10 +5,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
@@ -43,8 +46,8 @@ import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.imageGradient
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
-import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.modifiers.TintIndication
+import com.omasyo.snac.core.ui.modifiers.pressSilhouette
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
@@ -124,19 +127,14 @@ private fun AnticipatedCard(
     modifier: Modifier = Modifier,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    Column(
+    AnticipatedCardLayout(
+        interactionSource = interactionSource,
         modifier = modifier.clickable(
             interactionSource = interactionSource,
             indication = null,
             onClick = onClick,
-        )
-    ) {
-        Box(
-            modifier = Modifier
-                .indication(interactionSource, SilhouettePressIndication())
-                .border(2.dp, SnacColors.outline)
-                .size(224.dp, 128.dp)
-        ) {
+        ),
+        image = {
             Image(
                 imageUrl = imageUrl,
                 modifier = Modifier.matchParentSize(),
@@ -152,19 +150,40 @@ private fun AnticipatedCard(
                     .rotate(-4f)
                     .padding(horizontal = 8.dp, vertical = 12.dp),
             )
-        }
-        val tintColor = SnacColors.page
-        Text(
-            text = title,
-            style = SnacTypography.subtitle,
+        },
+        details = {
+            val tintColor = SnacColors.page
+            Text(
+                text = title,
+                style = SnacTypography.subtitle,
+                modifier = Modifier
+                    .indication(
+                        interactionSource, TintIndication(
+                            contentOnly = true,
+                            focusOpacity = 0.2f,
+                            pressOpacity = 0.5f,
+                        ) { tintColor })
+            )
+        },
+    )
+}
+
+@Composable
+private fun AnticipatedCardLayout(
+    interactionSource: InteractionSource?,
+    image: @Composable BoxScope.() -> Unit,
+    details: @Composable ColumnScope.() -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier) {
+        Box(
             modifier = Modifier
-                .indication(
-                    interactionSource, TintIndication(
-                        contentOnly = true,
-                        focusOpacity = 0.2f,
-                        pressOpacity = 0.5f,
-                    ) { tintColor })
+                .pressSilhouette(interactionSource)
+                .border(2.dp, SnacColors.outline)
+                .size(224.dp, 128.dp),
+            content = image,
         )
+        details()
     }
 }
 
@@ -177,22 +196,25 @@ private fun Placeholder(scrollable: Boolean) {
         horizontalArrangement = Arrangement.spacedBy(16f.dp),
     ) {
         repeat(4) {
-            Column {
-                Box(
-                    modifier = Modifier
-                        .silhouette()
-                        .border(2.dp, SnacColors.outline)
-                        .background(imageGradient())
-                        .size(224.dp, 128.dp)
-                )
-                Box(
-                    Modifier
-                        .padding(vertical = 8.dp)
-                        .width(120.dp)
-                        .height(16.dp)
-                        .background(SnacColors.placeholder)
-                )
-            }
+            AnticipatedCardLayout(
+                interactionSource = null,
+                image = {
+                    Box(
+                        Modifier
+                            .matchParentSize()
+                            .background(imageGradient())
+                    )
+                },
+                details = {
+                    Box(
+                        Modifier
+                            .padding(vertical = 8.dp)
+                            .width(120.dp)
+                            .height(16.dp)
+                            .background(SnacColors.placeholder)
+                    )
+                },
+            )
         }
     }
 }

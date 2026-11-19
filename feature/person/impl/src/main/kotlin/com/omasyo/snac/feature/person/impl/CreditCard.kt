@@ -3,10 +3,10 @@ package com.omasyo.snac.feature.person.impl
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,9 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -28,11 +26,11 @@ import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.data.models.CreditRole
 import com.omasyo.snac.core.data.models.PersonCredit
 import com.omasyo.snac.core.ui.components.Image
+import com.omasyo.snac.core.ui.components.RuledRowLayout
 import com.omasyo.snac.core.ui.components.Stamp
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.imageGradient
 import com.omasyo.snac.core.ui.format.metaLine
-import com.omasyo.snac.core.ui.modifiers.TintIndication
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
@@ -44,23 +42,15 @@ internal fun CreditCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val borderColor = SnacColors.filmLine
-    val indicationColor = SnacColors.accent
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    val interactionSource = remember { MutableInteractionSource() }
+    RuledRowLayout(
+        interactionSource = interactionSource,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .padding(start = 32.dp, end = 8.dp)
-            .drawBehind {
-                drawLine(borderColor, Offset(0f, size.height), Offset(size.width, size.height))
-            }
-            .clickable(
-                onClick = onClick,
-                indication = remember { TintIndication { indicationColor } },
-                interactionSource = null,
-            )
-            .padding(end = 8.dp)
-            .padding(vertical = 8.dp),
+        modifier = modifier.clickable(
+            interactionSource = interactionSource,
+            indication = null,
+            onClick = onClick,
+        ),
     ) {
         Text(
             text = credit.media.year?.toString().orEmpty(),
@@ -121,17 +111,10 @@ private fun PersonCredit.info(): String = metaLine(
 internal fun CreditCardPlaceholder(
     modifier: Modifier = Modifier,
 ) {
-    val borderColor = SnacColors.filmLine
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    RuledRowLayout(
+        interactionSource = null,
         verticalAlignment = Alignment.CenterVertically,
-        modifier = modifier
-            .padding(start = 32.dp, end = 8.dp)
-            .drawBehind {
-                drawLine(borderColor, Offset(0f, size.height), Offset(size.width, size.height))
-            }
-            .padding(end = 8.dp)
-            .padding(vertical = 8.dp),
+        modifier = modifier,
     ) {
         Box(
             Modifier

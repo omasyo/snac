@@ -39,12 +39,11 @@ import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
+import com.omasyo.snac.core.ui.components.PosterCardLayout
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.imageGradient
 import com.omasyo.snac.core.ui.models.message
-import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.modifiers.TintIndication
-import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
@@ -138,7 +137,32 @@ private fun RelatedCard(
     val rotation =
         remember(media) { Random(media.slug.hashCode()).nextInt(-3, 3).toFloat() }
 
-    Column(
+    PosterCardLayout(
+        interactionSource = interactionSource,
+        poster = {
+            Image(
+                imageUrl = media.imageUrl,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(160.dp),
+            )
+        },
+        details = {
+            val tintColor = SnacColors.page
+            Text(
+                text = media.title,
+                style = SnacTypography.tag,
+                maxLines = 2,
+                minLines = 2,
+                modifier = Modifier
+                    .indication(
+                        interactionSource, TintIndication(
+                            contentOnly = true,
+                            focusOpacity = 0.2f,
+                            pressOpacity = 0.5f,
+                        ) { tintColor })
+            )
+        },
         modifier = modifier
             .rotate(rotation)
             .clickable(
@@ -147,32 +171,7 @@ private fun RelatedCard(
                 onClick = onClick,
             )
             .width(112.dp),
-    ) {
-        Image(
-            imageUrl = media.imageUrl,
-            modifier = Modifier
-                .indication(interactionSource, SilhouettePressIndication())
-                .border(2.dp, SnacColors.outline)
-                .background(SnacColors.card)
-                .padding(6.dp)
-                .fillMaxWidth()
-                .height(160.dp),
-        )
-        val tintColor = SnacColors.page
-        Text(
-            text = media.title,
-            style = SnacTypography.tag,
-            maxLines = 2,
-            minLines = 2,
-            modifier = Modifier
-                .indication(
-                    interactionSource, TintIndication(
-                        contentOnly = true,
-                        focusOpacity = 0.2f,
-                        pressOpacity = 0.5f,
-                    ) { tintColor })
-        )
-    }
+    )
 }
 
 @Composable
@@ -191,37 +190,37 @@ private fun Placeholder(scrollable: Boolean) {
 private fun RelatedCardPlaceholder(seed: Int, modifier: Modifier = Modifier) {
     val rotation = remember(seed) { Random(seed + 80).nextInt(-3, 3).toFloat() }
 
-    Column(
-        modifier
+    PosterCardLayout(
+        interactionSource = null,
+        poster = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(160.dp)
+                    .border(2.dp, SnacColors.outline)
+                    .background(imageGradient())
+            )
+        },
+        details = {
+            Box(
+                Modifier
+                    .padding(top = 8.dp, bottom = 2.dp)
+                    .width(96.dp)
+                    .height(14.dp)
+                    .background(SnacColors.placeholder)
+            )
+            Box(
+                Modifier
+                    .padding(bottom = 8.dp)
+                    .width(72.dp)
+                    .height(14.dp)
+                    .background(SnacColors.placeholder)
+            )
+        },
+        modifier = modifier
             .rotate(rotation)
-            .width(112.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .silhouette()
-                .border(2.dp, SnacColors.outline)
-                .background(SnacColors.card)
-                .padding(6.dp)
-                .fillMaxWidth()
-                .height(160.dp)
-                .border(2.dp, SnacColors.outline)
-                .background(imageGradient())
-        )
-        Box(
-            Modifier
-                .padding(top = 8.dp, bottom = 2.dp)
-                .width(96.dp)
-                .height(14.dp)
-                .background(SnacColors.placeholder)
-        )
-        Box(
-            Modifier
-                .padding(bottom = 8.dp)
-                .width(72.dp)
-                .height(14.dp)
-                .background(SnacColors.placeholder)
-        )
-    }
+            .width(112.dp),
+    )
 }
 
 @Preview

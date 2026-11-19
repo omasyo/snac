@@ -5,11 +5,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -55,7 +57,7 @@ import com.omasyo.snac.core.ui.format.formatRelative
 import com.omasyo.snac.core.ui.format.formatRuntime
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
-import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
+import com.omasyo.snac.core.ui.modifiers.pressSilhouette
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
@@ -150,25 +152,14 @@ private fun PlaybackCard(
     }
     val timeLeft = item.runtime?.times(1.0 - item.progress)
     val interactionSource = remember { MutableInteractionSource() }
-    Column(
-        modifier = modifier
-            .width(CardWidth)
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                onClick = onClick,
-            )
-    ) {
-        Box(
-            modifier = Modifier
-                .indication(
-                    interactionSource,
-                    SilhouettePressIndication(offset = FrameShadowOffset),
-                )
-                .background(SnacColors.film)
-                .fillMaxWidth()
-                .aspectRatio(16f / 9f),
-        ) {
+    PlaybackCardLayout(
+        interactionSource = interactionSource,
+        modifier = modifier.clickable(
+            interactionSource = interactionSource,
+            indication = null,
+            onClick = onClick,
+        ),
+        frame = {
             Image(
                 imageUrl = item.backdropUrl,
                 modifier = Modifier.matchParentSize(),
@@ -198,19 +189,43 @@ private fun PlaybackCard(
                     .fillMaxWidth()
                     .height(6.dp),
             )
-        }
-        Text(
-            text = item.media.title.uppercase(),
-            style = SnacTypography.subtitle,
-            color = SnacColors.ink,
-            maxLines = 1,
-            modifier = Modifier.padding(top = 8.dp),
+        },
+        details = {
+            Text(
+                text = item.media.title.uppercase(),
+                style = SnacTypography.subtitle,
+                color = SnacColors.ink,
+                maxLines = 1,
+            )
+            Text(
+                text = "$kind · ${stringResource(R.string.paused_ago, item.pausedAt.formatRelative())}",
+                style = SnacTypography.label,
+                color = SnacColors.muted,
+                maxLines = 1,
+            )
+        },
+    )
+}
+
+@Composable
+private fun PlaybackCardLayout(
+    interactionSource: InteractionSource?,
+    frame: @Composable BoxScope.() -> Unit,
+    details: @Composable ColumnScope.() -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier.width(CardWidth)) {
+        Box(
+            modifier = Modifier
+                .pressSilhouette(interactionSource, offset = FrameShadowOffset)
+                .background(SnacColors.film)
+                .fillMaxWidth()
+                .aspectRatio(16f / 9f),
+            content = frame,
         )
-        Text(
-            text = "$kind · ${stringResource(R.string.paused_ago, item.pausedAt.formatRelative())}",
-            style = SnacTypography.label,
-            color = SnacColors.muted,
-            maxLines = 1,
+        Column(
+            modifier = Modifier.padding(top = 8.dp),
+            content = details,
         )
     }
 }
@@ -251,28 +266,31 @@ private fun Placeholder(scrollable: Boolean) {
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         repeat(3) {
-            Column(Modifier.width(CardWidth)) {
-                Box(
-                    modifier = Modifier
-                        .silhouette(offset = FrameShadowOffset)
-                        .background(imageGradient())
-                        .fillMaxWidth()
-                        .aspectRatio(16f / 9f),
-                )
-                Box(
-                    Modifier
-                        .padding(top = 12.dp, bottom = 4.dp)
-                        .width(140.dp)
-                        .height(18.dp)
-                        .background(SnacColors.placeholder)
-                )
-                Box(
-                    Modifier
-                        .width(180.dp)
-                        .height(14.dp)
-                        .background(SnacColors.placeholder)
-                )
-            }
+            PlaybackCardLayout(
+                interactionSource = null,
+                frame = {
+                    Box(
+                        Modifier
+                            .matchParentSize()
+                            .background(imageGradient())
+                    )
+                },
+                details = {
+                    Box(
+                        Modifier
+                            .padding(bottom = 4.dp)
+                            .width(140.dp)
+                            .height(18.dp)
+                            .background(SnacColors.placeholder)
+                    )
+                    Box(
+                        Modifier
+                            .width(180.dp)
+                            .height(14.dp)
+                            .background(SnacColors.placeholder)
+                    )
+                },
+            )
         }
     }
 }

@@ -8,7 +8,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -105,25 +107,8 @@ fun CommentPreviewCard(
     modifier: Modifier = Modifier,
 ) {
     var blurred by rememberSaveable(comment) { mutableStateOf(comment.isSpoiler) }
-    Column(
-        modifier = modifier
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = SilhouettePressIndication(offset = DpOffset(4.dp, 4.dp)),
-            ) {
-                if (comment.repliesCount > 0) {
-                    onClick()
-                }
-            }
-            .border(2.dp, SnacColors.outline)
-            .background(SnacColors.card)
-            .padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+    CommentPreviewCardLayout(
+        author = {
             Image(
                 imageUrl = comment.user.imageUrl,
                 modifier = Modifier
@@ -153,32 +138,33 @@ fun CommentPreviewCard(
                     color = SnacColors.signal,
                 )
             }
-        }
-        Text(
-            text = comment.comment,
-            style = SnacTypography.caption,
-            maxLines = 3,
-            modifier = if (blurred) Modifier.blur(8.dp, BlurredEdgeTreatment.Unbounded)
-            else Modifier
-        )
-        CommentStats(comment)
-    }
+        },
+        body = {
+            Text(
+                text = comment.comment,
+                style = SnacTypography.caption,
+                maxLines = 3,
+                modifier = if (blurred) Modifier.blur(8.dp, BlurredEdgeTreatment.Unbounded)
+                else Modifier
+            )
+        },
+        stats = { CommentStats(comment) },
+        modifier = modifier
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = SilhouettePressIndication(offset = DpOffset(4.dp, 4.dp)),
+            ) {
+                if (comment.repliesCount > 0) {
+                    onClick()
+                }
+            },
+    )
 }
 
 @Composable
 fun ReviewPreviewPlaceholder(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .silhouette(offset = DpOffset(4.dp, 4.dp))
-            .border(2.dp, SnacColors.outline)
-            .background(SnacColors.card)
-            .padding(12.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+    CommentPreviewCardLayout(
+        author = {
             Box(
                 modifier = Modifier
                     .size(32.dp)
@@ -203,45 +189,72 @@ fun ReviewPreviewPlaceholder(modifier: Modifier = Modifier) {
                     .height(16.dp)
                     .background(SnacColors.placeholder)
             )
-        }
-
-        repeat(2) {
+        },
+        body = {
+            repeat(2) {
+                Box(
+                    Modifier
+                        .padding(vertical = 2.dp)
+                        .fillMaxWidth()
+                        .height(12.dp)
+                        .background(SnacColors.placeholder)
+                )
+            }
             Box(
                 Modifier
-                    .padding(vertical = 2.dp)
-                    .fillMaxWidth()
+                    .width(160.dp)
                     .height(12.dp)
                     .background(SnacColors.placeholder)
             )
-        }
-        Box(
-            Modifier
-                .width(160.dp)
-                .height(12.dp)
-                .background(SnacColors.placeholder)
-        )
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-        ) {
+        },
+        stats = {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
 
-            Box(
-                Modifier
-                    .padding(vertical = 8.dp)
-                    .width(40.dp)
-                    .height(10.dp)
-                    .background(SnacColors.placeholder)
-            )
-            Box(
-                Modifier
-                    .padding(vertical = 8.dp)
-                    .width(40.dp)
-                    .height(10.dp)
-                    .background(SnacColors.placeholder)
-            )
-        }
-    }
+                Box(
+                    Modifier
+                        .padding(vertical = 8.dp)
+                        .width(40.dp)
+                        .height(10.dp)
+                        .background(SnacColors.placeholder)
+                )
+                Box(
+                    Modifier
+                        .padding(vertical = 8.dp)
+                        .width(40.dp)
+                        .height(10.dp)
+                        .background(SnacColors.placeholder)
+                )
+            }
+        },
+        modifier = modifier.silhouette(offset = DpOffset(4.dp, 4.dp)),
+    )
 }
 
+@Composable
+private fun CommentPreviewCardLayout(
+    author: @Composable RowScope.() -> Unit,
+    body: @Composable ColumnScope.() -> Unit,
+    stats: @Composable ColumnScope.() -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .border(2.dp, SnacColors.outline)
+            .background(SnacColors.card)
+            .padding(12.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            content = author,
+        )
+        body()
+        stats()
+    }
+}
 
 @Preview
 @Composable

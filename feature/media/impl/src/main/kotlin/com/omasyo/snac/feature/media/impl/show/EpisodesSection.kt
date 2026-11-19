@@ -2,6 +2,7 @@ package com.omasyo.snac.feature.media.impl.show
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,8 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -31,13 +30,13 @@ import com.omasyo.snac.core.data.models.EpisodeDetails
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Icon
 import com.omasyo.snac.core.ui.components.Image
+import com.omasyo.snac.core.ui.components.RuledRowLayout
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.format.MetaSeparator
 import com.omasyo.snac.core.ui.format.formatFullDate
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
 import com.omasyo.snac.core.ui.modifiers.Side
-import com.omasyo.snac.core.ui.modifiers.TintIndication
 import com.omasyo.snac.core.ui.modifiers.film
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
@@ -99,21 +98,15 @@ private fun EpisodeRow(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val borderColor = SnacColors.filmLine
-    val indicationColor = SnacColors.accent
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = modifier
-            .padding(start = 32.dp, end = 8.dp)
-            .drawBehind {
-                drawLine(borderColor, Offset(0f, size.height), Offset(size.width, size.height))
-            }
-            .padding(vertical = 8.dp)
-            .clickable(
-                onClick = onClick,
-                indication = remember { TintIndication { indicationColor } },
-                interactionSource = null,
-            )
+    val interactionSource = remember { MutableInteractionSource() }
+    RuledRowLayout(
+        interactionSource = interactionSource,
+        verticalAlignment = Alignment.Top,
+        modifier = modifier.clickable(
+            interactionSource = interactionSource,
+            indication = null,
+            onClick = onClick,
+        ),
     ) {
         Box(
             modifier = Modifier
@@ -175,22 +168,12 @@ internal fun EpisodeDetails.displayTitle(): String =
 
 @Composable
 private fun Placeholder() {
-    val borderColor = SnacColors.filmLine
     Column {
         repeat(8) {
             val position = it + 1
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier
-                    .padding(start = 32.dp, end = 8.dp)
-                    .drawBehind {
-                        drawLine(
-                            borderColor,
-                            Offset(0f, size.height),
-                            Offset(size.width, size.height)
-                        )
-                    }
-                    .padding(vertical = 8.dp),
+            RuledRowLayout(
+                interactionSource = null,
+                verticalAlignment = Alignment.Top,
             ) {
                 Box(
                     modifier = Modifier

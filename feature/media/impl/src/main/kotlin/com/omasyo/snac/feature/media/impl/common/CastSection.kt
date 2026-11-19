@@ -5,10 +5,13 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.InteractionSource
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,9 +42,8 @@ import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.imageGradient
 import com.omasyo.snac.core.ui.models.UiState
 import com.omasyo.snac.core.ui.models.message
-import com.omasyo.snac.core.ui.modifiers.SilhouettePressIndication
 import com.omasyo.snac.core.ui.modifiers.TintIndication
-import com.omasyo.snac.core.ui.modifiers.silhouette
+import com.omasyo.snac.core.ui.modifiers.pressSilhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
 import com.omasyo.snac.core.ui.theme.SnacTypography
 import com.omasyo.snac.core.ui.theme.colors.SnacColors
@@ -111,54 +113,73 @@ private fun CastCard(
         remember(cast) { Random(cast.person.slug.hashCode()).nextInt(-3, 3).toFloat() }
 
     val tintColor = SnacColors.page
-    Column(
+    CastCardLayout(
+        interactionSource = interactionSource,
+        photo = {
+            Image(
+                imageUrl = cast.person.imageUrl,
+                modifier = Modifier.matchParentSize(),
+            )
+        },
+        details = {
+            Text(
+                text = cast.person.name,
+                style = SnacTypography.tag,
+                maxLines = 1,
+                modifier = Modifier
+                    .indication(
+                        interactionSource, TintIndication(
+                            contentOnly = true,
+                            focusOpacity = 0.2f,
+                            pressOpacity = 0.5f,
+                        ) { tintColor })
+            )
+            Text(
+                text = cast.character,
+                style = SnacTypography.hand,
+                color = SnacColors.signal,
+                maxLines = 2,
+                minLines = 2,
+                modifier = Modifier
+                    .indication(
+                        interactionSource = interactionSource,
+                        indication = TintIndication(
+                            contentOnly = true,
+                            focusOpacity = 0.2f,
+                            pressOpacity = 0.5f,
+                        ) { tintColor })
+            )
+        },
         modifier = modifier
             .rotate(rotation)
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
                 onClick = onClick,
-            )
-            .width(84.dp),
+            ),
+    )
+}
 
-        ) {
-        Image(
-            imageUrl = cast.person.imageUrl,
+@Composable
+private fun CastCardLayout(
+    interactionSource: InteractionSource?,
+    photo: @Composable BoxScope.() -> Unit,
+    details: @Composable ColumnScope.() -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(modifier.width(84.dp)) {
+        Box(
             modifier = Modifier
-                .indication(interactionSource, SilhouettePressIndication())
+                .pressSilhouette(interactionSource)
                 .border(2.dp, SnacColors.outline)
                 .background(SnacColors.card)
                 .padding(horizontal = 6.dp)
                 .padding(top = 6.dp, bottom = 16.dp)
                 .fillMaxWidth()
                 .height(104.dp),
+            content = photo,
         )
-        Text(
-            text = cast.person.name,
-            style = SnacTypography.tag,
-            maxLines = 1,
-            modifier = Modifier
-                .indication(
-                    interactionSource, TintIndication(
-                        contentOnly = true,
-                        focusOpacity = 0.2f,
-                        pressOpacity = 0.5f,
-                    ) { tintColor })
-        )
-        Text(
-            text = cast.character,
-            style = SnacTypography.hand,
-            color = SnacColors.signal,
-            maxLines = 2,
-            minLines = 2,
-            modifier = Modifier
-                .indication(
-                    interactionSource, TintIndication(
-                        contentOnly = true,
-                        focusOpacity = 0.2f,
-                        pressOpacity = 0.5f,
-                    ) { tintColor })
-        )
+        details()
     }
 }
 
@@ -172,37 +193,33 @@ private fun Placeholder(scrollable: Boolean) {
     ) {
         repeat(10) {
             val rotation = remember(it) { Random(it + 80).nextInt(-3, 3).toFloat() }
-            Column(
-                Modifier
-                    .rotate(rotation)
-                    .width(84.dp)
-            ) {
-                Box(
-                    modifier = Modifier
-                        .silhouette()
-                        .border(2.dp, SnacColors.outline)
-                        .background(SnacColors.card)
-                        .padding(horizontal = 6.dp)
-                        .padding(top = 6.dp, bottom = 16.dp)
-                        .fillMaxWidth()
-                        .height(104.dp)
-                        .background(imageGradient())
-                )
-                Box(
-                    Modifier
-                        .padding(top = 8.dp)
-                        .width(64.dp)
-                        .height(14.dp)
-                        .background(SnacColors.placeholder)
-                )
-                Box(
-                    Modifier
-                        .padding(vertical = 4.dp)
-                        .width(48.dp)
-                        .height(12.dp)
-                        .background(SnacColors.placeholder)
-                )
-            }
+            CastCardLayout(
+                interactionSource = null,
+                photo = {
+                    Box(
+                        Modifier
+                            .matchParentSize()
+                            .background(imageGradient())
+                    )
+                },
+                details = {
+                    Box(
+                        Modifier
+                            .padding(top = 8.dp)
+                            .width(64.dp)
+                            .height(14.dp)
+                            .background(SnacColors.placeholder)
+                    )
+                    Box(
+                        Modifier
+                            .padding(vertical = 4.dp)
+                            .width(48.dp)
+                            .height(12.dp)
+                            .background(SnacColors.placeholder)
+                    )
+                },
+                modifier = Modifier.rotate(rotation),
+            )
         }
     }
 }
