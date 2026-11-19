@@ -47,3 +47,6 @@ fun Image(
         contentScale = contentScale,
     )
 }
+
+const val PosterAspectRatio = 2f / 3f
+const val BackdropAspectRatio = 16f / 9f

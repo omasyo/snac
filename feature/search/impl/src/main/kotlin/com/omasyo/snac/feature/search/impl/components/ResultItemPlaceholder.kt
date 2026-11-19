@@ -3,6 +3,7 @@ package com.omasyo.snac.feature.search.impl.components
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.omasyo.snac.core.ui.components.PosterAspectRatio
 import com.omasyo.snac.core.ui.components.PosterCardLayout
 import com.omasyo.snac.core.ui.components.imageGradient
 import com.omasyo.snac.core.ui.theme.SnacTheme
@@ -30,7 +32,7 @@ internal fun ResultItemPlaceholder(seed: Int, modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(160.dp)
+                    .aspectRatio(PosterAspectRatio)
                     .border(2.dp, SnacColors.outline)
                     .background(imageGradient())
             )

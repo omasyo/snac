@@ -14,12 +14,14 @@ fun CalendarMediaResponse.toCalendarItem(zone: ZoneId = ZoneId.systemDefault()):
     when (this) {
         is CalendarMovieResponse -> MovieRelease(
             media = movie.toMovie(),
+            backdropUrl = movie.images?.fanart?.firstOrNull()?.toImageUrl(),
             date = released,
         )
 
 
         is CalendarShowResponse -> EpisodeAiring(
             media = show.toShow(),
+            backdropUrl = show.images?.fanart?.firstOrNull()?.toImageUrl(),
             episode = episode.toEpisode(),
             episodes = episode.episodes.orEmpty().map { it.toEpisode() },
             firstAired = firstAired,

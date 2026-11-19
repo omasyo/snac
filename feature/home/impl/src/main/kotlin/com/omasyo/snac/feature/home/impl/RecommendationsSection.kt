@@ -55,6 +55,7 @@ import com.omasyo.snac.core.model.media.Recommendation
 import com.omasyo.snac.core.model.media.Show
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
+import com.omasyo.snac.core.ui.components.PosterAspectRatio
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.imageGradient
 import com.omasyo.snac.core.ui.models.UiState
@@ -205,7 +206,7 @@ private fun TicketCard(
                 imageUrl = media.imageUrl,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(2f / 3f),
+                    .aspectRatio(PosterAspectRatio),
             )
         },
         details = {
@@ -313,7 +314,7 @@ private fun Placeholder(scrollable: Boolean) {
                     Box(
                         Modifier
                             .fillMaxWidth()
-                            .aspectRatio(2f / 3f)
+                            .aspectRatio(PosterAspectRatio)
                             .background(imageGradient())
                     )
                 },

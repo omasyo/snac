@@ -9,11 +9,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
@@ -43,6 +45,7 @@ import com.omasyo.snac.core.data.models.Reply
 import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
+import com.omasyo.snac.core.ui.components.PosterAspectRatio
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.heroScrollable
 import com.omasyo.snac.core.ui.components.imageGradient
@@ -316,7 +319,8 @@ private fun CommentsHeroLayout(
                 modifier = Modifier
                     .silhouette(SnacColors.signalShadow)
                     .border(4.dp, SnacColors.chip)
-                    .size(74.dp, 108.dp),
+                    .width(72.dp)
+                    .aspectRatio(PosterAspectRatio),
                 content = poster,
             )
         }

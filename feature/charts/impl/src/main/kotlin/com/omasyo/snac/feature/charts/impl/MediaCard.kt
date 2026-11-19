@@ -7,9 +7,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.model.media.ChartItem
 import com.omasyo.snac.core.model.media.TrendingItem
 import com.omasyo.snac.core.ui.components.Image
+import com.omasyo.snac.core.ui.components.PosterAspectRatio
 import com.omasyo.snac.core.ui.components.RuledRowLayout
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.imageGradient
@@ -66,7 +67,8 @@ internal fun MediaCard(
                 })
                 .border(2.dp, SnacColors.chip)
                 .background(SnacColors.muted)
-                .size(56.dp, 80.dp),
+                .width(56.dp)
+                .aspectRatio(PosterAspectRatio),
         )
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -113,7 +115,8 @@ internal fun MediaCardPlaceholder(
                 .rotate(-2f)
                 .border(2.dp, SnacColors.chip)
                 .background(imageGradient())
-                .size(56.dp, 80.dp),
+                .width(56.dp)
+                .aspectRatio(PosterAspectRatio),
         )
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),

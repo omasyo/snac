@@ -7,6 +7,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.data.models.CreditRole
 import com.omasyo.snac.core.data.models.PersonCredit
 import com.omasyo.snac.core.ui.components.Image
+import com.omasyo.snac.core.ui.components.PosterAspectRatio
 import com.omasyo.snac.core.ui.components.RuledRowLayout
 import com.omasyo.snac.core.ui.components.Stamp
 import com.omasyo.snac.core.ui.components.Text
@@ -69,7 +71,8 @@ internal fun CreditCard(
                 })
                 .border(2.dp, SnacColors.chip)
                 .background(SnacColors.muted)
-                .size(56.dp, 80.dp),
+                .width(56.dp)
+                .aspectRatio(PosterAspectRatio),
         )
         Column(
             verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -126,7 +129,8 @@ internal fun CreditCardPlaceholder(
                 .rotate(-2f)
                 .border(2.dp, SnacColors.chip)
                 .background(imageGradient())
-                .size(56.dp, 80.dp),
+                .width(56.dp)
+                .aspectRatio(PosterAspectRatio),
         )
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),

@@ -11,9 +11,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -34,6 +34,7 @@ import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.data.models.Season
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
+import com.omasyo.snac.core.ui.components.PosterAspectRatio
 import com.omasyo.snac.core.ui.components.PosterCardLayout
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.imageGradient
@@ -113,7 +114,9 @@ private fun SeasonCard(
         poster = {
             Image(
                 imageUrl = season.posterUrl,
-                modifier = Modifier.size(100.dp, 160.dp),
+                modifier = Modifier
+                    .width(100.dp)
+                    .aspectRatio(PosterAspectRatio),
             )
         },
         details = {
@@ -179,7 +182,8 @@ private fun Placeholder(scrollable: Boolean) {
                 poster = {
                     Box(
                         modifier = Modifier
-                            .size(100.dp, 160.dp)
+                            .width(100.dp)
+                            .aspectRatio(PosterAspectRatio)
                             .border(2.dp, SnacColors.outline)
                             .background(imageGradient())
                     )

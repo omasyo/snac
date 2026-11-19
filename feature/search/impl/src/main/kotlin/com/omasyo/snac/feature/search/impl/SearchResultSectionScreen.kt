@@ -94,7 +94,7 @@ internal fun <T : Any> SearchResultSectionScreen(
                 is LoadState.Error -> item("append-error") {
                     Box(
                         contentAlignment = Alignment.Center,
-                        modifier = Modifier.size(112.dp, 172.dp),
+                        modifier = Modifier.size(112.dp, 160.dp),
                     ) {
                         Button(text = "Retry", onClick = items::retry)
                     }

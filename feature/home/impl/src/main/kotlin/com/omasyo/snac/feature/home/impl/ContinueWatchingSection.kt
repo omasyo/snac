@@ -47,6 +47,7 @@ import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.model.media.MoviePlayback
 import com.omasyo.snac.core.model.media.PlaybackItem
 import com.omasyo.snac.core.model.media.Show
+import com.omasyo.snac.core.ui.components.BackdropAspectRatio
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.ProgressBar
@@ -220,7 +221,7 @@ private fun PlaybackCardLayout(
                 .pressSilhouette(interactionSource, offset = FrameShadowOffset)
                 .background(SnacColors.film)
                 .fillMaxWidth()
-                .aspectRatio(16f / 9f),
+                .aspectRatio(BackdropAspectRatio),
             content = frame,
         )
         Column(

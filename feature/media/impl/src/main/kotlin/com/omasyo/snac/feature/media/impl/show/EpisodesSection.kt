@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.common.format.formatRating
 import com.omasyo.snac.core.data.models.EpisodeDetails
+import com.omasyo.snac.core.ui.components.BackdropAspectRatio
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Icon
 import com.omasyo.snac.core.ui.components.Image
@@ -110,7 +112,8 @@ private fun EpisodeRow(
     ) {
         Box(
             modifier = Modifier
-                .size(92.dp, 54.dp)
+                .width(96.dp)
+                .aspectRatio(BackdropAspectRatio)
         ) {
             Image(
                 imageUrl = episode.screenshotUrl,
@@ -177,7 +180,8 @@ private fun Placeholder() {
             ) {
                 Box(
                     modifier = Modifier
-                        .size(92.dp, 54.dp)
+                        .width(96.dp)
+                .aspectRatio(BackdropAspectRatio)
                 ) {
                     Box(
                         modifier = Modifier

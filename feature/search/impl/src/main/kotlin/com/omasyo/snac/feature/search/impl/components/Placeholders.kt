@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -27,6 +28,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.omasyo.snac.core.ui.components.Icon
+import com.omasyo.snac.core.ui.components.PosterAspectRatio
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.modifiers.silhouette
 import com.omasyo.snac.core.ui.theme.SnacTheme
@@ -50,7 +52,7 @@ internal fun SearchPromptPlaceholder(
             EmptyFrame(
                 modifier = Modifier
                     .padding(vertical = 8.dp)
-                    .size(104.dp, 144.dp)
+                    .width(96.dp)
                     .rotate(1.5f),
             )
             Icon(
@@ -95,7 +97,7 @@ internal fun NoResultsPlaceholder(
                 listOf(-3f, 1.5f, -1f).forEach { rotation ->
                     EmptyFrame(
                         modifier = Modifier
-                            .size(104.dp, 144.dp)
+                            .width(96.dp)
                             .rotate(rotation),
                     )
                 }
@@ -120,7 +122,7 @@ internal fun NoResultsPlaceholder(
 private fun EmptyFrame(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
-            .aspectRatio(9f / 13f)
+            .aspectRatio(PosterAspectRatio)
             .silhouette()
             .border(2.dp, SnacColors.outline)
             .background(SnacColors.card)

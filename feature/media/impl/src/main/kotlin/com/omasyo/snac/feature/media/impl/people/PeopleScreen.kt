@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
@@ -39,6 +41,7 @@ import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.PeopleList
 import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.ui.components.Image
+import com.omasyo.snac.core.ui.components.PosterAspectRatio
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.heroScrollable
 import com.omasyo.snac.core.ui.models.UiState
@@ -197,7 +200,8 @@ private fun Hero(
                     modifier = Modifier
                         .silhouette(SnacColors.signalShadow)
                         .border(4.dp, SnacColors.chip)
-                        .size(74.dp, 108.dp),
+                        .width(72.dp)
+                    .aspectRatio(PosterAspectRatio),
                 )
             }
             Column(

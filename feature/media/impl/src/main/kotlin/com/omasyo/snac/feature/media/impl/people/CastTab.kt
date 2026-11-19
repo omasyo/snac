@@ -14,8 +14,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -40,6 +39,7 @@ import com.omasyo.snac.core.data.models.Cast
 import com.omasyo.snac.core.data.models.Person
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
+import com.omasyo.snac.core.ui.components.PosterAspectRatio
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.imageGradient
 import com.omasyo.snac.core.ui.models.UiState
@@ -123,7 +123,7 @@ private fun CastCard(
         photo = {
             Image(
                 imageUrl = cast.person.imageUrl,
-                modifier = Modifier.fillMaxHeight(),
+                modifier = Modifier.matchParentSize(),
             )
         },
         details = {
@@ -171,7 +171,7 @@ private fun CastCardLayout(
     details: @Composable ColumnScope.() -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier.aspectRatio(2f / 3f)) {
+    Column(modifier) {
         Box(
             modifier = Modifier
                 .pressSilhouette(interactionSource)
@@ -179,7 +179,8 @@ private fun CastCardLayout(
                 .background(SnacColors.card)
                 .padding(horizontal = 6.dp)
                 .padding(top = 6.dp, bottom = 20.dp)
-                .weight(1f),
+                .fillMaxWidth()
+                .aspectRatio(PosterAspectRatio),
             content = photo,
         )
         details()
@@ -209,7 +210,7 @@ private fun Placeholder(
                 photo = {
                     Box(
                         Modifier
-                            .fillMaxSize()
+                            .matchParentSize()
                             .background(imageGradient())
                     )
                 },

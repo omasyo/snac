@@ -39,6 +39,7 @@ import com.omasyo.snac.core.common.SnacResult
 import com.omasyo.snac.core.model.media.Episode
 import com.omasyo.snac.core.model.media.Show
 import com.omasyo.snac.core.model.media.UpNextItem
+import com.omasyo.snac.core.ui.components.BackdropAspectRatio
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
 import com.omasyo.snac.core.ui.components.ProgressBar
@@ -202,7 +203,7 @@ private fun UpNextCardLayout(
             modifier = Modifier
                 .border(2.dp, SnacColors.outline)
                 .fillMaxWidth()
-                .aspectRatio(16f / 9f),
+                .aspectRatio(BackdropAspectRatio),
             content = image,
         )
         Column(

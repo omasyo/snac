@@ -65,6 +65,7 @@ import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.IconButton
 import com.omasyo.snac.core.ui.components.Image
+import com.omasyo.snac.core.ui.components.BackdropAspectRatio
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.bottomBarPadding
 import com.omasyo.snac.core.ui.format.formatEpisodeCode
@@ -298,7 +299,7 @@ private fun CalendarList(
                     title = item.item.title,
                     subtitle = item.item.subtitle,
                     caption = item.item.caption,
-                    imageUrl = item.item.media.imageUrl,
+                    imageUrl = item.item.backdropUrl,
                     onClick = {
                         when (item.item) {
                             is EpisodeAiring -> onEpisodeClick(item.item)
@@ -413,7 +414,7 @@ internal fun CalendarCardLayout(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Box(
-            modifier = Modifier.aspectRatio(16f / 9f),
+            modifier = Modifier.aspectRatio(BackdropAspectRatio),
             content = image,
         )
         Column(
@@ -498,9 +499,14 @@ private fun Preview() {
             CalendarDay(
                 date = date,
                 items = listOf(
-                    MovieRelease(Movie("movie-$dayOffset", "Frankenstein", 2025, null), date),
+                    MovieRelease(
+                        media = Movie("movie-$dayOffset", "Frankenstein", 2025, null),
+                        backdropUrl = null,
+                        date = date,
+                    ),
                     EpisodeAiring(
                         media = Show("show-$dayOffset", "The Long Static", 2024, null),
+                        backdropUrl = null,
                         episode = Episode(3, dayOffset + 1, "Carrier Wave"),
                         episodes = emptyList(),
                         firstAired = date.atTime(21, 0).atZone(ZoneId.systemDefault()).toInstant(),

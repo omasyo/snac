@@ -24,11 +24,16 @@ data class PopularItem(
 
 data class AnticipatedItem(
     override val media: Media,
+    val backdropUrl: String?,
     val listCount: Int,
 ) : ChartItem {
     companion object {
         val PreviewSample = List(10) {
-            AnticipatedItem(Movie("movie-$it", "Frankenstein", 2025, null), listCount = 1204)
+            AnticipatedItem(
+                Movie("movie-$it", "Frankenstein", 2025, null),
+                backdropUrl = null,
+                listCount = 1204,
+            )
         }
     }
 }

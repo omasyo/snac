@@ -14,9 +14,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -41,6 +42,7 @@ import com.omasyo.snac.core.model.media.Media
 import com.omasyo.snac.core.ui.components.ArrowLink
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
+import com.omasyo.snac.core.ui.components.BackdropAspectRatio
 import com.omasyo.snac.core.ui.components.Stamp
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.imageGradient
@@ -108,7 +110,7 @@ internal fun AnticipatedSection(
                         AnticipatedCard(
                             title = item.media.title,
                             listCount = item.listCount,
-                            imageUrl = item.media.imageUrl,
+                            imageUrl = item.backdropUrl,
                             onClick = { onMediaClick(item.media) },
                         )
                     }
@@ -175,12 +177,13 @@ private fun AnticipatedCardLayout(
     details: @Composable ColumnScope.() -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier) {
+    Column(modifier.width(224.dp)) {
         Box(
             modifier = Modifier
                 .pressSilhouette(interactionSource)
                 .border(2.dp, SnacColors.outline)
-                .size(224.dp, 128.dp),
+                .fillMaxWidth()
+                .aspectRatio(BackdropAspectRatio),
             content = image,
         )
         details()

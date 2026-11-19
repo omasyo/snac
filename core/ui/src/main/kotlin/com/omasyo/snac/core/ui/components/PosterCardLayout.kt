@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
@@ -49,7 +49,7 @@ private fun Preview() {
                 Box(
                     Modifier
                         .fillMaxWidth()
-                        .height(160.dp)
+                        .aspectRatio(PosterAspectRatio)
                         .background(imageGradient())
                 )
             },

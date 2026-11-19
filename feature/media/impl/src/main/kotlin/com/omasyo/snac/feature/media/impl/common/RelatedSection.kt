@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -39,6 +40,7 @@ import com.omasyo.snac.core.model.media.Movie
 import com.omasyo.snac.core.ui.components.Button
 import com.omasyo.snac.core.ui.components.ErrorBox
 import com.omasyo.snac.core.ui.components.Image
+import com.omasyo.snac.core.ui.components.PosterAspectRatio
 import com.omasyo.snac.core.ui.components.PosterCardLayout
 import com.omasyo.snac.core.ui.components.Text
 import com.omasyo.snac.core.ui.components.imageGradient
@@ -113,7 +115,7 @@ internal fun RelatedSection(
                         is LoadState.Error -> item("append-error") {
                             Box(
                                 contentAlignment = Alignment.Center,
-                                modifier = Modifier.size(112.dp, 172.dp),
+                                modifier = Modifier.size(112.dp, 162.dp),
                             ) {
                                 Button(text = "Retry", onClick = items::retry)
                             }
@@ -144,7 +146,7 @@ private fun RelatedCard(
                 imageUrl = media.imageUrl,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(160.dp),
+                    .aspectRatio(PosterAspectRatio),
             )
         },
         details = {
@@ -196,7 +198,7 @@ private fun RelatedCardPlaceholder(seed: Int, modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(160.dp)
+                    .aspectRatio(PosterAspectRatio)
                     .border(2.dp, SnacColors.outline)
                     .background(imageGradient())
             )

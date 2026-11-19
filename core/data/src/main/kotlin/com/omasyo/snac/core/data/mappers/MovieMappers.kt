@@ -30,6 +30,7 @@ fun MovieResponse.toPopularItem() = PopularItem(
 
 fun AnticipatedMovieResponse.toAnticipatedItem() = AnticipatedItem(
     media = movie.toMovie(),
+    backdropUrl = movie.images?.fanart?.firstOrNull()?.toImageUrl(),
     listCount = listCount,
 )
 

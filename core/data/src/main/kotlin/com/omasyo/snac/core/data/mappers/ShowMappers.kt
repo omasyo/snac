@@ -37,6 +37,7 @@ fun ShowResponse.toPopularItem() = PopularItem(
 
 fun AnticipatedShowResponse.toAnticipatedItem() = AnticipatedItem(
     media = show.toShow(),
+    backdropUrl = show.images?.fanart?.firstOrNull()?.toImageUrl(),
     listCount = listCount,
 )
 
