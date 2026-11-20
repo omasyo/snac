@@ -204,7 +204,7 @@ internal fun HomeScreen(
     }
 }
 
-@Preview
+@Preview(device = "spec:width=1080px,height=6340px,dpi=440")
 @Composable
 private fun Preview() {
     ProvideSignInState(true) {

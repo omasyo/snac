@@ -173,7 +173,6 @@ private fun Row(
                 item = item,
                 onClick = { onMediaClick(media) },
                 modifier = Modifier
-                    .width(TicketWidth)
                     .rotate(rotation),
             )
         }
@@ -235,6 +234,7 @@ private fun TicketCardLayout(
     val lineColor = SnacColors.outline
     Column(
         modifier = modifier
+            .width(160.dp)
             .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
             .background(SnacColors.card)
             .drawBehind {
@@ -308,7 +308,6 @@ private fun Placeholder(scrollable: Boolean) {
         repeat(3) {
             TicketCardLayout(
                 modifier = Modifier
-                    .width(TicketWidth)
                     .silhouette(offset = TicketShadowOffset),
                 poster = {
                     Box(
@@ -338,7 +337,6 @@ private fun Placeholder(scrollable: Boolean) {
     }
 }
 
-private val TicketWidth = 200.dp
 private val TicketShadowOffset = DpOffset(4.dp, 4.dp)
 
 @Preview
